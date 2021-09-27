@@ -26,6 +26,11 @@ export const Login = observer(() => {
           <Link to="/signup">here!</Link>
         </Text>
       </Box>
+      <Box mt="5">
+        <Text as="span" color="primary.100" _hover={{ color: "primary.200" }}>
+          <Link to="/password-reset">Forgot Password?</Link>
+        </Text>
+      </Box>
     </Flex>
   );
 });
