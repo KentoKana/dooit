@@ -41,10 +41,10 @@ class AuthByEmailPassword {
         return setPersistence(auth, browserLocalPersistence).then(async () => {
             return signInWithEmailAndPassword(auth, email, password).then((userCred) => {
                 localStorage.setItem("user", JSON.stringify(userCred.user));
-                userStore.user = userCred.user;
                 auth.currentUser?.getIdToken(true).then((token) => {
                     localStorage.setItem("user-jwt", JSON.stringify(token));
                 })
+                userStore.user = userCred.user;
             })
         });
     }
@@ -53,6 +53,9 @@ class AuthByEmailPassword {
         return createUserWithEmailAndPassword(auth, email, password)
             .then((userCred) => {
                 localStorage.setItem("user", JSON.stringify(userCred.user));
+                auth.currentUser?.getIdToken(true).then((token) => {
+                    localStorage.setItem("user-jwt", JSON.stringify(token));
+                })
                 userStore.user = userCred.user;
             })
     }
