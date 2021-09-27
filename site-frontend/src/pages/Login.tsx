@@ -1,3 +1,8 @@
+import { Button } from "@chakra-ui/button";
+import { FormLabel } from "@chakra-ui/form-control";
+import { Link as CLink, Spinner } from "@chakra-ui/react";
+import { Input } from "@chakra-ui/input";
+import { Box, Flex, Heading, Text } from "@chakra-ui/layout";
 import { observer } from "mobx-react-lite";
 import { useCallback, useState } from "react";
 import { Link, Redirect, useHistory } from "react-router-dom";
@@ -46,52 +51,71 @@ export const Login = observer(() => {
   }
 
   return (
-    <div>
-      {loadingState === LoadingState.Loading && <>Loggin In...</>}
-      {loadingState === LoadingState.Error && <>Error</>}
-      {loadingState === LoadingState.None && (
-        <>
-          <h1>Login</h1>
-          <form>
-            <div>
-              <label htmlFor="email">
-                Email:{" "}
-                <input
-                  name="email"
-                  type="email"
-                  placeholder="E-mail"
-                  onChange={(e) => {
-                    e.persist();
-                    setLoginForm((prev) => {
-                      return {
-                        ...prev,
-                        email: e.target.value,
-                      };
-                    });
-                  }}
-                />
-              </label>
-            </div>
-            <div>
-              <label htmlFor="password">
-                Password:{" "}
-                <input
-                  name="password"
-                  type="password"
-                  placeholder="Password"
-                  onChange={(e) => {
-                    e.persist();
-                    setLoginForm((prev) => {
-                      return {
-                        ...prev,
-                        password: e.target.value,
-                      };
-                    });
-                  }}
-                />
-              </label>
-            </div>
-            <button
+    <Flex
+      justifyContent="center"
+      alignItems="center"
+      height="100vh"
+      direction="column"
+    >
+      <Flex direction="column" justifyContent="center" alignItems="center">
+        <Heading as="h1" mb="5">
+          Log Into{" "}
+          <Text as="span" color="primary.100">
+            DooIt
+          </Text>
+        </Heading>
+        <form>
+          <div>
+            <FormLabel htmlFor="email" mr={0} mb={3}>
+              Email:{" "}
+              <Input
+                disabled={loadingState === LoadingState.Loading}
+                id="email"
+                name="email"
+                type="email"
+                placeholder="E-mail"
+                onChange={(e) => {
+                  e.persist();
+                  setLoginForm((prev) => {
+                    return {
+                      ...prev,
+                      email: e.target.value,
+                    };
+                  });
+                }}
+              />
+            </FormLabel>
+          </div>
+          <div>
+            <FormLabel htmlFor="password" mr={0} mb={3}>
+              Password:{" "}
+              <Input
+                disabled={loadingState === LoadingState.Loading}
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Password"
+                onChange={(e) => {
+                  e.persist();
+                  setLoginForm((prev) => {
+                    return {
+                      ...prev,
+                      password: e.target.value,
+                    };
+                  });
+                }}
+              />
+            </FormLabel>
+          </div>
+          <Flex justifyContent="center">
+            <Button
+              color="white"
+              _hover={{ bgColor: "primary.200" }}
+              _active={{ bgColor: "primary.200" }}
+              bgColor={"primary.100"}
+              mt="5"
+              width="100%"
+              disabled={loadingState === LoadingState.Loading}
               onClick={(e) => {
                 e.preventDefault();
                 handleLogin(AuthMethod.EmailAndPassword)
@@ -103,17 +127,24 @@ export const Login = observer(() => {
                   });
               }}
             >
-              Login
-            </button>
-          </form>
-          <div>
-            Don't have an account? Sign up <Link to="/signup">here!</Link>
-          </div>
-        </>
-      )}
-    </div>
+              {loadingState === LoadingState.Loading ? (
+                <>
+                  Logging you in ... <Spinner />
+                </>
+              ) : (
+                <>Log In</>
+              )}
+            </Button>
+          </Flex>
+        </form>
+      </Flex>
+
+      <Box mt="5">
+        Don't have an account? Sign up{" "}
+        <CLink color="primary.100">
+          <Link to="/signup">here!</Link>
+        </CLink>
+      </Box>
+    </Flex>
   );
 });
-function removeModuleScopePlugin() {
-  throw new Error("Function not implemented.");
-}
