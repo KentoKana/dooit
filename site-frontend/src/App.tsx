@@ -8,6 +8,7 @@ import { Home } from "./pages/Home";
 import { useEffect, useState } from "react";
 import { UseStores } from "./stores/StoreContexts";
 import { AppConfig } from "./classes/AppConfig";
+import { ForgotPassword } from "./pages/ForgotPassword";
 
 export const App = observer(() => {
   const { userStore } = UseStores();
@@ -33,6 +34,7 @@ export const App = observer(() => {
             />
             <Route exact path="/login" component={Login} />
             <Route exact path="/signup" component={SignUp} />
+            <Route exact path="/forgot-password" component={ForgotPassword} />
           </Switch>
         </Router>
       )}

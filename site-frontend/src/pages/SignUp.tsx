@@ -4,6 +4,7 @@ import { Redirect, useHistory } from "react-router-dom";
 import { UseStores } from "../stores/StoreContexts";
 import { AuthService } from "../classes/AuthService";
 import { LoadingState } from "../enums/LoadingState";
+import { isNullOrUndefined } from "../utils";
 
 interface ISignUpForm {
   email: string;
@@ -36,7 +37,7 @@ export const SignUp = observer(() => {
       });
   }, [userStore, history, signupForm]);
 
-  if (userStore.user) {
+  if (!isNullOrUndefined(userStore.userToken)) {
     return <Redirect to="/" />;
   }
 

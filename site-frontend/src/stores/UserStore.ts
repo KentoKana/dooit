@@ -1,18 +1,17 @@
-import { User } from "@firebase/auth";
 import { makeAutoObservable, runInAction } from "mobx";
 
 export class UserStore {
     constructor() {
         makeAutoObservable(this)
     }
-    private _user: User | null = null;
+    private _userToken: string | null = null;
 
-    get user() {
-        return this._user;
+    get userToken() {
+        return this._userToken;
     }
-    set user(newUser: User | null) {
+    set userToken(newUserToken: string | null) {
         runInAction(() => {
-            this._user = newUser;
+            this._userToken = newUserToken;
         })
     }
 }

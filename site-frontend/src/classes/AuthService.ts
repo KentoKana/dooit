@@ -28,8 +28,7 @@ export class AuthService {
      */
     async signOut() {
         runInAction(() => {
-            this.userStore.user = null;
-            localStorage.removeItem("user");
+            this.userStore.userToken = null;
             localStorage.removeItem("user-jwt");
             auth.signOut();
         })
@@ -40,11 +39,10 @@ class AuthByEmailPassword {
     static async login(userStore: UserStore, email: string, password: string) {
         return setPersistence(auth, browserLocalPersistence).then(async () => {
             return signInWithEmailAndPassword(auth, email, password).then((userCred) => {
-                localStorage.setItem("user", JSON.stringify(userCred.user));
                 auth.currentUser?.getIdToken(true).then((token) => {
+                    userStore.userToken = token;
                     localStorage.setItem("user-jwt", JSON.stringify(token));
                 })
-                userStore.user = userCred.user;
             })
         });
     }
@@ -52,11 +50,10 @@ class AuthByEmailPassword {
     static async createUser(userStore: UserStore, email: string, password: string) {
         return createUserWithEmailAndPassword(auth, email, password)
             .then((userCred) => {
-                localStorage.setItem("user", JSON.stringify(userCred.user));
-                auth.currentUser?.getIdToken(true).then((token) => {
-                    localStorage.setItem("user-jwt", JSON.stringify(token));
+                userCred.user.getIdToken(true).then((token) => {
+                    userStore.userToken = token;
+                    localStorage.setItem("user-jwt", token);
                 })
-                userStore.user = userCred.user;
             })
     }
 }

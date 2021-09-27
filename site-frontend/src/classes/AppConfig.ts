@@ -12,16 +12,12 @@ export class AppConfig {
     }
 
     private getPersistedUser() {
-        const currUser = localStorage.getItem("user");
-        if (currUser) {
-            this.userStore.user = JSON.parse(currUser);
-            auth.onAuthStateChanged((user) => {
-                if (user && JSON.stringify(user) === currUser) {
-                    this.userStore.user = user;
-                    localStorage.setItem("user", JSON.stringify(user));
-                }
-            });
-        }
-
+        this.userStore.userToken = localStorage.getItem("user-jwt");
+        auth.onAuthStateChanged((user) => {
+            user?.getIdToken().then((token) => {
+                this.userStore.userToken = token;
+                localStorage.setItem("user-jwt", token);
+            })
+        });
     }
 }

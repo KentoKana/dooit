@@ -11,6 +11,7 @@ import { AuthService } from "../../classes/AuthService";
 import { AuthMethod } from "../../enums/AuthMethod";
 import { LoadingState } from "../../enums/LoadingState";
 import { UseStores } from "../../stores/StoreContexts";
+import { isNullOrUndefined } from "../../utils";
 
 interface ILoginForm {
   email: string;
@@ -35,6 +36,7 @@ export const LoginForm = observer(() => {
   const handleLogin = useCallback(
     async (authMethod: AuthMethod) => {
       setLoadingState(LoadingState.Loading);
+
       const authService = new AuthService(userStore);
       if (authMethod === AuthMethod.EmailAndPassword) {
         return authService
@@ -51,7 +53,7 @@ export const LoginForm = observer(() => {
     [userStore, loginForm]
   );
 
-  if (userStore.user) {
+  if (!isNullOrUndefined(userStore.userToken)) {
     return <Redirect to="/" />;
   }
   return (
@@ -100,10 +102,7 @@ export const LoginForm = observer(() => {
       </div>
       <Flex justifyContent="center">
         <Button
-          color="white"
-          _hover={{ bgColor: "primary.200" }}
-          _active={{ bgColor: "primary.200" }}
-          bgColor={"primary.100"}
+          variant="primary"
           mt="5"
           width="100%"
           disabled={loadingState === LoadingState.Loading}
