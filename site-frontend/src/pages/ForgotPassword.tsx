@@ -3,7 +3,7 @@ import { FormLabel } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
 import { Box, Flex, Heading, Text } from "@chakra-ui/layout";
 import { observer } from "mobx-react-lite";
-import { useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useState } from "react";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebase";
 import { LoadingState } from "../enums/LoadingState";
@@ -15,34 +15,21 @@ export const ForgotPassword = observer(() => {
   const [loadingState, setLoadingSate] = useState<LoadingState>(
     LoadingState.None
   );
-  const handleResetPasswordRequest = useCallback(() => {
-    setLoadingSate(LoadingState.Loading);
-    sendPasswordResetEmail(auth, email)
-      .then(() => {
-        setLoadingSate(LoadingState.Loaded);
-      })
-      .catch((error) => {
-        alert(error);
-        setLoadingSate(LoadingState.Error);
-      });
-  }, [email]);
-
-  const handleUserKeyPress = useCallback(
-    (event: KeyboardEvent) => {
-      const { key } = event;
-      event.preventDefault();
-      if (key === "Enter") {
-        handleResetPasswordRequest();
-      }
+  const handleResetPasswordRequest = useCallback(
+    (e: FormEvent) => {
+      e.preventDefault();
+      setLoadingSate(LoadingState.Loading);
+      sendPasswordResetEmail(auth, email)
+        .then(() => {
+          setLoadingSate(LoadingState.Loaded);
+        })
+        .catch((error) => {
+          alert(error);
+          setLoadingSate(LoadingState.Error);
+        });
     },
-    [handleResetPasswordRequest]
+    [email]
   );
-  useEffect(() => {
-    window.addEventListener("keydown", handleUserKeyPress);
-    return () => {
-      window.removeEventListener("keydown", handleUserKeyPress);
-    };
-  }, [handleUserKeyPress]);
 
   return (
     <Flex
@@ -54,7 +41,7 @@ export const ForgotPassword = observer(() => {
       <Heading as="h1" mb="50">
         Reset Your Password
       </Heading>
-      <form>
+      <form onSubmit={handleResetPasswordRequest}>
         <Box mb="5">
           <FormLabel htmlFor="email">E-mail:</FormLabel>
           <Input
@@ -67,9 +54,9 @@ export const ForgotPassword = observer(() => {
           />
         </Box>
         <Button
+          type="submit"
           variant="primary"
           width="100%"
-          onClick={() => handleResetPasswordRequest()}
           disabled={loadingState === LoadingState.Loading}
         >
           {loadingState === LoadingState.Loading ? (

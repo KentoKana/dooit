@@ -4,11 +4,9 @@ import { Input } from "@chakra-ui/input";
 import { Flex } from "@chakra-ui/layout";
 import { Spinner } from "@chakra-ui/spinner";
 import { observer } from "mobx-react-lite";
-import { useCallback, useEffect, useState } from "react";
-import { useHistory } from "react-router";
+import { FormEvent, useCallback, useState } from "react";
 import { Redirect } from "react-router-dom";
 import { AuthService } from "../../classes/AuthService";
-import { AuthMethod } from "../../enums/AuthMethod";
 import { LoadingState } from "../../enums/LoadingState";
 import { UseStores } from "../../stores/StoreContexts";
 import { isNullOrUndefined } from "../../utils";
@@ -31,50 +29,29 @@ export const LoginForm = observer(() => {
   );
   //#endregion
 
-  const history = useHistory();
-
   const handleLogin = useCallback(
-    async (authMethod: AuthMethod) => {
+    async (e: FormEvent) => {
+      e.preventDefault();
       setLoadingState(LoadingState.Loading);
-
       const authService = new AuthService(userStore);
-      if (authMethod === AuthMethod.EmailAndPassword) {
-        return authService
-          .loginWithEmailAndPassword(loginForm.email, loginForm.password)
-          .then(() => {
-            setLoadingState(LoadingState.Loaded);
-          })
-          .catch((error) => {
-            setLoadingState(LoadingState.Error);
-            alert(error);
-          });
-      }
+      return authService
+        .loginWithEmailAndPassword(loginForm.email, loginForm.password)
+        .then(() => {
+          setLoadingState(LoadingState.Loaded);
+        })
+        .catch((error) => {
+          setLoadingState(LoadingState.Error);
+          alert(error);
+        });
     },
     [userStore, loginForm]
   );
-
-  const handleUserKeyPress = useCallback(
-    (event: KeyboardEvent) => {
-      const { key } = event;
-      event.preventDefault();
-      if (key === "Enter") {
-        handleLogin(AuthMethod.EmailAndPassword);
-      }
-    },
-    [handleLogin]
-  );
-  useEffect(() => {
-    window.addEventListener("keydown", handleUserKeyPress);
-    return () => {
-      window.removeEventListener("keydown", handleUserKeyPress);
-    };
-  }, [handleUserKeyPress]);
 
   if (!isNullOrUndefined(userStore.userToken)) {
     return <Redirect to="/" />;
   }
   return (
-    <form>
+    <form onSubmit={handleLogin}>
       <div>
         <FormLabel htmlFor="email" mr={0} mb={2}>
           Email:{" "}
@@ -121,20 +98,11 @@ export const LoginForm = observer(() => {
       </div>
       <Flex justifyContent="center">
         <Button
+          type="submit"
           variant="primary"
           mt="5"
           width="100%"
           disabled={loadingState === LoadingState.Loading}
-          onClick={(e) => {
-            e.preventDefault();
-            handleLogin(AuthMethod.EmailAndPassword)
-              .then(() => {
-                history.push("/");
-              })
-              .catch((error) => {
-                alert(error);
-              });
-          }}
         >
           {loadingState === LoadingState.Loading ? (
             <>
