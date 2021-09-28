@@ -1,5 +1,12 @@
+import { ComponentSingleStyleConfig } from "@chakra-ui/react"
 import { darken, mode, whiten } from "@chakra-ui/theme-tools"
-export const ButtonStyles = {
+const primaryButton = (props: any) => {
+    return {
+        color: mode("white", "black")(props),
+        bgColor: mode(darken("primary", 10), whiten("primary", 10))(props),
+    }
+}
+export const ButtonStyles: ComponentSingleStyleConfig = {
     baseStyle: {
         bgColor: "primary"
     },
@@ -7,12 +14,13 @@ export const ButtonStyles = {
     variants: {
         primary: (props: any) => ({
             color: "white",
-            _hover: {
-                bgColor:
-                    mode(darken("primary", 10), whiten("primary", 10))(props)
-            },
-            // _active: mode(darken("primary", 10), whiten("primary", 10))(props),
             bg: "primary",
+            _active: primaryButton(props),
+            _disabled: primaryButton(props),
+            _hover: {
+                ...primaryButton(props),
+                _disabled: primaryButton(props),
+            },
         })
     },
     defaultProps: {}
