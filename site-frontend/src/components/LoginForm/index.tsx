@@ -55,9 +55,9 @@ export const LoginForm = observer(() => {
 
   const handleUserKeyPress = useCallback(
     (event: KeyboardEvent) => {
-      const { keyCode } = event;
+      const { key } = event;
       event.preventDefault();
-      if (keyCode === 13) {
+      if (key === "Enter") {
         handleLogin(AuthMethod.EmailAndPassword);
       }
     },

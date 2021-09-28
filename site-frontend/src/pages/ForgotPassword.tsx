@@ -21,15 +21,16 @@ export const ForgotPassword = observer(() => {
         setLoadingSate(LoadingState.Loaded);
       })
       .catch((error) => {
+        alert(error);
         setLoadingSate(LoadingState.Error);
       });
   }, [email]);
 
   const handleUserKeyPress = useCallback(
     (event: KeyboardEvent) => {
-      const { keyCode } = event;
+      const { key } = event;
       event.preventDefault();
-      if (keyCode === 13) {
+      if (key === "Enter") {
         handleResetPasswordRequest();
       }
     },
