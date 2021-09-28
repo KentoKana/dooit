@@ -4,7 +4,7 @@ import { Input } from "@chakra-ui/input";
 import { Flex } from "@chakra-ui/layout";
 import { Spinner } from "@chakra-ui/spinner";
 import { observer } from "mobx-react-lite";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { Redirect } from "react-router-dom";
 import { AuthService } from "../../classes/AuthService";
@@ -52,6 +52,23 @@ export const LoginForm = observer(() => {
     },
     [userStore, loginForm]
   );
+
+  const handleUserKeyPress = useCallback(
+    (event: KeyboardEvent) => {
+      const { keyCode } = event;
+      event.preventDefault();
+      if (keyCode === 13) {
+        handleLogin(AuthMethod.EmailAndPassword);
+      }
+    },
+    [handleLogin]
+  );
+  useEffect(() => {
+    window.addEventListener("keydown", handleUserKeyPress);
+    return () => {
+      window.removeEventListener("keydown", handleUserKeyPress);
+    };
+  }, [handleUserKeyPress]);
 
   if (!isNullOrUndefined(userStore.userToken)) {
     return <Redirect to="/" />;
