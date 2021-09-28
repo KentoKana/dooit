@@ -1,13 +1,14 @@
 import { Button } from "@chakra-ui/button";
 import { FormLabel } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
-import { Box, Flex, Heading } from "@chakra-ui/layout";
+import { Box, Flex, Heading, Text } from "@chakra-ui/layout";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useState } from "react";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebase";
 import { LoadingState } from "../enums/LoadingState";
 import { Spinner } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
 
 export const ForgotPassword = observer(() => {
   const [email, setEmail] = useState("");
@@ -80,6 +81,11 @@ export const ForgotPassword = observer(() => {
           )}
         </Button>
       </form>
+      <Box mt="5">
+        <Text as="span" variant="link">
+          <Link to="/login">Back to Login Page</Link>
+        </Text>
+      </Box>
     </Flex>
   );
 });
