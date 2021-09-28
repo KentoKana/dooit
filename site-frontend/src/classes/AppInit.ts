@@ -1,21 +1,21 @@
 import { auth } from "../firebase";
 import { UserStore } from "../stores/UserStore";
 
-export class AppConfig {
+export class AppInit {
     constructor(userStore: UserStore) {
-        this.userStore = userStore;
+        this._userStore = userStore;
     }
-    userStore: UserStore;
+    private _userStore: UserStore;
 
     init() {
         this.getPersistedUser();
     }
 
     private getPersistedUser() {
-        this.userStore.userToken = localStorage.getItem("user-jwt");
+        this._userStore.userToken = localStorage.getItem("user-jwt");
         auth.onAuthStateChanged((user) => {
             user?.getIdToken().then((token) => {
-                this.userStore.userToken = token;
+                this._userStore.userToken = token;
                 localStorage.setItem("user-jwt", token);
             })
         });

@@ -59,46 +59,48 @@ export const LoginForm = observer(() => {
   return (
     <form>
       <div>
-        <FormLabel htmlFor="email" mr={0} mb={3}>
+        <FormLabel htmlFor="email" mr={0} mb={2}>
           Email:{" "}
-          <Input
-            disabled={loadingState === LoadingState.Loading}
-            id="email"
-            name="email"
-            type="email"
-            placeholder="E-mail"
-            onChange={(e) => {
-              e.persist();
-              setLoginForm((prev) => {
-                return {
-                  ...prev,
-                  email: e.target.value,
-                };
-              });
-            }}
-          />
         </FormLabel>
+        <Input
+          mb={3}
+          disabled={loadingState === LoadingState.Loading}
+          id="email"
+          name="email"
+          type="email"
+          placeholder="E-mail"
+          onChange={(e) => {
+            e.persist();
+            setLoginForm((prev) => {
+              return {
+                ...prev,
+                email: e.target.value,
+              };
+            });
+          }}
+        />
       </div>
       <div>
-        <FormLabel htmlFor="password" mr={0} mb={3}>
+        <FormLabel htmlFor="password" mr={0} mb={2}>
           Password:{" "}
-          <Input
-            disabled={loadingState === LoadingState.Loading}
-            id="password"
-            name="password"
-            type="password"
-            placeholder="Password"
-            onChange={(e) => {
-              e.persist();
-              setLoginForm((prev) => {
-                return {
-                  ...prev,
-                  password: e.target.value,
-                };
-              });
-            }}
-          />
         </FormLabel>
+        <Input
+          mb={3}
+          disabled={loadingState === LoadingState.Loading}
+          id="password"
+          name="password"
+          type="password"
+          placeholder="Password"
+          onChange={(e) => {
+            e.persist();
+            setLoginForm((prev) => {
+              return {
+                ...prev,
+                password: e.target.value,
+              };
+            });
+          }}
+        />
       </div>
       <Flex justifyContent="center">
         <Button

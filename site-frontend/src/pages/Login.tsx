@@ -14,7 +14,7 @@ export const Login = observer(() => {
       <Flex direction="column" justifyContent="center" alignItems="center">
         <Heading as="h1" mb="5">
           Log Into{" "}
-          <Text as="span" color="primary.100">
+          <Text as="span" color="primary">
             DooIt
           </Text>
         </Heading>
@@ -22,12 +22,12 @@ export const Login = observer(() => {
       </Flex>
       <Box mt="5">
         Don't have an account? Sign up{" "}
-        <Text as="span" color="primary.100" _hover={{ color: "primary.200" }}>
+        <Text as="span" variant="link">
           <Link to="/signup">here!</Link>
         </Text>
       </Box>
       <Box mt="5">
-        <Text as="span" color="primary.100" _hover={{ color: "primary.200" }}>
+        <Text as="span" variant="link">
           <Link to="/forgot-password">Forgot Password?</Link>
         </Text>
       </Box>
