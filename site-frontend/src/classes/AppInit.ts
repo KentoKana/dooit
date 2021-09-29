@@ -1,4 +1,3 @@
-import { auth } from "../firebase";
 import { UserStore } from "../stores/UserStore";
 
 export class AppInit {
@@ -12,12 +11,7 @@ export class AppInit {
     }
 
     private getPersistedUser() {
-        this._userStore.userToken = localStorage.getItem("user-jwt");
-        auth.onAuthStateChanged((user) => {
-            user?.getIdToken().then((token) => {
-                this._userStore.userToken = token;
-                localStorage.setItem("user-jwt", token);
-            })
-        });
+        const token = localStorage.getItem("user-jwt")
+        this._userStore.userToken = token?.replace(/['"]+/g, '') ?? null;
     }
 }
