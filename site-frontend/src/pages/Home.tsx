@@ -9,7 +9,7 @@ export const Home = observer(() => {
   const { userStore } = UseStores();
   const authService = new AuthService(userStore);
   const reset = useResetQuery();
-  const { data, error } = useDashboard();
+  const { data } = useDashboard();
 
   return (
     <>
@@ -26,7 +26,6 @@ export const Home = observer(() => {
         variant="primary"
         onClick={() => {
           console.log(data);
-          console.log(error);
         }}
       >
         Click
