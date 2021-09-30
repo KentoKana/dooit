@@ -54,6 +54,7 @@ class AuthByEmailPassword {
                     userStore.userToken = token;
                     localStorage.setItem("user-jwt", token);
                 })
+                return userCred;
             })
     }
 }
