@@ -11,7 +11,7 @@ interface ISignUpForm {
   password: string;
 }
 export const SignUp = observer(() => {
-  const { userStore } = UseStores();
+  const { uiStore, userStore } = UseStores();
   //#region Local States
   const [signupForm, setSignupForm] = useState<ISignUpForm>({
     email: "",
@@ -20,6 +20,7 @@ export const SignUp = observer(() => {
   const [loadingState, setLoadingState] = useState<LoadingState>(
     LoadingState.None
   );
+
   //#endregion
   const history = useHistory();
   const handleSignUp = useCallback(async () => {
@@ -27,15 +28,38 @@ export const SignUp = observer(() => {
     const authService = new AuthService(userStore);
     authService
       .createUserWithEmailAndPassword(signupForm.email, signupForm.password)
-      .then(() => {
-        setLoadingState(LoadingState.Loaded);
-        history.push("/");
+      .then((userCred) => {
+        userCred.user
+          .getIdToken()
+          .then(async (token) => {
+            localStorage.setItem("user-jwt", token);
+            userStore.userToken = token;
+            return token;
+          })
+          .then((token) => {
+            userStore.userToken = token;
+            uiStore
+              .apiRequest<{ id: string }>("http://localhost:4000/usder", {
+                method: "POST",
+                bodyData: { id: token },
+              })
+              .then((d) => {
+                console.log(d);
+                setLoadingState(LoadingState.Loaded);
+                history.push("/");
+              })
+              .catch(() => {
+                setLoadingState(LoadingState.Error);
+                // Delete user from Firebase if API fails
+                userCred.user.delete();
+              });
+          });
       })
       .catch((error) => {
         setLoadingState(LoadingState.Error);
         alert(error);
       });
-  }, [userStore, history, signupForm]);
+  }, [uiStore, userStore, history, signupForm]);
 
   if (!isNullOrUndefined(userStore.userToken)) {
     return <Redirect to="/" />;

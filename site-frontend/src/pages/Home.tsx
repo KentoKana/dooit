@@ -1,7 +1,6 @@
 import { Button } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { AuthService } from "../classes/AuthService";
-import { useDashboard } from "../hooks/useDashboard";
 import { useResetQuery } from "../hooks/useResetQuery";
 import { UseStores } from "../stores/StoreContexts";
 
@@ -9,7 +8,6 @@ export const Home = observer(() => {
   const { userStore } = UseStores();
   const authService = new AuthService(userStore);
   const reset = useResetQuery();
-  const { data } = useDashboard();
 
   return (
     <>
@@ -25,7 +23,7 @@ export const Home = observer(() => {
       <Button
         variant="primary"
         onClick={() => {
-          console.log(data);
+          // console.log(data);
         }}
       >
         Click
