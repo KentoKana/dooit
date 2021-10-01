@@ -1,7 +1,7 @@
 import { Box, Flex, Heading, Text } from "@chakra-ui/layout";
 import { observer } from "mobx-react-lite";
 import { Link } from "react-router-dom";
-import { LoginForm } from "../components/LoginForm";
+import { LoginForm } from "../components/Forms/LoginForm";
 
 export const Login = observer(() => {
   return (
