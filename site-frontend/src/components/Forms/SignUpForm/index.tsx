@@ -10,12 +10,16 @@ import { AuthService } from "../../../classes/AuthService";
 import { UseStores } from "../../../stores/StoreContexts";
 import { auth } from "../../../firebase";
 interface ISignUpForm {
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
 }
 export const SignUpForm = () => {
   //#region Local States
   const [signupForm, setSignUpForm] = useState<ISignUpForm>({
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
   });
@@ -72,6 +76,46 @@ export const SignUpForm = () => {
   return (
     <form onSubmit={handleSignUp}>
       <div>
+        <FormLabel htmlFor="firstName" mr={0} mb={2}>
+          First Name:{" "}
+        </FormLabel>
+        <Input
+          mb={3}
+          disabled={loadingState === LoadingState.Loading}
+          id="firstName"
+          name="firstName"
+          type="text"
+          placeholder="First Name"
+          onChange={(e) => {
+            e.persist();
+            setSignUpForm((prev) => {
+              return {
+                ...prev,
+                firstName: e.target.value,
+              };
+            });
+          }}
+        />
+        <FormLabel htmlFor="lastName" mr={0} mb={2}>
+          Last Name:{" "}
+        </FormLabel>
+        <Input
+          mb={3}
+          disabled={loadingState === LoadingState.Loading}
+          id="lastName"
+          name="lastName"
+          type="text"
+          placeholder="Last Name"
+          onChange={(e) => {
+            e.persist();
+            setSignUpForm((prev) => {
+              return {
+                ...prev,
+                lastName: e.target.value,
+              };
+            });
+          }}
+        />
         <FormLabel htmlFor="email" mr={0} mb={2}>
           Email:{" "}
         </FormLabel>
