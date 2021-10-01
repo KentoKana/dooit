@@ -1,57 +1,76 @@
-import { Button } from "@chakra-ui/button";
 import { FormLabel } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
-import { Flex } from "@chakra-ui/layout";
-import { Spinner } from "@chakra-ui/spinner";
-import { observer } from "mobx-react-lite";
+import { Button } from "@chakra-ui/button";
+import { Flex, Spinner } from "@chakra-ui/react";
 import { FormEvent, useCallback, useState } from "react";
-import { Redirect } from "react-router-dom";
-import { AuthService } from "../../classes/AuthService";
-import { LoadingState } from "../../enums/LoadingState";
-import { UseStores } from "../../stores/StoreContexts";
-import { isNullOrUndefined } from "../../utils";
-
-interface ILoginForm {
+import { LoadingState } from "../../../enums/LoadingState";
+import { useResetQuery } from "../../../hooks/useResetQuery";
+import { useHistory } from "react-router";
+import { AuthService } from "../../../classes/AuthService";
+import { UseStores } from "../../../stores/StoreContexts";
+import { auth } from "../../../firebase";
+interface ISignUpForm {
   email: string;
   password: string;
 }
-
-export const LoginForm = observer(() => {
-  const { userStore } = UseStores();
-
+export const SignUpForm = () => {
   //#region Local States
-  const [loginForm, setLoginForm] = useState<ILoginForm>({
+  const [signupForm, setSignUpForm] = useState<ISignUpForm>({
     email: "",
     password: "",
   });
   const [loadingState, setLoadingState] = useState<LoadingState>(
     LoadingState.None
   );
-  //#endregion
+  const reset = useResetQuery();
+  const { uiStore, userStore } = UseStores();
 
-  const handleLogin = useCallback(
+  //#endregion
+  const history = useHistory();
+  const handleSignUp = useCallback(
     async (e: FormEvent) => {
       e.preventDefault();
       setLoadingState(LoadingState.Loading);
       const authService = new AuthService(userStore);
-      return authService
-        .loginWithEmailAndPassword(loginForm.email, loginForm.password)
-        .then(() => {
-          setLoadingState(LoadingState.Loaded);
+      authService
+        .createUserWithEmailAndPassword(signupForm.email, signupForm.password)
+        .then((userCred) => {
+          userCred.user
+            .getIdToken()
+            .then(async (token) => {
+              localStorage.setItem("user-jwt", token);
+              userStore.userToken = token;
+              return token;
+            })
+            .then((token) => {
+              userStore.userToken = token;
+              uiStore
+                .apiRequest<{ id: string }>("http://localhost:4000/usder", {
+                  method: "POST",
+                  bodyData: { id: token },
+                })
+                .then((d) => {
+                  console.log(d);
+                  setLoadingState(LoadingState.Loaded);
+                  reset();
+                  auth.currentUser?.delete();
+                  history.push("/");
+                })
+                .catch(() => {
+                  setLoadingState(LoadingState.Error);
+                  // Delete user from Firebase if API fails
+                });
+            });
         })
         .catch((error) => {
           setLoadingState(LoadingState.Error);
           alert(error);
         });
     },
-    [userStore, loginForm]
+    [uiStore, userStore, history, signupForm, reset]
   );
-
-  if (!isNullOrUndefined(userStore.userToken)) {
-    return <Redirect to="/" />;
-  }
   return (
-    <form onSubmit={handleLogin}>
+    <form onSubmit={handleSignUp}>
       <div>
         <FormLabel htmlFor="email" mr={0} mb={2}>
           Email:{" "}
@@ -65,7 +84,7 @@ export const LoginForm = observer(() => {
           placeholder="E-mail"
           onChange={(e) => {
             e.persist();
-            setLoginForm((prev) => {
+            setSignUpForm((prev) => {
               return {
                 ...prev,
                 email: e.target.value,
@@ -87,7 +106,7 @@ export const LoginForm = observer(() => {
           placeholder="Password"
           onChange={(e) => {
             e.persist();
-            setLoginForm((prev) => {
+            setSignUpForm((prev) => {
               return {
                 ...prev,
                 password: e.target.value,
@@ -106,13 +125,13 @@ export const LoginForm = observer(() => {
         >
           {loadingState === LoadingState.Loading ? (
             <>
-              Logging you in ... <Spinner />
+              Creating Account ... <Spinner />
             </>
           ) : (
-            <>Log In</>
+            <>Sign Up!</>
           )}
         </Button>
       </Flex>
     </form>
   );
-});
+};
