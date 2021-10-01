@@ -25,6 +25,7 @@ export class UserService {
         userToCreate.firstName = userDto.firstName;
         userToCreate.lastName = userDto.lastName;
         userToCreate.isActive = true;
+        userToCreate.email = request.user.email;
         userToCreate.id = request.user.user_id
         const created = await this.usersRepository.save(userToCreate);
         return created;
