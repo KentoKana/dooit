@@ -5,14 +5,17 @@ export class User {
     @PrimaryColumn()
     id: string;
 
-    @Column()
+    @Column({ length: 100 })
     firstName: string;
 
-    @Column()
+    @Column({ length: 100 })
     lastName: string;
 
     @Column({ default: true })
     isActive: boolean;
+
+    @Column({ length: 200 })
+    email: string;
 
     @CreateDateColumn()
     dateCreated: Date;
