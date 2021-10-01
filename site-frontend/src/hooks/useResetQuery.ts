@@ -5,6 +5,7 @@ export const useResetQuery = () => {
     const queryClient = useQueryClient();
     const { userStore } = UseStores();
     const reset = () => {
+        userStore.isSignedIn = false;
         userStore.userToken = null;
         localStorage.removeItem('user-jwt');
         queryClient.setQueryData("dashboard", () => null);

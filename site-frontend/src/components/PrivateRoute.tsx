@@ -14,7 +14,8 @@ export const PrivateRoute = observer(
     ...routeProps
   }: ProtectedRouteProps) => {
     const { userStore } = UseStores();
-    if (!!userStore.userToken) {
+
+    if (userStore.userToken !== null && userStore.isSignedIn) {
       return <Route {...routeProps} />;
     } else {
       return <Redirect to={{ pathname: authenticationPath }} />;

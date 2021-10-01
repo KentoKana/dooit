@@ -7,12 +7,6 @@ import { Box, Flex, Heading, Text } from "@chakra-ui/layout";
 import { Link } from "react-router-dom";
 
 export const SignUp = observer(() => {
-  const { userStore } = UseStores();
-
-  if (!isNullOrUndefined(userStore.userToken)) {
-    return <Redirect to="/" />;
-  }
-
   return (
     <Flex
       justifyContent="center"

@@ -2,7 +2,6 @@ import { Button } from "@chakra-ui/button";
 import { FormLabel } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
 import { Flex } from "@chakra-ui/layout";
-import { Spinner } from "@chakra-ui/spinner";
 import { observer } from "mobx-react-lite";
 import { FormEvent, useCallback, useState } from "react";
 import { Redirect } from "react-router-dom";
@@ -27,6 +26,7 @@ export const LoginForm = observer(() => {
   const [loadingState, setLoadingState] = useState<LoadingState>(
     LoadingState.None
   );
+  const [hasLoggedIn, setHasLoggedIn] = useState<boolean>(false);
   //#endregion
 
   const handleLogin = useCallback(
@@ -38,6 +38,7 @@ export const LoginForm = observer(() => {
         .loginWithEmailAndPassword(loginForm.email, loginForm.password)
         .then(() => {
           setLoadingState(LoadingState.Loaded);
+          setHasLoggedIn(true);
         })
         .catch((error) => {
           setLoadingState(LoadingState.Error);
@@ -47,7 +48,8 @@ export const LoginForm = observer(() => {
     [userStore, loginForm]
   );
 
-  if (!isNullOrUndefined(userStore.userToken)) {
+  if (!isNullOrUndefined(userStore.userToken) && hasLoggedIn) {
+    userStore.isSignedIn = true;
     return <Redirect to="/" />;
   }
   return (
@@ -98,19 +100,14 @@ export const LoginForm = observer(() => {
       </div>
       <Flex justifyContent="center">
         <Button
+          isLoading={loadingState === LoadingState.Loading}
           type="submit"
           variant="primary"
           mt="5"
           width="100%"
           disabled={loadingState === LoadingState.Loading}
         >
-          {loadingState === LoadingState.Loading ? (
-            <>
-              Logging you in ... <Spinner />
-            </>
-          ) : (
-            <>Log In</>
-          )}
+          Log In
         </Button>
       </Flex>
     </form>

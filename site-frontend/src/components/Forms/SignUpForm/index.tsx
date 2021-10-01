@@ -1,43 +1,44 @@
-import { FormLabel } from "@chakra-ui/form-control";
+import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
 import { Button } from "@chakra-ui/button";
-import { Flex, Spinner } from "@chakra-ui/react";
-import { FormEvent, useCallback, useState } from "react";
+import { Flex, FormErrorMessage } from "@chakra-ui/react";
+import { useCallback, useState } from "react";
 import { LoadingState } from "../../../enums/LoadingState";
 import { useResetQuery } from "../../../hooks/useResetQuery";
-import { useHistory } from "react-router";
 import { AuthService } from "../../../classes/AuthService";
 import { UseStores } from "../../../stores/StoreContexts";
 import { auth } from "../../../firebase";
+import { useForm } from "react-hook-form";
+import { observer } from "mobx-react-lite";
+import { isNullOrUndefined } from "../../../utils";
+import { Redirect } from "react-router";
 interface ISignUpForm {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
 }
-export const SignUpForm = () => {
+export const SignUpForm = observer(() => {
+  const { uiStore, userStore } = UseStores();
+  const reset = useResetQuery();
+  const {
+    handleSubmit,
+    register,
+    formState: { errors, isSubmitting },
+  } = useForm();
   //#region Local States
-  const [signupForm, setSignUpForm] = useState<ISignUpForm>({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-  });
+
   const [loadingState, setLoadingState] = useState<LoadingState>(
     LoadingState.None
   );
-  const reset = useResetQuery();
-  const { uiStore, userStore } = UseStores();
-
+  const [creationSuccessful, setCreationSuccessful] = useState(false);
   //#endregion
-  const history = useHistory();
-  const handleSignUp = useCallback(
-    async (e: FormEvent) => {
-      e.preventDefault();
+  const onSubmit = useCallback(
+    async (formData: ISignUpForm) => {
       setLoadingState(LoadingState.Loading);
       const authService = new AuthService(userStore);
       authService
-        .createUserWithEmailAndPassword(signupForm.email, signupForm.password)
+        .createUserWithEmailAndPassword(formData.email, formData.password)
         .then((userCred) => {
           userCred.user
             .getIdToken()
@@ -49,20 +50,19 @@ export const SignUpForm = () => {
             .then((token) => {
               userStore.userToken = token;
               uiStore
-                .apiRequest<{ id: string }>("http://localhost:4000/usder", {
+                .apiRequest<ISignUpForm>("http://localhost:4000/user", {
                   method: "POST",
-                  bodyData: { id: token },
+                  bodyData: formData,
                 })
-                .then((d) => {
-                  console.log(d);
+                .then(() => {
                   setLoadingState(LoadingState.Loaded);
-                  reset();
-                  auth.currentUser?.delete();
-                  history.push("/");
+                  setCreationSuccessful(true);
                 })
                 .catch(() => {
                   setLoadingState(LoadingState.Error);
                   // Delete user from Firebase if API fails
+                  reset();
+                  auth.currentUser?.delete();
                 });
             });
         })
@@ -71,111 +71,95 @@ export const SignUpForm = () => {
           alert(error);
         });
     },
-    [uiStore, userStore, history, signupForm, reset]
+    [uiStore, userStore, reset]
   );
+
+  if (!isNullOrUndefined(userStore.userToken) && creationSuccessful) {
+    userStore.isSignedIn = true;
+    return <Redirect to="/" />;
+  }
+
   return (
-    <form onSubmit={handleSignUp}>
-      <div>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <FormControl isInvalid={errors.firstName} mb={3}>
         <FormLabel htmlFor="firstName" mr={0} mb={2}>
           First Name:{" "}
         </FormLabel>
         <Input
-          mb={3}
-          disabled={loadingState === LoadingState.Loading}
           id="firstName"
-          name="firstName"
-          type="text"
+          disabled={loadingState === LoadingState.Loading}
           placeholder="First Name"
-          onChange={(e) => {
-            e.persist();
-            setSignUpForm((prev) => {
-              return {
-                ...prev,
-                firstName: e.target.value,
-              };
-            });
-          }}
+          {...register("firstName", {
+            required: "Please enter your first name.",
+          })}
         />
+        <FormErrorMessage>
+          {errors.firstName && errors.firstName.message}
+        </FormErrorMessage>
+      </FormControl>
+      <FormControl isInvalid={errors.lastName} mb={3}>
         <FormLabel htmlFor="lastName" mr={0} mb={2}>
           Last Name:{" "}
         </FormLabel>
         <Input
-          mb={3}
           disabled={loadingState === LoadingState.Loading}
           id="lastName"
-          name="lastName"
           type="text"
           placeholder="Last Name"
-          onChange={(e) => {
-            e.persist();
-            setSignUpForm((prev) => {
-              return {
-                ...prev,
-                lastName: e.target.value,
-              };
-            });
-          }}
+          {...register("lastName", {
+            required: "Please enter your last name.",
+          })}
         />
+        <FormErrorMessage>
+          {errors.lastName && errors.lastName.message}
+        </FormErrorMessage>
+      </FormControl>
+      <FormControl isInvalid={errors.email} mb={3}>
         <FormLabel htmlFor="email" mr={0} mb={2}>
-          Email:{" "}
+          E-mail:{" "}
         </FormLabel>
         <Input
-          mb={3}
           disabled={loadingState === LoadingState.Loading}
           id="email"
-          name="email"
-          type="email"
+          type="text"
           placeholder="E-mail"
-          onChange={(e) => {
-            e.persist();
-            setSignUpForm((prev) => {
-              return {
-                ...prev,
-                email: e.target.value,
-              };
-            });
-          }}
+          {...register("email", {
+            required: "Please enter your email.",
+          })}
         />
-      </div>
-      <div>
+        <FormErrorMessage>
+          {errors.email && errors.email.message}
+        </FormErrorMessage>
+      </FormControl>
+      <FormControl isInvalid={errors.password} mb={3}>
         <FormLabel htmlFor="password" mr={0} mb={2}>
           Password:{" "}
         </FormLabel>
         <Input
-          mb={3}
           disabled={loadingState === LoadingState.Loading}
           id="password"
-          name="password"
           type="password"
           placeholder="Password"
-          onChange={(e) => {
-            e.persist();
-            setSignUpForm((prev) => {
-              return {
-                ...prev,
-                password: e.target.value,
-              };
-            });
-          }}
+          {...register("password", {
+            required: "Please enter your password.",
+          })}
         />
-      </div>
+        <FormErrorMessage>
+          {errors.password && errors.password.message}
+        </FormErrorMessage>
+      </FormControl>
       <Flex justifyContent="center">
         <Button
+          isLoading={isSubmitting}
           type="submit"
           variant="primary"
           mt="5"
           width="100%"
           disabled={loadingState === LoadingState.Loading}
         >
-          {loadingState === LoadingState.Loading ? (
-            <>
-              Creating Account ... <Spinner />
-            </>
-          ) : (
-            <>Sign Up!</>
-          )}
+          Sign Up!
         </Button>
       </Flex>
     </form>
   );
-};
+});
