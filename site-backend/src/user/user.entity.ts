@@ -1,6 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, CreateDateColumn } from 'typeorm';
 
-@Entity()
+@Entity({ name: "users" })
 export class User {
     @PrimaryColumn()
     id: string;
@@ -13,4 +13,10 @@ export class User {
 
     @Column({ default: true })
     isActive: boolean;
+
+    @CreateDateColumn()
+    dateCreated: Date;
+
+    @Column()
+    dateModified: Date;
 }
