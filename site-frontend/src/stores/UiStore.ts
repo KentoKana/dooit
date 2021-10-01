@@ -33,6 +33,9 @@ export class UiStore {
         if (res.status === 401) {
             localStorage.removeItem("user-jwt");
         }
+        if (!res.ok) {
+            throw new Error();
+        }
         return await res.json();
     }
 }
