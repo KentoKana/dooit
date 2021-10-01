@@ -5,6 +5,7 @@ export class UserStore {
         makeAutoObservable(this)
     }
     private _userToken: string | null = null;
+    private _isSignedIn: boolean = false;
 
     get userToken() {
         return this._userToken;
@@ -12,6 +13,15 @@ export class UserStore {
     set userToken(newUserToken: string | null) {
         runInAction(() => {
             this._userToken = newUserToken;
+        })
+    }
+
+    get isSignedIn() {
+        return this._isSignedIn;
+    }
+    set isSignedIn(signInStatus: boolean) {
+        runInAction(() => {
+            this._isSignedIn = signInStatus;
         })
     }
 }
