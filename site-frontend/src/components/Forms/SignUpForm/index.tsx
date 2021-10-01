@@ -124,6 +124,10 @@ export const SignUpForm = observer(() => {
           type="text"
           placeholder="E-mail"
           {...register("email", {
+            pattern: {
+              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+              message: "Invalid email address",
+            },
             required: "Please enter your email.",
           })}
         />
