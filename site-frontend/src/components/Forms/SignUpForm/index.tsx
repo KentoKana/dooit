@@ -24,7 +24,7 @@ export const SignUpForm = observer(() => {
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm();
   //#region Local States
 
@@ -68,6 +68,7 @@ export const SignUpForm = observer(() => {
         })
         .catch((error) => {
           setLoadingState(LoadingState.Error);
+
           alert(error);
         });
     },
@@ -128,7 +129,7 @@ export const SignUpForm = observer(() => {
               value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
               message: "Invalid email address",
             },
-            required: "Please enter your email.",
+            required: "Please enter your e-mail.",
           })}
         />
         <FormErrorMessage>
@@ -154,7 +155,7 @@ export const SignUpForm = observer(() => {
       </FormControl>
       <Flex justifyContent="center">
         <Button
-          isLoading={isSubmitting}
+          isLoading={loadingState === LoadingState.Loading}
           type="submit"
           variant="primary"
           mt="5"

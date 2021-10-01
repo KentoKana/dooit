@@ -1,8 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { UseStores } from "../stores/StoreContexts";
-import { isNullOrUndefined } from "../utils";
 import { SignUpForm } from "../components/Forms/SignUpForm";
-import { Redirect } from "react-router";
 import { Box, Flex, Heading, Text } from "@chakra-ui/layout";
 import { Link } from "react-router-dom";
 

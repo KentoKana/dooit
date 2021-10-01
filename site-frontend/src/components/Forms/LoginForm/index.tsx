@@ -1,9 +1,15 @@
 import { Button } from "@chakra-ui/button";
-import { FormLabel } from "@chakra-ui/form-control";
+import {
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+} from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
 import { Flex } from "@chakra-ui/layout";
+import { FirebaseError } from "@firebase/util";
 import { observer } from "mobx-react-lite";
-import { FormEvent, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
+import { useForm } from "react-hook-form";
 import { Redirect } from "react-router-dom";
 import { AuthService } from "../../../classes/AuthService";
 import { LoadingState } from "../../../enums/LoadingState";
@@ -17,35 +23,36 @@ interface ILoginForm {
 
 export const LoginForm = observer(() => {
   const { userStore } = UseStores();
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm();
 
   //#region Local States
-  const [loginForm, setLoginForm] = useState<ILoginForm>({
-    email: "",
-    password: "",
-  });
+
   const [loadingState, setLoadingState] = useState<LoadingState>(
     LoadingState.None
   );
   const [hasLoggedIn, setHasLoggedIn] = useState<boolean>(false);
   //#endregion
 
-  const handleLogin = useCallback(
-    async (e: FormEvent) => {
-      e.preventDefault();
+  const onSubmit = useCallback(
+    async (loginFormData: ILoginForm) => {
       setLoadingState(LoadingState.Loading);
       const authService = new AuthService(userStore);
       return authService
-        .loginWithEmailAndPassword(loginForm.email, loginForm.password)
+        .loginWithEmailAndPassword(loginFormData.email, loginFormData.password)
         .then(() => {
           setLoadingState(LoadingState.Loaded);
           setHasLoggedIn(true);
         })
-        .catch((error) => {
+        .catch((error: FirebaseError) => {
           setLoadingState(LoadingState.Error);
           alert(error);
         });
     },
-    [userStore, loginForm]
+    [userStore]
   );
 
   if (!isNullOrUndefined(userStore.userToken) && hasLoggedIn) {
@@ -53,51 +60,45 @@ export const LoginForm = observer(() => {
     return <Redirect to="/" />;
   }
   return (
-    <form onSubmit={handleLogin}>
-      <div>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <FormControl isInvalid={errors.email} mb={3}>
         <FormLabel htmlFor="email" mr={0} mb={2}>
-          Email:{" "}
+          E-mail:{" "}
         </FormLabel>
         <Input
-          mb={3}
           disabled={loadingState === LoadingState.Loading}
           id="email"
-          name="email"
-          type="email"
+          type="text"
           placeholder="E-mail"
-          onChange={(e) => {
-            e.persist();
-            setLoginForm((prev) => {
-              return {
-                ...prev,
-                email: e.target.value,
-              };
-            });
-          }}
+          {...register("email", {
+            pattern: {
+              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+              message: "Invalid email address",
+            },
+            required: "Please enter your e-mail.",
+          })}
         />
-      </div>
-      <div>
+        <FormErrorMessage>
+          {errors.email && errors.email.message}
+        </FormErrorMessage>
+      </FormControl>
+      <FormControl isInvalid={errors.password} mb={3}>
         <FormLabel htmlFor="password" mr={0} mb={2}>
           Password:{" "}
         </FormLabel>
         <Input
-          mb={3}
           disabled={loadingState === LoadingState.Loading}
           id="password"
-          name="password"
           type="password"
           placeholder="Password"
-          onChange={(e) => {
-            e.persist();
-            setLoginForm((prev) => {
-              return {
-                ...prev,
-                password: e.target.value,
-              };
-            });
-          }}
+          {...register("password", {
+            required: "Please enter your password.",
+          })}
         />
-      </div>
+        <FormErrorMessage>
+          {errors.password && errors.password.message}
+        </FormErrorMessage>
+      </FormControl>
       <Flex justifyContent="center">
         <Button
           isLoading={loadingState === LoadingState.Loading}
