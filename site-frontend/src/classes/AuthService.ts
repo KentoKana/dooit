@@ -1,5 +1,6 @@
-import { createUserWithEmailAndPassword, setPersistence, signInWithEmailAndPassword } from "@firebase/auth";
 import { runInAction } from "mobx";
+import { UserCreateDto } from "../Dtos/UserCreateDto.dto";
+import { UserGetCreatedDto } from "../Dtos/UserGetCreatedDto.dto";
 import { UserLoginByEmailDto } from "../Dtos/UserLoginByEmailDto.dto";
 import { AuthRoute } from "../enums/ApiRoutes";
 import { auth } from "../firebase";
@@ -23,8 +24,8 @@ export class AuthService {
     async loginWithEmailAndPassword(loginCred: UserLoginByEmailDto) {
         return AuthByEmailPassword.login(this.userStore, this.uiStore, loginCred)
     }
-    async createUserWithEmailAndPassword(email: string, password: string) {
-        return AuthByEmailPassword.createUser(this.userStore, email, password)
+    async createUserWithEmailAndPassword(userToCreate: UserCreateDto) {
+        return AuthByEmailPassword.createUser(this.userStore, this.uiStore, userToCreate)
     }
 
     /**
@@ -51,24 +52,32 @@ class AuthByEmailPassword {
                 userStore.userToken = data.token;
                 return data;
             })
-        // setPersistence(auth, browserLocalPersistence).then(async () => {
-        //     return signInWithEmailAndPassword(auth, email, password).then((userCred) => {
-        //         auth.currentUser?.getIdToken(true).then((token) => {
-        //             userStore.userToken = token;
-        //             localStorage.setItem("user-jwt", JSON.stringify(token));
-        //         })
-        //     })
-        // });
     }
 
-    static async createUser(userStore: UserStore, email: string, password: string) {
-        return createUserWithEmailAndPassword(auth, email, password)
-            .then((userCred) => {
-                userCred.user.getIdToken(true).then((token) => {
-                    userStore.userToken = token;
-                    localStorage.setItem("user-jwt", token);
-                })
-                return userCred;
+    static async createUser(userStore: UserStore, uiStore: UiStore, formData: UserCreateDto) {
+        return uiStore
+            .apiRequest<UserCreateDto, UserGetCreatedDto>(AuthRoute.Create, {
+                method: "POST",
+                bodyData: formData,
             })
+            .then((data) => {
+                userStore.userToken = data.token;
+                localStorage.setItem("user-jwt", data.token);
+                return data;
+            })
+        // .catch(() => {
+        //     setLoadingState(LoadingState.Error);
+        //     // Delete user from Firebase if API fails
+        //     reset();
+        //     auth.currentUser?.delete();
+        // });
+        // return createUserWithEmailAndPassword(auth, email, password)
+        //     .then((userCred) => {
+        //         userCred.user.getIdToken(true).then((token) => {
+        //             userStore.userToken = token;
+        //             localStorage.setItem("user-jwt", token);
+        //         })
+        //         return userCred;
+        //     })
     }
 }

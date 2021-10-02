@@ -12,8 +12,6 @@ import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Redirect } from "react-router-dom";
 import { AuthService } from "../../../classes/AuthService";
-import { UserLoginByEmailDto } from "../../../Dtos/UserLoginByEmailDto.dto";
-import { AuthRoute } from "../../../enums/ApiRoutes";
 import { LoadingState } from "../../../enums/LoadingState";
 import { UseStores } from "../../../stores/StoreContexts";
 import {

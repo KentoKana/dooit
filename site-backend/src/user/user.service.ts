@@ -4,10 +4,11 @@ import { Request } from 'express';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { UserCreateDto } from './dto/UserCreateDto.dto'
-import { browserLocalPersistence, setPersistence, signInWithEmailAndPassword } from '@firebase/auth';
+import { browserLocalPersistence, createUserWithEmailAndPassword, setPersistence, signInWithEmailAndPassword } from '@firebase/auth';
 import { FirebaseError } from '@firebase/util';
 import { Firebase } from 'src/firebase/firebase';
 import { UserLoginByEmailDto } from './dto/UserLoginByEmailDto.dto';
+import { UserGetCreatedDto } from './dto/UserGetCreatedDto.dto';
 
 @Injectable()
 export class UserService {
@@ -25,15 +26,39 @@ export class UserService {
     }
     readonly firebase = new Firebase()
 
-    async create(@Body() userDto: UserCreateDto, @Req() request: Request) {
-        const userToCreate: User = new User();
-        userToCreate.firstName = userDto.firstName;
-        userToCreate.lastName = userDto.lastName;
-        userToCreate.isActive = true;
-        userToCreate.email = request.user.email;
-        userToCreate.id = request.user.user_id
-        const created = await this.usersRepository.save(userToCreate);
-        return created;
+    async create(@Body() userDto: UserCreateDto): Promise<UserGetCreatedDto> {
+        return createUserWithEmailAndPassword(this.firebase.auth, userDto.email, userDto.password)
+            .then((userCred) => {
+                return userCred.user.getIdToken(true).then(async (token) => {
+                    const userToCreate: User = new User();
+                    userToCreate.firstName = userDto.firstName;
+                    userToCreate.lastName = userDto.lastName;
+                    userToCreate.isActive = true;
+                    userToCreate.email = userDto.email;
+                    userToCreate.id = userCred.user.uid;
+                    const created = await this.usersRepository.save(userToCreate);
+                    return {
+                        firstName: created.firstName,
+                        lastName: created.lastName,
+                        email: created.email,
+                        token: token
+                    }
+                }).catch((error) => {
+                    throw new HttpException({
+                        status: HttpStatus.BAD_GATEWAY,
+                        error: 'Something went wrong when attempting to create user.',
+                    }, HttpStatus.BAD_GATEWAY);
+                })
+            }).then((createdUser) => {
+                return createdUser;
+            })
+            .catch((error: FirebaseError) => {
+                throw new HttpException({
+                    status: error.code,
+                    error: error.message,
+                }, HttpStatus.BAD_REQUEST);
+            })
+
     }
 
     async loginByEmail(@Body() loginCred: UserLoginByEmailDto) {

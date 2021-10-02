@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
+import { UserCreateDto } from './dto/UserCreateDto.dto';
 import { UserLoginByEmailDto } from './dto/UserLoginByEmailDto.dto';
-import { User } from './user.entity';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -17,10 +17,9 @@ export class UserController {
         return this.userService.get(request);
     }
 
-    @Post()
-    @UseGuards(AuthGuard('jwt'))
-    create(@Body() user: User, @Req() request: Request) {
-        return this.userService.create(user, request);
+    @Post("create")
+    create(@Body() user: UserCreateDto) {
+        return this.userService.create(user);
     }
 
     @Post("login")

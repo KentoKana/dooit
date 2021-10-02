@@ -7,7 +7,6 @@ import { LoadingState } from "../../../enums/LoadingState";
 import { useResetQuery } from "../../../hooks/useResetQuery";
 import { AuthService } from "../../../classes/AuthService";
 import { UseStores } from "../../../stores/StoreContexts";
-import { auth } from "../../../firebase";
 import { useForm } from "react-hook-form";
 import { observer } from "mobx-react-lite";
 import { isNullOrUndefined } from "../../../utils";
@@ -38,38 +37,20 @@ export const SignUpForm = observer(() => {
       setLoadingState(LoadingState.Loading);
       const authService = new AuthService(userStore, uiStore);
       authService
-        .createUserWithEmailAndPassword(formData.email, formData.password)
-        .then((userCred) => {
-          userCred.user
-            .getIdToken()
-            .then(async (token) => {
-              localStorage.setItem("user-jwt", token);
-              userStore.userToken = token;
-              return token;
-            })
-            .then((token) => {
-              userStore.userToken = token;
-              uiStore
-                .apiRequest<ISignUpForm>("http://localhost:4000/user", {
-                  method: "POST",
-                  bodyData: formData,
-                })
-                .then(() => {
-                  setLoadingState(LoadingState.Loaded);
-                  setCreationSuccessful(true);
-                })
-                .catch(() => {
-                  setLoadingState(LoadingState.Error);
-                  // Delete user from Firebase if API fails
-                  reset();
-                  auth.currentUser?.delete();
-                });
-            });
+        .createUserWithEmailAndPassword({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          password: formData.password,
+          email: formData.email,
+        })
+        .then(() => {
+          setLoadingState(LoadingState.Loaded);
+          setCreationSuccessful(true);
         })
         .catch((error) => {
+          console.log(error);
           setLoadingState(LoadingState.Error);
-
-          alert(error);
+          reset();
         });
     },
     [uiStore, userStore, reset]

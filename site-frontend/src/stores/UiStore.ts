@@ -24,7 +24,9 @@ export class UiStore {
             headers.set("Accept", "application/json")
         }
         headers.set("Content-Type", "application/json")
-        headers.set("Authorization", `Bearer ${this.userStore.userToken}`)
+        if (this.userStore.userToken) {
+            headers.set("Authorization", `Bearer ${this.userStore.userToken}`)
+        }
         const res = await fetch(url, {
             method: options.method,
             headers: headers,
