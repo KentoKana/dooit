@@ -14,11 +14,15 @@ import { Redirect } from "react-router-dom";
 import { AuthService } from "../../../classes/AuthService";
 import { LoadingState } from "../../../enums/LoadingState";
 import { UseStores } from "../../../stores/StoreContexts";
-import { isNullOrUndefined } from "../../../utils";
+import {
+  generateFirebaseAuthErrorMessage,
+  isNullOrUndefined,
+} from "../../../utils";
 
 interface ILoginForm {
   email: string;
   password: string;
+  serverError: string;
 }
 
 export const LoginForm = observer(() => {
@@ -26,8 +30,10 @@ export const LoginForm = observer(() => {
   const {
     handleSubmit,
     register,
-    formState: { errors },
-  } = useForm();
+    setError,
+    clearErrors,
+    formState: { errors, isSubmitting },
+  } = useForm<ILoginForm>();
 
   //#region Local States
 
@@ -49,10 +55,14 @@ export const LoginForm = observer(() => {
         })
         .catch((error: FirebaseError) => {
           setLoadingState(LoadingState.Error);
-          alert(error);
+          const errorMessage = generateFirebaseAuthErrorMessage(error.code);
+          setError("serverError", {
+            type: "server",
+            message: errorMessage,
+          });
         });
     },
-    [userStore]
+    [userStore, setError]
   );
 
   if (!isNullOrUndefined(userStore.userToken) && hasLoggedIn) {
@@ -61,7 +71,7 @@ export const LoginForm = observer(() => {
   }
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <FormControl isInvalid={errors.email} mb={3}>
+      <FormControl isInvalid={!!errors.email} mb={3}>
         <FormLabel htmlFor="email" mr={0} mb={2}>
           E-mail:{" "}
         </FormLabel>
@@ -82,7 +92,7 @@ export const LoginForm = observer(() => {
           {errors.email && errors.email.message}
         </FormErrorMessage>
       </FormControl>
-      <FormControl isInvalid={errors.password} mb={3}>
+      <FormControl isInvalid={!!errors.password} mb={3}>
         <FormLabel htmlFor="password" mr={0} mb={2}>
           Password:{" "}
         </FormLabel>
@@ -99,14 +109,22 @@ export const LoginForm = observer(() => {
           {errors.password && errors.password.message}
         </FormErrorMessage>
       </FormControl>
+      <FormControl isInvalid={!!errors.serverError}>
+        <FormErrorMessage justifyContent="center">
+          {errors.serverError && errors.serverError.message}
+        </FormErrorMessage>
+      </FormControl>
       <Flex justifyContent="center">
         <Button
-          isLoading={loadingState === LoadingState.Loading}
+          onClick={() => {
+            clearErrors(["serverError"]);
+          }}
+          isLoading={isSubmitting}
           type="submit"
           variant="primary"
           mt="5"
           width="100%"
-          disabled={loadingState === LoadingState.Loading}
+          disabled={isSubmitting}
         >
           Log In
         </Button>

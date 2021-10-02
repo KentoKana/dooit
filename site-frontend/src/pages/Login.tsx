@@ -8,7 +8,7 @@ export const Login = observer(() => {
     <Flex
       justifyContent="center"
       alignItems="center"
-      height="100vh"
+      minHeight="100vh"
       direction="column"
     >
       <Flex direction="column" justifyContent="center" alignItems="center">
