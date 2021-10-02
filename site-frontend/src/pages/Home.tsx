@@ -5,8 +5,8 @@ import { useResetQuery } from "../hooks/useResetQuery";
 import { UseStores } from "../stores/StoreContexts";
 
 export const Home = observer(() => {
-  const { userStore } = UseStores();
-  const authService = new AuthService(userStore);
+  const { userStore, uiStore } = UseStores();
+  const authService = new AuthService(userStore, uiStore);
   const reset = useResetQuery();
 
   return (

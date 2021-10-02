@@ -12,6 +12,8 @@ import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Redirect } from "react-router-dom";
 import { AuthService } from "../../../classes/AuthService";
+import { UserLoginByEmailDto } from "../../../Dtos/UserLoginByEmailDto.dto";
+import { AuthRoute } from "../../../enums/ApiRoutes";
 import { LoadingState } from "../../../enums/LoadingState";
 import { UseStores } from "../../../stores/StoreContexts";
 import {
@@ -26,7 +28,7 @@ interface ILoginForm {
 }
 
 export const LoginForm = observer(() => {
-  const { userStore } = UseStores();
+  const { userStore, uiStore } = UseStores();
   const {
     handleSubmit,
     register,
@@ -46,12 +48,15 @@ export const LoginForm = observer(() => {
   const onSubmit = useCallback(
     async (loginFormData: ILoginForm) => {
       setLoadingState(LoadingState.Loading);
-      const authService = new AuthService(userStore);
-      return authService
-        .loginWithEmailAndPassword(loginFormData.email, loginFormData.password)
-        .then(() => {
-          setLoadingState(LoadingState.Loaded);
+      const authService = new AuthService(userStore, uiStore);
+      authService
+        .loginWithEmailAndPassword({
+          email: loginFormData.email,
+          password: loginFormData.password,
+        })
+        .then((data) => {
           setHasLoggedIn(true);
+          return data;
         })
         .catch((error: FirebaseError) => {
           setLoadingState(LoadingState.Error);
@@ -62,7 +67,7 @@ export const LoginForm = observer(() => {
           });
         });
     },
-    [userStore, setError]
+    [userStore, uiStore, setError]
   );
 
   if (!isNullOrUndefined(userStore.userToken) && hasLoggedIn) {

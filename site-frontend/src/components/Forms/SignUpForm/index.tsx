@@ -36,7 +36,7 @@ export const SignUpForm = observer(() => {
   const onSubmit = useCallback(
     async (formData: ISignUpForm) => {
       setLoadingState(LoadingState.Loading);
-      const authService = new AuthService(userStore);
+      const authService = new AuthService(userStore, uiStore);
       authService
         .createUserWithEmailAndPassword(formData.email, formData.password)
         .then((userCred) => {
