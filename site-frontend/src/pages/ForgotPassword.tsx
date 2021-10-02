@@ -7,7 +7,7 @@ import { useCallback, useState } from "react";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebase";
 import { LoadingState } from "../enums/LoadingState";
-import { FormControl, FormErrorMessage } from "@chakra-ui/react";
+import { FormControl, FormErrorMessage, useToast } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { generateFirebaseAuthErrorMessage } from "../utils";
@@ -27,12 +27,21 @@ export const ForgotPassword = observer(() => {
   const [loadingState, setLoadingSate] = useState<LoadingState>(
     LoadingState.None
   );
+  const toast = useToast();
   const onSubmit = useCallback(
     (data: { email: string }) => {
       setLoadingSate(LoadingState.Loading);
       sendPasswordResetEmail(auth, data.email)
         .then(() => {
           setLoadingSate(LoadingState.Loaded);
+          toast({
+            title: "Sent!",
+            description:
+              "We sent an e-mail with your password reset link. Please check your email.",
+            status: "success",
+            duration: 9000,
+            isClosable: true,
+          });
         })
         .catch((error) => {
           const errorMessage = generateFirebaseAuthErrorMessage(error.code);
@@ -43,7 +52,7 @@ export const ForgotPassword = observer(() => {
           setLoadingSate(LoadingState.Error);
         });
     },
-    [setError]
+    [setError, toast]
   );
 
   return (
@@ -52,6 +61,7 @@ export const ForgotPassword = observer(() => {
       direction="column"
       justifyContent="center"
       alignItems="center"
+      padding="20px"
     >
       <Heading as="h1" mb="50">
         Reset Your Password

@@ -10,6 +10,7 @@ export const Login = observer(() => {
       alignItems="center"
       minHeight="100vh"
       direction="column"
+      padding="20px"
     >
       <Flex direction="column" justifyContent="center" alignItems="center">
         <Heading as="h1" mb="5">

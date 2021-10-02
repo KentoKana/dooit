@@ -5,6 +5,7 @@ export const TextStyles = {
         primary: {
             color: 'primary'
         },
+        success: "#22ee44",
         link: (props: any) => ({
             color: 'primary',
             _hover: {
