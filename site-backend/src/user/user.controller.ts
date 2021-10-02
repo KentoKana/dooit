@@ -22,4 +22,9 @@ export class UserController {
         return this.userService.create(user, request);
     }
 
+    @Post("login")
+    login(@Body() loginCred: { email: string, password: string }) {
+        return this.userService.login(loginCred);
+    }
+
 }

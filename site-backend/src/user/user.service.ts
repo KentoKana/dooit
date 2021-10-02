@@ -4,6 +4,9 @@ import { Request } from 'express';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { UserCreateDto } from './Dto/UserCreateDto.dto'
+import { browserLocalPersistence, setPersistence, signInWithEmailAndPassword } from '@firebase/auth';
+import { FirebaseError } from '@firebase/util';
+import { Firebase } from 'src/firebase/firebase';
 
 @Injectable()
 export class UserService {
@@ -19,6 +22,7 @@ export class UserService {
         }
         return user
     }
+    readonly firebase = new Firebase()
 
     async create(@Body() userDto: UserCreateDto, @Req() request: Request) {
         const userToCreate: User = new User();
@@ -29,5 +33,22 @@ export class UserService {
         userToCreate.id = request.user.user_id
         const created = await this.usersRepository.save(userToCreate);
         return created;
+    }
+
+    async login(@Body() loginCred: { email: string, password: string }) {
+        return setPersistence(this.firebase.auth, browserLocalPersistence).then(async () => {
+            return signInWithEmailAndPassword(this.firebase.auth, loginCred.email, loginCred.password).then((userCred) => {
+                return userCred?.user.getIdToken(true).then((token) => {
+                    return {
+                        token: token
+                    };
+                })
+            })
+        }).catch((error: FirebaseError) => {
+            throw new HttpException({
+                status: error.code,
+                error: error.message,
+            }, HttpStatus.BAD_REQUEST);
+        })
     }
 }
