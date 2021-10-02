@@ -23,8 +23,9 @@ export class UserController {
     }
 
     @Post("login")
-    login(@Body() loginCred: { email: string, password: string }) {
-        return this.userService.login(loginCred);
+    login(@Body() loginCred: UserLoginByEmailDto) {
+        if (loginCred instanceof UserLoginByEmailDto) {
+            return this.userService.loginByEmail(loginCred);
+        }
     }
-
 }

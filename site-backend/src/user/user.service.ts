@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Request } from 'express';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
-import { UserCreateDto } from './Dto/UserCreateDto.dto'
+import { UserCreateDto } from './dto/UserCreateDto.dto'
 import { browserLocalPersistence, setPersistence, signInWithEmailAndPassword } from '@firebase/auth';
 import { FirebaseError } from '@firebase/util';
 import { Firebase } from 'src/firebase/firebase';
@@ -35,7 +35,7 @@ export class UserService {
         return created;
     }
 
-    async login(@Body() loginCred: { email: string, password: string }) {
+    async loginByEmail(@Body() loginCred: UserLoginByEmailDto) {
         return setPersistence(this.firebase.auth, browserLocalPersistence).then(async () => {
             return signInWithEmailAndPassword(this.firebase.auth, loginCred.email, loginCred.password).then((userCred) => {
                 return userCred?.user.getIdToken(true).then((token) => {
