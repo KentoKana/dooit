@@ -7,6 +7,7 @@ import { UserCreateDto } from './dto/UserCreateDto.dto'
 import { browserLocalPersistence, setPersistence, signInWithEmailAndPassword } from '@firebase/auth';
 import { FirebaseError } from '@firebase/util';
 import { Firebase } from 'src/firebase/firebase';
+import { UserLoginByEmailDto } from './dto/UserLoginByEmailDto.dto';
 
 @Injectable()
 export class UserService {
