@@ -28,4 +28,15 @@ export class UserController {
             return this.userService.loginByEmail(loginCred);
         }
     }
+
+    @Post("sign-out")
+    @UseGuards(AuthGuard('jwt'))
+    signOut() {
+        return this.userService.signOut();
+    }
+
+    @Post("reset-password")
+    resetPassword(@Body() email: { email: string }) {
+        return this.userService.resetPassword(email.email);
+    }
 }

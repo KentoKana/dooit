@@ -1,14 +1,16 @@
-import { Body, HttpException, HttpStatus, Injectable, Req } from '@nestjs/common';
+import { Body, HttpException, HttpStatus, Injectable, NotFoundException, Req } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Request } from 'express';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { UserCreateDto } from './dto/UserCreateDto.dto'
-import { browserLocalPersistence, createUserWithEmailAndPassword, setPersistence, signInWithEmailAndPassword } from '@firebase/auth';
+import { browserLocalPersistence, createUserWithEmailAndPassword, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword } from '@firebase/auth';
 import { FirebaseError } from '@firebase/util';
 import { Firebase } from 'src/firebase/firebase';
 import { UserLoginByEmailDto } from './dto/UserLoginByEmailDto.dto';
 import { UserGetCreatedDto } from './dto/UserGetCreatedDto.dto';
+import { HttpError } from 'src/shared/dto/HttpError.dto';
+import { generateFirebaseAuthErrorMessage } from 'src/helpers/firebase';
 
 @Injectable()
 export class UserService {
@@ -44,19 +46,19 @@ export class UserService {
                         token: token
                     }
                 }).catch((error) => {
-                    throw new HttpException({
-                        status: HttpStatus.BAD_GATEWAY,
-                        error: 'Something went wrong when attempting to create user.',
-                    }, HttpStatus.BAD_GATEWAY);
+                    const err = new HttpError()
+                    err.status = error.code;
+                    err.message = generateFirebaseAuthErrorMessage(error.code)
+                    throw new HttpException(err, HttpStatus.BAD_REQUEST);
                 })
             }).then((createdUser) => {
                 return createdUser;
             })
             .catch((error: FirebaseError) => {
-                throw new HttpException({
-                    status: error.code,
-                    error: error.message,
-                }, HttpStatus.BAD_REQUEST);
+                const err = new HttpError()
+                err.status = error.code;
+                err.message = generateFirebaseAuthErrorMessage(error.code)
+                throw new HttpException(err, HttpStatus.BAD_REQUEST);
             })
 
     }
@@ -71,10 +73,32 @@ export class UserService {
                 })
             })
         }).catch((error: FirebaseError) => {
-            throw new HttpException({
-                status: error.code,
-                error: error.message,
-            }, HttpStatus.BAD_REQUEST);
+            const err = new HttpError()
+            err.status = error.code;
+            err.message = generateFirebaseAuthErrorMessage(error.code)
+            throw new HttpException(err, HttpStatus.BAD_REQUEST);
         })
+    }
+
+    async signOut() {
+        return this.firebase.auth.signOut()
+    }
+
+    async resetPassword(@Body() email: string) {
+        return sendPasswordResetEmail(this.firebase.auth, email)
+            .then(() => {
+                return {
+                    status: 200,
+                    message: "Success!"
+                }
+            }).catch((error: FirebaseError) => {
+                const err = new HttpError()
+                err.status = error.code;
+
+                err.message = generateFirebaseAuthErrorMessage(error.code)
+                console.log(error, err);
+                throw new HttpException(err, HttpStatus.BAD_REQUEST);
+                // throw new NotFoundException(err)
+            })
     }
 }

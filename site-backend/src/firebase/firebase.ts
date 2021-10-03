@@ -2,8 +2,6 @@ import { Injectable } from "@nestjs/common";
 import * as firebase from "firebase/app"
 import { getAuth } from "firebase/auth";
 
-
-
 @Injectable()
 export class Firebase {
     constructor() {
