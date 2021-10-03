@@ -1,9 +1,7 @@
-import { runInAction } from "mobx";
 import { UserCreateDto } from "../Dtos/UserCreateDto.dto";
 import { UserGetCreatedDto } from "../Dtos/UserGetCreatedDto.dto";
 import { UserLoginByEmailDto } from "../Dtos/UserLoginByEmailDto.dto";
 import { AuthRoute } from "../enums/ApiRoutes";
-import { auth } from "../firebase";
 import { UiStore } from "../stores/UiStore";
 import { UserStore } from "../stores/UserStore";
 
@@ -32,11 +30,22 @@ export class AuthService {
      * Signs out from user session. Removes "user" from local storage.
      */
     async signOut() {
-        runInAction(() => {
-            this.userStore.userToken = null;
-            localStorage.removeItem("user-jwt");
-            auth.signOut();
-        })
+        return this.uiStore
+            .apiRequest(AuthRoute.SignOut, {
+                method: "POST",
+            })
+            .then(() => {
+                localStorage.removeItem("user-jwt"); this.userStore.userToken = null;
+                this.userStore.userToken = null;
+                this.userStore.isSignedIn = false
+            })
+    }
+    async resetPassword(email: { email: string }) {
+        return this.uiStore
+            .apiRequest(AuthRoute.ResetPassword, {
+                method: "POST",
+                bodyData: email
+            })
     }
 }
 

@@ -27,17 +27,44 @@ export class UiStore {
         if (this.userStore.userToken) {
             headers.set("Authorization", `Bearer ${this.userStore.userToken}`)
         }
-        const res = await fetch(url, {
+        return fetch(url, {
             method: options.method,
             headers: headers,
             body: (options.bodyData ? JSON.stringify(options.bodyData) : undefined)
-        });
-        if (res.status === 401) {
-            localStorage.removeItem("user-jwt");
-        }
-        if (!res.ok) {
-            throw new Error();
-        }
-        return await res.json();
+        }).then(async (res) => {
+            if (!res.ok) {
+                const reader = res.body?.getReader();
+                // Read the data
+                let decoder = new TextDecoder("utf-8"); //Text decoder
+                let chunks: string[] = []; // array of strings that make up the chunks sent
+                while (true) {
+                    const r = await reader?.read();
+                    //If we're done the request, exit the loop
+                    if (r?.done) {
+                        break;
+                    }
+                    //We need this check for typescript
+                    if (r?.value !== undefined) {
+                        //Decode the chunks as we go and save as strings in the chunks array
+                        chunks.push(decoder.decode(r.value, { stream: true }));
+                    }
+                }
+
+                // Concatenate to string and parse for JSON
+                const resultJson = JSON.parse(chunks.join(""));
+                if (res.status === 401) {
+                    localStorage.removeItem("user-jwt");
+                    this.userStore.userToken = null;
+                    this.userStore.isSignedIn = false;
+                    return Promise.reject({ status: resultJson.status, message: resultJson.message, httpCodeStatus: res.status })
+                }
+
+                return Promise.reject(
+                    { status: resultJson.status, message: resultJson.message, httpCodeStatus: res.status }
+                );
+            }
+            return res.json();
+        })
+
     }
 }

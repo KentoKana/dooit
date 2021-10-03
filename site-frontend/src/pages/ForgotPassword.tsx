@@ -4,13 +4,14 @@ import { Input } from "@chakra-ui/input";
 import { Box, Flex, Heading, Text } from "@chakra-ui/layout";
 import { observer } from "mobx-react-lite";
 import { useCallback, useState } from "react";
-import { sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "../firebase";
 import { LoadingState } from "../enums/LoadingState";
 import { FormControl, FormErrorMessage, useToast } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { generateFirebaseAuthErrorMessage } from "../utils";
+import { AuthService } from "../classes/AuthService";
+import { UseStores } from "../stores/StoreContexts";
+import { HttpError } from "../Dtos/HttpError.dto";
+import { isNullOrUndefined } from "../utils";
 
 interface IForgotPasswordForm {
   email: string;
@@ -24,6 +25,7 @@ export const ForgotPassword = observer(() => {
     clearErrors,
     formState: { errors },
   } = useForm<IForgotPasswordForm>({ reValidateMode: "onSubmit" });
+  const { uiStore, userStore } = UseStores();
   const [loadingState, setLoadingSate] = useState<LoadingState>(
     LoadingState.None
   );
@@ -31,8 +33,10 @@ export const ForgotPassword = observer(() => {
   const onSubmit = useCallback(
     (data: { email: string }) => {
       setLoadingSate(LoadingState.Loading);
-      sendPasswordResetEmail(auth, data.email)
-        .then(() => {
+      const authService = new AuthService(userStore, uiStore);
+      authService
+        .resetPassword({ email: data.email })
+        .then(async () => {
           setLoadingSate(LoadingState.Loaded);
           toast({
             title: "Sent!",
@@ -43,16 +47,17 @@ export const ForgotPassword = observer(() => {
             isClosable: true,
           });
         })
-        .catch((error) => {
-          const errorMessage = generateFirebaseAuthErrorMessage(error.code);
+        .catch((error: HttpError) => {
+          console.log(error);
+
           setError("serverError", {
             type: "server",
-            message: errorMessage,
+            message: error.message,
           });
           setLoadingSate(LoadingState.Error);
         });
     },
-    [setError, toast]
+    [setError, toast, uiStore, userStore]
   );
 
   return (
@@ -89,13 +94,16 @@ export const ForgotPassword = observer(() => {
               {errors.email && errors.email.message}
             </FormErrorMessage>
           </FormControl>
-          <FormControl isInvalid={!!errors.serverError}>
+          <FormControl isInvalid={!isNullOrUndefined(errors.serverError)}>
             <FormErrorMessage justifyContent="center">
               {errors.serverError && errors.serverError.message}
             </FormErrorMessage>
           </FormControl>
         </Box>
         <Button
+          onClick={() => {
+            clearErrors(["serverError"]);
+          }}
           isLoading={loadingState === LoadingState.Loading}
           type="submit"
           variant="primary"
@@ -105,12 +113,7 @@ export const ForgotPassword = observer(() => {
           Request Reset Link
         </Button>
       </form>
-      <Box
-        mt="5"
-        onClick={() => {
-          clearErrors(["serverError"]);
-        }}
-      >
+      <Box mt="5">
         <Text as="span" variant="link">
           <Link to="/login">Back to Login Page</Link>
         </Text>

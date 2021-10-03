@@ -81,7 +81,11 @@ export class UserService {
     }
 
     async signOut() {
-        return this.firebase.auth.signOut()
+        this.firebase.auth.signOut()
+        return {
+            status: 200,
+            message: "Successfully signed out!"
+        }
     }
 
     async resetPassword(@Body() email: string) {

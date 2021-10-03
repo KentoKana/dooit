@@ -6,18 +6,15 @@ import {
 } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
 import { Flex } from "@chakra-ui/layout";
-import { FirebaseError } from "@firebase/util";
 import { observer } from "mobx-react-lite";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Redirect } from "react-router-dom";
 import { AuthService } from "../../../classes/AuthService";
+import { HttpError } from "../../../Dtos/HttpError.dto";
 import { LoadingState } from "../../../enums/LoadingState";
 import { UseStores } from "../../../stores/StoreContexts";
-import {
-  generateFirebaseAuthErrorMessage,
-  isNullOrUndefined,
-} from "../../../utils";
+import { isNullOrUndefined } from "../../../utils";
 
 interface ILoginForm {
   email: string;
@@ -32,7 +29,7 @@ export const LoginForm = observer(() => {
     register,
     setError,
     clearErrors,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<ILoginForm>();
 
   //#region Local States
@@ -56,12 +53,11 @@ export const LoginForm = observer(() => {
           setHasLoggedIn(true);
           return data;
         })
-        .catch((error: FirebaseError) => {
+        .catch((error: HttpError) => {
           setLoadingState(LoadingState.Error);
-          const errorMessage = generateFirebaseAuthErrorMessage(error.code);
           setError("serverError", {
             type: "server",
-            message: errorMessage,
+            message: error.message,
           });
         });
     },
@@ -122,12 +118,12 @@ export const LoginForm = observer(() => {
           onClick={() => {
             clearErrors(["serverError"]);
           }}
-          isLoading={isSubmitting}
+          isLoading={loadingState === LoadingState.Loading}
           type="submit"
           variant="primary"
           mt="5"
           width="100%"
-          disabled={isSubmitting}
+          disabled={loadingState === LoadingState.Loading}
         >
           Log In
         </Button>
