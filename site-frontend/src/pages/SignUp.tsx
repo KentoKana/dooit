@@ -8,7 +8,7 @@ export const SignUp = observer(() => {
     <Flex
       justifyContent="center"
       alignItems="center"
-      minHeight="100vh"
+      // minHeight="100vh"
       direction="column"
       padding="20px"
     >

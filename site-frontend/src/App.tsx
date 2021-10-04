@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { UseStores } from "./stores/StoreContexts";
 import { AppInit } from "./classes/AppInit";
 import { ForgotPassword } from "./pages/ForgotPassword";
+import { NavBar } from "./components/Layouts/NavBar";
 
 export const App = observer(() => {
   const { userStore } = UseStores();
@@ -23,6 +24,7 @@ export const App = observer(() => {
     <>
       {appInitialized && (
         <Router>
+          <NavBar />
           <Switch>
             <PrivateRoute
               exact
