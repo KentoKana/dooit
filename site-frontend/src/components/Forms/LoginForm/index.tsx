@@ -64,7 +64,10 @@ export const LoginForm = observer(() => {
     [userStore, uiStore, setError]
   );
 
-  if (!isNullOrUndefined(userStore.userToken) && hasLoggedIn) {
+  if (
+    (!isNullOrUndefined(userStore.userToken) && hasLoggedIn) ||
+    userStore.isSignedIn
+  ) {
     userStore.isSignedIn = true;
     return <Redirect to="/" />;
   }

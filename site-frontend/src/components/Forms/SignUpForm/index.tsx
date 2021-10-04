@@ -56,7 +56,10 @@ export const SignUpForm = observer(() => {
     [uiStore, userStore, reset]
   );
 
-  if (!isNullOrUndefined(userStore.userToken) && creationSuccessful) {
+  if (
+    (!isNullOrUndefined(userStore.userToken) && creationSuccessful) ||
+    userStore.isSignedIn
+  ) {
     userStore.isSignedIn = true;
     return <Redirect to="/" />;
   }
