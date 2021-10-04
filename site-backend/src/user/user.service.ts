@@ -30,7 +30,7 @@ export class UserService {
 
     async create(@Body() userDto: UserCreateDto): Promise<UserGetCreatedDto> {
         return createUserWithEmailAndPassword(this.firebase.auth, userDto.email, userDto.password)
-            .then((userCred) => {
+            .then(async (userCred) => {
                 return userCred.user.getIdToken(true).then(async (token) => {
                     const userToCreate: User = new User();
                     userToCreate.firstName = userDto.firstName;
@@ -46,6 +46,7 @@ export class UserService {
                         token: token
                     }
                 }).catch((error) => {
+                    this.firebase.auth.currentUser.delete();
                     const err = new HttpError()
                     err.status = error.code;
                     err.message = generateFirebaseAuthErrorMessage(error.code)
