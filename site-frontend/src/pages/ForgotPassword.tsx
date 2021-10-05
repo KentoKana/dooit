@@ -12,6 +12,7 @@ import { AuthService } from "../classes/AuthService";
 import { UseStores } from "../stores/StoreContexts";
 import { HttpError } from "../Dtos/HttpError.dto";
 import { isNullOrUndefined } from "../utils";
+import { LocalRoutes } from "../enums/LocalRoutes";
 
 interface IForgotPasswordForm {
   email: string;
@@ -115,7 +116,7 @@ export const ForgotPassword = observer(() => {
       </form>
       <Box mt="5">
         <Text as="span" variant="link">
-          <Link to="/login">Back to Login Page</Link>
+          <Link to={LocalRoutes.Login}>Back to Login Page</Link>
         </Text>
       </Box>
     </Flex>

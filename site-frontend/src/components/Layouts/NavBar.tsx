@@ -10,8 +10,20 @@ import {
 import { UnlockIcon } from "@chakra-ui/icons";
 import { observer } from "mobx-react-lite";
 import { Link } from "react-router-dom";
+import { UseStores } from "../../stores/StoreContexts";
+import { AuthService } from "../../classes/AuthService";
+import { useResetQuery } from "../../hooks/useResetQuery";
+import { useEffect, useState } from "react";
+import { LocalRoutes } from "../../enums/LocalRoutes";
 
 export const NavBar = observer(() => {
+  const { userStore, uiStore } = UseStores();
+  const authService = new AuthService(userStore, uiStore);
+  const reset = useResetQuery();
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  useEffect(() => {
+    setIsSignedIn(userStore.isSignedIn);
+  }, [userStore.isSignedIn]);
   return (
     <Box>
       <Container maxW="container.xl" height="80px">
@@ -23,7 +35,11 @@ export const NavBar = observer(() => {
           alignItems="center"
         >
           <Flex>
-            <Link to="/">
+            <Link
+              to={
+                userStore.isSignedIn ? LocalRoutes.Dashboard : LocalRoutes.Home
+              }
+            >
               <Text>DooIt</Text>
             </Link>
           </Flex>
@@ -32,20 +48,38 @@ export const NavBar = observer(() => {
             listStyleType="none"
             alignItems="center"
           >
-            <ListItem pl={5}>
-              <Link to="/signup">
-                <Text variant="link" fontWeight="bold">
-                  Sign Up
-                </Text>
-              </Link>
-            </ListItem>
-            <ListItem pl={5}>
-              <Link to="/login">
-                <Button variant="primary">
-                  Login <UnlockIcon ml={1} />
-                </Button>
-              </Link>
-            </ListItem>
+            {!isSignedIn ? (
+              <>
+                <ListItem pl={5}>
+                  <Link to={LocalRoutes.SignUp}>
+                    <Text variant="link" fontWeight="bold">
+                      Sign Up
+                    </Text>
+                  </Link>
+                </ListItem>
+                <ListItem pl={5}>
+                  <Link to={LocalRoutes.Login}>
+                    <Button variant="primary">
+                      Login <UnlockIcon ml={1} />
+                    </Button>
+                  </Link>
+                </ListItem>
+              </>
+            ) : (
+              <>
+                <ListItem pl={5}>
+                  <Link
+                    to={LocalRoutes.Home}
+                    onClick={() => {
+                      authService.signOut();
+                      reset();
+                    }}
+                  >
+                    <Button variant="primary">Log Out</Button>
+                  </Link>
+                </ListItem>
+              </>
+            )}
           </UnorderedList>
         </Flex>
       </Container>

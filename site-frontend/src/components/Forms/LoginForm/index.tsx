@@ -13,6 +13,7 @@ import { Redirect } from "react-router-dom";
 import { AuthService } from "../../../classes/AuthService";
 import { HttpError } from "../../../Dtos/HttpError.dto";
 import { LoadingState } from "../../../enums/LoadingState";
+import { LocalRoutes } from "../../../enums/LocalRoutes";
 import { UseStores } from "../../../stores/StoreContexts";
 import { isNullOrUndefined } from "../../../utils";
 
@@ -69,7 +70,7 @@ export const LoginForm = observer(() => {
     userStore.isSignedIn
   ) {
     userStore.isSignedIn = true;
-    return <Redirect to="/" />;
+    return <Redirect to={LocalRoutes.Dashboard} />;
   }
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

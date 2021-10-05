@@ -2,6 +2,7 @@ import { Box, Flex, Heading, Text } from "@chakra-ui/layout";
 import { observer } from "mobx-react-lite";
 import { Link } from "react-router-dom";
 import { LoginForm } from "../components/Forms/LoginForm";
+import { LocalRoutes } from "../enums/LocalRoutes";
 
 export const Login = observer(() => {
   return (
@@ -24,12 +25,12 @@ export const Login = observer(() => {
       <Box mt="5">
         Don't have an account? Sign up{" "}
         <Text as="span" variant="link">
-          <Link to="/signup">here!</Link>
+          <Link to={LocalRoutes.SignUp}>here!</Link>
         </Text>
       </Box>
       <Box mt="5">
         <Text as="span" variant="link">
-          <Link to="/forgot-password">Forgot Password?</Link>
+          <Link to={LocalRoutes.ForgotPassword}>Forgot Password?</Link>
         </Text>
       </Box>
     </Flex>
