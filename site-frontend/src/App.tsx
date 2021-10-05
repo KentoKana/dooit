@@ -14,14 +14,13 @@ import { LocalRoutes } from "./enums/LocalRoutes";
 import { Home } from "./pages/Home";
 
 export const App = observer(() => {
-  const { userStore } = UseStores();
+  const { userStore, uiStore } = UseStores();
   const [appInitialized, setAppInitialized] = useState<boolean>(false);
 
   useEffect(() => {
-    const app = new AppInit(userStore);
-    app.init();
-    setAppInitialized(true);
-  }, [userStore]);
+    const app = new AppInit(userStore, uiStore);
+    app.init((loaded) => setAppInitialized(loaded));
+  }, [userStore, uiStore]);
 
   return (
     <>

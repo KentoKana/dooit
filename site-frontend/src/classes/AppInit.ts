@@ -1,13 +1,19 @@
+import { UserGetDto } from "../Dtos/UserGetDto.dto";
+import { AuthRoute } from "../enums/ApiRoutes";
+import { UiStore } from "../stores/UiStore";
 import { UserStore } from "../stores/UserStore";
 
 export class AppInit {
-    constructor(userStore: UserStore) {
+    constructor(userStore: UserStore, uiStore: UiStore) {
         this._userStore = userStore;
+        this._uiStore = uiStore;
     }
     private _userStore: UserStore;
+    private _uiStore: UiStore;
 
-    init() {
-        this.getPersistedUser();
+    async init(onLoad: (loaded: boolean) => void) {
+        await this.getPersistedUser();
+        onLoad(true);
     }
 
     private getPersistedUser() {
@@ -15,6 +21,13 @@ export class AppInit {
         if (token) {
             this._userStore.userToken = token?.replace(/['"]+/g, '') ?? null;
             this._userStore.isSignedIn = true;
+            return this._uiStore
+                .apiRequest<UserGetDto>(AuthRoute.GetUser, {
+                    method: "GET",
+                })
+                .then((data) => {
+                    this._userStore.user = data;
+                })
         }
     }
 }
