@@ -3,16 +3,11 @@ import { Redirect, Route, RouteProps } from "react-router-dom";
 import { UseStores } from "../stores/StoreContexts";
 
 export type ProtectedRouteProps = {
-  isAuthenticated: boolean;
   authenticationPath: string;
 } & RouteProps;
 
 export const PrivateRoute = observer(
-  ({
-    isAuthenticated,
-    authenticationPath,
-    ...routeProps
-  }: ProtectedRouteProps) => {
+  ({ authenticationPath, ...routeProps }: ProtectedRouteProps) => {
     const { userStore } = UseStores();
 
     if (userStore.userToken !== null && userStore.isSignedIn) {
