@@ -11,11 +11,13 @@ import { UserLoginByEmailDto } from './dto/UserLoginByEmailDto.dto';
 import { UserGetCreatedDto } from './dto/UserGetCreatedDto.dto';
 import { HttpError } from 'src/shared/dto/HttpError.dto';
 import { generateFirebaseAuthErrorMessage } from 'src/helpers/firebase';
+import { UserGetDto } from './dto/UserGetDto.dto';
+import { UserGetLoggedIn } from './dto/UserGetLoggedInDto.dto';
 
 @Injectable()
 export class UserService {
     constructor(@InjectRepository(User) private usersRepository: Repository<User>) { }
-    async get(@Req() request: Request) {
+    async get(@Req() request: Request): Promise<UserGetDto> {
         // return request.user
         const user = await this.usersRepository.findOne(request.user.user_id);
         if (!user) {
@@ -24,7 +26,11 @@ export class UserService {
                 error: 'User Not Found',
             }, HttpStatus.NOT_FOUND);
         }
-        return user
+        return {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+        };
     }
     readonly firebase = new Firebase()
 
@@ -64,12 +70,17 @@ export class UserService {
 
     }
 
-    async loginByEmail(@Body() loginCred: UserLoginByEmailDto) {
+    async loginByEmail(@Body() loginCred: UserLoginByEmailDto): Promise<UserGetLoggedIn> {
+
         return setPersistence(this.firebase.auth, browserLocalPersistence).then(async () => {
             return signInWithEmailAndPassword(this.firebase.auth, loginCred.email, loginCred.password).then((userCred) => {
-                return userCred?.user.getIdToken(true).then((token) => {
+                return userCred?.user.getIdToken(true).then(async (token) => {
+                    const user = await this.usersRepository.findOne(userCred.user.uid);
                     return {
-                        token: token
+                        token: token,
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                        email: user.email
                     };
                 })
             })
