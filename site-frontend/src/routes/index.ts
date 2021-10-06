@@ -12,7 +12,7 @@ interface IRoutes {
     path: string;
     authenticationPath?: string;
 }
-export const routes: IRoutes[] = [
+export const mainRoutes: IRoutes[] = [
     {
         isPrivate: true,
         component: Dashboard,
