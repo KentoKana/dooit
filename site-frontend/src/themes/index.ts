@@ -3,6 +3,7 @@ import { extendTheme } from "@chakra-ui/react"
 import { ButtonStyles as Button } from "./button"
 import { TextStyles as Text } from "./text"
 import { InputStyles as Input } from "./input"
+import { LinkStyles as Link } from "./link"
 // 2. Call `extendTheme` and pass your custom values
 export const theme = extendTheme({
     colors: {
@@ -22,6 +23,6 @@ export const theme = extendTheme({
         },
     },
     components: {
-        Button, Text, Input
+        Button, Text, Input, Link
     }
 })

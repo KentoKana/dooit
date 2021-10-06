@@ -10,11 +10,11 @@ export const ButtonStyles: ComponentSingleStyleConfig = {
     baseStyle: {
         bgColor: "primary"
     },
-    sizes: {},
     variants: {
         primary: (props: any) => ({
             color: "white",
             bg: "primary",
+            borderRadius: "3px",
             _active: primaryButton(props),
             _disabled: primaryButton(props),
             _hover: {
