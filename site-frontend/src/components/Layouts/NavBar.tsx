@@ -25,7 +25,7 @@ export const NavBar = observer(() => {
     setIsSignedIn(userStore.isSignedIn);
   }, [userStore.isSignedIn]);
   return (
-    <Box>
+    <Box position="fixed" width="100%" backgroundColor={"white"} top="0">
       <Container maxW="container.xl" height="80px">
         <Flex
           as="nav"
