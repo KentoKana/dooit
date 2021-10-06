@@ -7,7 +7,7 @@ import { AppInit } from "./classes/AppInit";
 import { NavBar } from "./components/Layouts/NavBar";
 import { BasePage } from "./components/Layouts/BasePage";
 import { LocalRoutes } from "./enums/LocalRoutes";
-import { routes } from "./routes";
+import { mainRoutes } from "./routes";
 
 export const App = observer(() => {
   const { userStore, uiStore } = UseStores();
@@ -25,9 +25,10 @@ export const App = observer(() => {
           <NavBar />
           <BasePage>
             <Switch>
-              {routes.map((route) => {
+              {mainRoutes.map((route) => {
                 return route.isPrivate ? (
                   <PrivateRoute
+                    key={route.path}
                     exact
                     path={route.path}
                     authenticationPath={
@@ -36,7 +37,12 @@ export const App = observer(() => {
                     component={route.component}
                   />
                 ) : (
-                  <Route exact path={route.path} component={route.component} />
+                  <Route
+                    key={route.path}
+                    exact
+                    path={route.path}
+                    component={route.component}
+                  />
                 );
               })}
             </Switch>
