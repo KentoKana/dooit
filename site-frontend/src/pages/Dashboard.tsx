@@ -1,7 +1,9 @@
+import { Jumbotron } from "../components/Dashboard/Jumbotron";
+
 export const Dashboard = () => {
   return (
     <>
-      <h1>Dashboard</h1>
+      <Jumbotron />
     </>
   );
 };
