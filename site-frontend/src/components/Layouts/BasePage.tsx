@@ -23,7 +23,7 @@ export const BasePage = observer(({ children }: IBasePageProps) => {
   }, [userStore.isSignedIn]);
 
   return (
-    <Container maxW="container.xl" as="div">
+    <Container maxW="container.xl" as="div" marginTop="100px">
       <Flex>
         {userStore.isSignedIn && (
           <Box width={getDesktopWidths().sidebar} pr={5}>
