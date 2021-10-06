@@ -5,6 +5,7 @@ import { ForgotPassword } from "../pages/ForgotPassword";
 import { Home } from "../pages/Home";
 import { Login } from "../pages/Login";
 import { SignUp } from "../pages/SignUp";
+import { UserSettings } from "../pages/UserSettings";
 
 interface IRoutes {
     isPrivate: boolean;
@@ -38,5 +39,10 @@ export const mainRoutes: IRoutes[] = [
         isPrivate: false,
         component: ForgotPassword,
         path: LocalRoutes.ForgotPassword
+    },
+    {
+        isPrivate: true,
+        component: UserSettings,
+        path: LocalRoutes.UserSettings
     },
 ];

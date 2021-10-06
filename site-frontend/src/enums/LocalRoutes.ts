@@ -4,4 +4,5 @@ export enum LocalRoutes {
     Login = "/login",
     SignUp = "/signup",
     ForgotPassword = "/forgot-password",
+    UserSettings = "/user-settings"
 }
