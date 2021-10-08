@@ -5,3 +5,7 @@ export enum AuthRoute {
     GetUser = "http://localhost:4000/user",
     ResetPassword = "http://localhost:4000/user/reset-password"
 }
+
+export enum UserRoute {
+    UpdateUser = "http://localhost:4000/user/update-user"
+}
