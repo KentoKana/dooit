@@ -1,4 +1,4 @@
-import { ComponentType, ReactNode } from "react";
+import { ComponentType } from "react";
 import { LocalRoutes } from "../enums/LocalRoutes";
 import { Dashboard } from "../pages/Dashboard";
 import { ForgotPassword } from "../pages/ForgotPassword";

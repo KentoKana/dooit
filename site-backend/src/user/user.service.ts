@@ -135,9 +135,9 @@ export class UserService {
         }
         // Update Firebase user instance
         const currentUser = this.firebase.auth.currentUser;
+        let newToken: string = null;
         await updateEmail(currentUser, userEditDto.email).then(async () => {
-            const newToken = await currentUser.getIdToken();
-
+            newToken = await currentUser.getIdToken();
             // Update user on DB
             const updatedUser = await this.usersRepository.save(userToUpdate);
             if (!updatedUser) {
@@ -146,14 +146,15 @@ export class UserService {
                 err.message = "Something went wrong when attempting to update this user.";
                 throw new HttpException(err, HttpStatus.BAD_GATEWAY);
             }
-            return {
-                token: newToken
-            }
         }).catch((error: FirebaseError) => {
             const err = new HttpError();
             err.status = error.code;
             err.message = error.message;
             throw new HttpException(err, HttpStatus.BAD_GATEWAY);
         })
+
+        return {
+            token: newToken
+        }
     }
 }

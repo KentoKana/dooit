@@ -7,7 +7,8 @@ import {
   Tabs,
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
-import { UserSettingsForm } from "../components/Forms/UserSettingsForm";
+import { UserProfileForm } from "../components/Forms/UserSettingsForm/index";
+import { AccountSecurityForm } from "../components/Forms/UserSettingsForm/SecurityForm";
 import { PageWrapper } from "./PageWrapper";
 
 export const UserSettings = observer(() => {
@@ -21,12 +22,13 @@ export const UserSettings = observer(() => {
           <Tab>Profile</Tab>
           <Tab>Account Security</Tab>
         </TabList>
-
-        <TabPanels>
+        <TabPanels maxW="500px">
           <TabPanel>
-            <UserSettingsForm />
+            <UserProfileForm />
           </TabPanel>
-          <TabPanel>Security Form</TabPanel>
+          <TabPanel>
+            <AccountSecurityForm />
+          </TabPanel>
         </TabPanels>
       </Tabs>
     </PageWrapper>
