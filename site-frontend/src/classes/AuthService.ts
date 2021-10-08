@@ -84,19 +84,5 @@ class AuthByEmailPassword {
                 localStorage.setItem("user-jwt", data.token);
                 return data;
             })
-        // .catch(() => {
-        //     setLoadingState(LoadingState.Error);
-        //     // Delete user from Firebase if API fails
-        //     reset();
-        //     auth.currentUser?.delete();
-        // });
-        // return createUserWithEmailAndPassword(auth, email, password)
-        //     .then((userCred) => {
-        //         userCred.user.getIdToken(true).then((token) => {
-        //             userStore.userToken = token;
-        //             localStorage.setItem("user-jwt", token);
-        //         })
-        //         return userCred;
-        //     })
     }
 }
