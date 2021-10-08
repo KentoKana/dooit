@@ -4,7 +4,7 @@ import { Request } from 'express';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { UserCreateDto } from './dto/UserCreateDto.dto'
-import { browserLocalPersistence, createUserWithEmailAndPassword, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword } from '@firebase/auth';
+import { browserLocalPersistence, createUserWithEmailAndPassword, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword, updateEmail } from '@firebase/auth';
 import { FirebaseError } from '@firebase/util';
 import { Firebase } from 'src/firebase/firebase';
 import { UserLoginByEmailDto } from './dto/UserLoginByEmailDto.dto';
@@ -13,6 +13,7 @@ import { HttpError } from 'src/shared/dto/HttpError.dto';
 import { generateFirebaseAuthErrorMessage } from 'src/helpers/firebase';
 import { UserGetDto } from './dto/UserGetDto.dto';
 import { UserGetLoggedIn } from './dto/UserGetLoggedInDto.dto';
+import { UserEditDto } from './dto/UserEditDto.dto';
 
 @Injectable()
 export class UserService {
@@ -116,5 +117,43 @@ export class UserService {
                 throw new HttpException(err, HttpStatus.BAD_REQUEST);
                 // throw new NotFoundException(err)
             })
+    }
+
+    async updateUser(@Body() userEditDto: UserEditDto, @Req() request: Request) {
+        let userToUpdate = await this.usersRepository.findOne(request.user.user_id)
+        // Check if user to update exists
+        if (!userToUpdate) {
+            throw new HttpException({
+                status: HttpStatus.NOT_FOUND,
+                error: 'User Not Found',
+            }, HttpStatus.NOT_FOUND);
+        }
+        userToUpdate = {
+            ...userToUpdate,
+            dateModified: new Date(),
+            ...userEditDto
+        }
+        // Update Firebase user instance
+        const currentUser = this.firebase.auth.currentUser;
+        await updateEmail(currentUser, userEditDto.email).then(async () => {
+            const newToken = await currentUser.getIdToken();
+
+            // Update user on DB
+            const updatedUser = await this.usersRepository.save(userToUpdate);
+            if (!updatedUser) {
+                const err = new HttpError();
+                err.status = "server-side-error";
+                err.message = "Something went wrong when attempting to update this user.";
+                throw new HttpException(err, HttpStatus.BAD_GATEWAY);
+            }
+            return {
+                token: newToken
+            }
+        }).catch((error: FirebaseError) => {
+            const err = new HttpError();
+            err.status = error.code;
+            err.message = error.message;
+            throw new HttpException(err, HttpStatus.BAD_GATEWAY);
+        })
     }
 }
