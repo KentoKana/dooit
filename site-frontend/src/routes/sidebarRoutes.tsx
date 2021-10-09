@@ -1,7 +1,7 @@
 import { LocalRoutes } from "../enums/LocalRoutes";
 import { AiTwotoneSetting, AiFillAppstore } from "react-icons/ai";
 
-export const dashboardRoutes = [
+export const sidebarRoutes = [
   {
     url: LocalRoutes.Dashboard,
     label: "Dashboard",

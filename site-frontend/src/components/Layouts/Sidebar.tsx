@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { Link as RouteLink } from "react-router-dom";
 import { LocalRoutes } from "../../enums/LocalRoutes";
-import { dashboardRoutes } from "../../routes/dashboardRoutes";
+import { sidebarRoutes } from "../../routes/sidebarRoutes";
 import { useLocation } from "react-router-dom";
 
 export const Sidebar = observer(() => {
@@ -22,7 +22,7 @@ export const Sidebar = observer(() => {
     <Box>
       <Box as="nav" borderRadius={5}>
         <UnorderedList listStyleType="none">
-          {dashboardRoutes.map((route) => {
+          {sidebarRoutes.map((route) => {
             return (
               <ListItem fontWeight="600" key={route.url}>
                 <Link
