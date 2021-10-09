@@ -5,19 +5,30 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
+  useToast,
 } from "@chakra-ui/react";
+import { FirebaseError } from "@firebase/util";
 import { observer } from "mobx-react-lite";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
+import { UserService } from "../../../classes/UserService";
 import { LoadingState } from "../../../enums/LoadingState";
 import { UseStores } from "../../../stores/StoreContexts";
-import { isNullOrUndefined } from "../../../utils";
+import { generateFirebaseAuthErrorMessage } from "../../../utils";
+
+interface IAccountSecurityForm {
+  oldPassword: string;
+  newPassword: string;
+}
 
 export const AccountSecurityForm = observer(() => {
+  const toast = useToast();
   const { uiStore, userStore } = UseStores();
   const {
     handleSubmit,
     register,
+    setError,
+    clearErrors,
     formState: { errors },
   } = useForm();
   //#region Local States
@@ -28,27 +39,43 @@ export const AccountSecurityForm = observer(() => {
   // const [creationSuccessful, setCreationSuccessful] = useState(false);
   //#endregion
   const onSubmit = useCallback(
-    async (formData: any) => {
-      //   setLoadingState(LoadingState.Loading);
-      //   const authService = new AuthService(userStore, uiStore);
-      //   authService
-      //     .createUserWithEmailAndPassword({
-      //       firstName: formData.firstName,
-      //       lastName: formData.lastName,
-      //       password: formData.password,
-      //       email: formData.email,
-      //     })
-      //     .then(() => {
-      //       setLoadingState(LoadingState.Loaded);
-      //       setCreationSuccessful(true);
-      //     })
-      //     .catch((error) => {
-      //       console.log(error);
-      //       setLoadingState(LoadingState.Error);
-      //       reset();
-      //     });
+    async (formData: IAccountSecurityForm) => {
+      setLoadingState(LoadingState.Loading);
+
+      const userService = new UserService(userStore, uiStore);
+      userService
+        .updateUserPassword(formData.oldPassword, formData.newPassword)
+        .then(() => {
+          setLoadingState(LoadingState.Loaded);
+          toast({
+            title: `Your password has been updated!`,
+            status: "success",
+            isClosable: true,
+            position: "top",
+          });
+        })
+        .catch((error: FirebaseError) => {
+          setLoadingState(LoadingState.Error);
+          console.log(error.code);
+          let message = generateFirebaseAuthErrorMessage(error.code);
+          if (error.code === "auth/wrong-password") {
+            message = "Your old password is incorrect.";
+          }
+
+          setError("serverError", {
+            type: "server",
+            message: message,
+          });
+          toast({
+            title: `Uh oh... :(`,
+            description: message,
+            status: "error",
+            isClosable: true,
+            position: "top",
+          });
+        });
     },
-    [uiStore, userStore]
+    [uiStore, userStore, setError, toast]
   );
 
   return (
@@ -62,7 +89,7 @@ export const AccountSecurityForm = observer(() => {
           id="old-password"
           type="password"
           placeholder="Old Password"
-          {...register("old-password", {
+          {...register("oldPassword", {
             required: "Please enter your old password.",
           })}
         />
@@ -79,7 +106,7 @@ export const AccountSecurityForm = observer(() => {
           id="new-password"
           type="password"
           placeholder="New Password"
-          {...register("new-password", {
+          {...register("newPassword", {
             required: "Please enter your new password.",
           })}
         />
@@ -87,8 +114,16 @@ export const AccountSecurityForm = observer(() => {
           {errors.password && errors.password.message}
         </FormErrorMessage>
       </FormControl>
+      <FormControl isInvalid={!!errors.serverError}>
+        <FormErrorMessage justifyContent="center">
+          {errors.serverError && errors.serverError.message}
+        </FormErrorMessage>
+      </FormControl>
       <Flex justifyContent="center">
         <Button
+          onClick={() => {
+            clearErrors(["serverError"]);
+          }}
           isLoading={loadingState === LoadingState.Loading}
           type="submit"
           variant="primary"

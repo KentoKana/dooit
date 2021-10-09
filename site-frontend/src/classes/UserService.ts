@@ -1,3 +1,4 @@
+import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "@firebase/auth";
 import { UserEditDto } from "../Dtos/UserEditDto.dto";
 import { UserRoute } from "../enums/ApiRoutes";
 import { auth } from "../firebase";
@@ -35,5 +36,15 @@ export class UserService {
                 })
             })
         })
+    }
+
+    updateUserPassword = async (oldPassword: string, newPassword: string) => {
+
+        if (auth.currentUser) {
+            return await reauthenticateWithCredential(auth.currentUser, EmailAuthProvider.credential(auth.currentUser.email!, oldPassword))
+                .then((userCred) => {
+                    return updatePassword(userCred.user, newPassword)
+                })
+        }
     }
 }
