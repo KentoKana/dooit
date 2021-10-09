@@ -10,9 +10,11 @@ export class UserStore {
     private _user: UserGetDto | null = null;
 
     public reset() {
-        this.userToken = null;
-        this._isSignedIn = false;
-        this._user = null;
+        runInAction(() => {
+            this.userToken = null;
+            this._isSignedIn = false;
+            this._user = null;
+        })
     }
 
     get userToken() {

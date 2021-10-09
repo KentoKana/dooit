@@ -10,9 +10,9 @@ import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { AuthService } from "../classes/AuthService";
 import { UseStores } from "../stores/StoreContexts";
-import { HttpError } from "../Dtos/HttpError.dto";
-import { isNullOrUndefined } from "../utils";
+import { generateFirebaseAuthErrorMessage, isNullOrUndefined } from "../utils";
 import { LocalRoutes } from "../enums/LocalRoutes";
+import { FirebaseError } from "@firebase/util";
 
 interface IForgotPasswordForm {
   email: string;
@@ -36,7 +36,7 @@ export const ForgotPassword = observer(() => {
       setLoadingSate(LoadingState.Loading);
       const authService = new AuthService(userStore, uiStore);
       authService
-        .resetPassword({ email: data.email })
+        .resetPassword(data.email)
         .then(async () => {
           setLoadingSate(LoadingState.Loaded);
           toast({
@@ -48,12 +48,10 @@ export const ForgotPassword = observer(() => {
             isClosable: true,
           });
         })
-        .catch((error: HttpError) => {
-          console.log(error);
-
+        .catch((error: FirebaseError) => {
           setError("serverError", {
             type: "server",
-            message: error.message,
+            message: generateFirebaseAuthErrorMessage(error.code),
           });
           setLoadingSate(LoadingState.Error);
         });

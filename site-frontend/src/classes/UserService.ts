@@ -1,5 +1,6 @@
 import { UserEditDto } from "../Dtos/UserEditDto.dto";
 import { UserRoute } from "../enums/ApiRoutes";
+import { auth } from "../firebase";
 import { UiStore } from "../stores/UiStore";
 import { UserStore } from "../stores/UserStore";
 
@@ -13,19 +14,26 @@ export class UserService {
     private _userStore: UserStore;
 
     updateUser = async (userEditDto: UserEditDto) => {
-        await this._uiStore.apiRequest<UserEditDto, { token: string }>(UserRoute.UpdateUser, {
+        return await this._uiStore.apiRequest<UserEditDto>(UserRoute.UpdateUser, {
             method: "PATCH",
             bodyData: userEditDto
-        }).then(({ token }) => {
+        }).then(() => {
             const { firstName, lastName, email } = userEditDto;
-            this._userStore.userToken = token;
-            localStorage.setItem("user-jwt", token);
             this._userStore.user = {
                 ...this._userStore.user,
                 firstName,
                 lastName,
                 email
             }
+        }).then(() => {
+            auth.onAuthStateChanged(async (user) => {
+                user?.getIdToken().then((token) => {
+                    if (token) {
+                        localStorage.setItem("user-jwt", token);
+                        this._userStore.userToken = token;
+                    }
+                })
+            })
         })
     }
 }

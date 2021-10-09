@@ -6,16 +6,19 @@ import {
 } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
 import { Flex } from "@chakra-ui/layout";
+import { FirebaseError } from "@firebase/util";
 import { observer } from "mobx-react-lite";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Redirect } from "react-router-dom";
 import { AuthService } from "../../../classes/AuthService";
-import { HttpError } from "../../../Dtos/HttpError.dto";
 import { LoadingState } from "../../../enums/LoadingState";
 import { LocalRoutes } from "../../../enums/LocalRoutes";
 import { UseStores } from "../../../stores/StoreContexts";
-import { isNullOrUndefined } from "../../../utils";
+import {
+  generateFirebaseAuthErrorMessage,
+  isNullOrUndefined,
+} from "../../../utils";
 
 interface ILoginForm {
   email: string;
@@ -45,20 +48,20 @@ export const LoginForm = observer(() => {
     async (loginFormData: ILoginForm) => {
       setLoadingState(LoadingState.Loading);
       const authService = new AuthService(userStore, uiStore);
-      authService
+
+      return await authService
         .loginWithEmailAndPassword({
           email: loginFormData.email,
           password: loginFormData.password,
         })
-        .then((data) => {
+        .then(() => {
           setHasLoggedIn(true);
-          return data;
         })
-        .catch((error: HttpError) => {
+        .catch((error: FirebaseError) => {
           setLoadingState(LoadingState.Error);
           setError("serverError", {
             type: "server",
-            message: error.message,
+            message: generateFirebaseAuthErrorMessage(error.code),
           });
         });
     },

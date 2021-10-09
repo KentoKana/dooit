@@ -3,8 +3,10 @@ import { UserGetCreatedDto } from "../Dtos/UserGetCreatedDto.dto";
 import { UserGetLoggedIn } from "../Dtos/UserGetLoggedInDto.dto";
 import { UserLoginByEmailDto } from "../Dtos/UserLoginByEmailDto.dto";
 import { AuthRoute } from "../enums/ApiRoutes";
+import { auth } from "../firebase";
 import { UiStore } from "../stores/UiStore";
 import { UserStore } from "../stores/UserStore";
+import { browserLocalPersistence, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword } from '@firebase/auth';
 
 export class AuthService {
     constructor(userStore: UserStore, uiStore: UiStore) {
@@ -31,41 +33,39 @@ export class AuthService {
      * Signs out from user session. Removes "user" from local storage.
      */
     async signOut() {
-        return this.uiStore
-            .apiRequest(AuthRoute.SignOut, {
-                method: "POST",
-            })
+        return auth.signOut()
             .then(() => {
                 localStorage.removeItem("user-jwt");
                 this.userStore.reset();
             })
     }
-    async resetPassword(email: { email: string }) {
-        return this.uiStore
-            .apiRequest(AuthRoute.ResetPassword, {
-                method: "POST",
-                bodyData: email
-            })
+
+    async resetPassword(email: string) {
+        return sendPasswordResetEmail(auth, email)
     }
 }
 
 class AuthByEmailPassword {
     static async login(userStore: UserStore, uiStore: UiStore, loginCred: UserLoginByEmailDto) {
-        return uiStore
-            .apiRequest<UserLoginByEmailDto, UserGetLoggedIn>(AuthRoute.Login, {
-                method: "POST",
-                bodyData: loginCred,
+        return setPersistence(auth, browserLocalPersistence).then(async () => {
+            return signInWithEmailAndPassword(auth, loginCred.email, loginCred.password).then(async (userCred) => {
+                return userCred?.user.getIdToken(true)
             })
-            .then((data) => {
-                localStorage.setItem("user-jwt", JSON.stringify(data.token));
-                userStore.userToken = data.token;
-                userStore.user = {
-                    firstName: data.firstName,
-                    lastName: data.lastName,
-                    email: data.email,
-                }
-                return data;
-            })
+        }).then(async (token) => {
+            localStorage.setItem("user-jwt", token);
+            userStore.userToken = token;
+            return uiStore
+                .apiRequest<UserLoginByEmailDto, UserGetLoggedIn>(AuthRoute.Login, {
+                    method: "GET",
+                })
+                .then((data) => {
+                    userStore.user = {
+                        firstName: data.firstName,
+                        lastName: data.lastName,
+                        email: data.email,
+                    };
+                })
+        })
     }
 
     static async createUser(userStore: UserStore, uiStore: UiStore, formData: UserCreateDto) {

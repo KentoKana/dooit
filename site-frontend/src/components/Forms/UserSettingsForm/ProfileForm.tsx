@@ -1,7 +1,7 @@
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
 import { Button } from "@chakra-ui/button";
-import { Box, Flex, FormErrorMessage } from "@chakra-ui/react";
+import { Box, Flex, FormErrorMessage, useToast } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
 import { LoadingState } from "../../../enums/LoadingState";
 import { UseStores } from "../../../stores/StoreContexts";
@@ -21,8 +21,9 @@ export const UserProfileForm = observer(() => {
     register,
     formState: { errors },
   } = useForm();
-  //#region Local States
 
+  //#region Local States
+  const toast = useToast();
   const [loadingState, setLoadingState] = useState<LoadingState>(
     LoadingState.None
   );
@@ -31,17 +32,29 @@ export const UserProfileForm = observer(() => {
     async (formData: IProfileEditForm) => {
       setLoadingState(LoadingState.Loading);
       const userService = new UserService(userStore, uiStore);
+
       userService
         .updateUser(formData)
         .then(() => {
           setLoadingState(LoadingState.Loaded);
+          toast({
+            title: `Successfully updated your profile!`,
+            status: "success",
+            isClosable: true,
+            position: "top",
+          });
         })
         .catch((error) => {
           console.log(error);
           setLoadingState(LoadingState.Error);
+          toast({
+            title: `Something went wrong - Unable to update your profile at this time :(`,
+            status: "error",
+            isClosable: true,
+          });
         });
     },
-    [uiStore, userStore]
+    [uiStore, userStore, toast]
   );
 
   return (
