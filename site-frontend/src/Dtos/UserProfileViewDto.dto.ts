@@ -1,6 +1,6 @@
 import { UserProfileGetDto } from "./UserProfileGetDto.dto";
 
-export class UserEditDto {
+export class UserProfileViewDto {
     firstName: string;
     lastName: string;
     email: string;
