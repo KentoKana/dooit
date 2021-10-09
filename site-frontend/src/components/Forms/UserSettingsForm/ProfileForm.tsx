@@ -8,6 +8,8 @@ import { UseStores } from "../../../stores/StoreContexts";
 import { useForm } from "react-hook-form";
 import { observer } from "mobx-react-lite";
 import { UserService } from "../../../classes/UserService";
+import { generateFirebaseAuthErrorMessage } from "../../../utils";
+import { HttpError } from "../../../Dtos/HttpError.dto";
 
 interface IProfileEditForm {
   firstName: string;
@@ -19,6 +21,8 @@ export const UserProfileForm = observer(() => {
   const {
     handleSubmit,
     register,
+    setError,
+    clearErrors,
     formState: { errors },
   } = useForm();
 
@@ -44,17 +48,22 @@ export const UserProfileForm = observer(() => {
             position: "top",
           });
         })
-        .catch((error) => {
-          console.log(error);
+        .catch((error: HttpError) => {
           setLoadingState(LoadingState.Error);
+          setError("serverError", {
+            type: "server",
+            message: generateFirebaseAuthErrorMessage(error.status),
+          });
           toast({
-            title: `Something went wrong - Unable to update your profile at this time :(`,
+            title: `Uh oh... :(`,
+            description: generateFirebaseAuthErrorMessage(error.status),
             status: "error",
             isClosable: true,
+            position: "top",
           });
         });
     },
-    [uiStore, userStore, toast]
+    [uiStore, userStore, toast, setError]
   );
 
   return (
@@ -117,8 +126,16 @@ export const UserProfileForm = observer(() => {
             {errors.email && errors.email.message}
           </FormErrorMessage>
         </FormControl>
+        <FormControl isInvalid={!!errors.serverError}>
+          <FormErrorMessage justifyContent="center">
+            {errors.serverError && errors.serverError.message}
+          </FormErrorMessage>
+        </FormControl>
         <Flex justifyContent="center">
           <Button
+            onClick={() => {
+              clearErrors(["serverError"]);
+            }}
             isLoading={loadingState === LoadingState.Loading}
             type="submit"
             variant="primary"

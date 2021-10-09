@@ -107,7 +107,7 @@ export class UserService {
             dateModified: new Date(),
         }
         // Update Firebase user instance
-        this.firebaseAuth.updateUser(request.user.user_id, {
+        return this.firebaseAuth.updateUser(request.user.user_id, {
             email:
                 userEditDto.email
         }).then(async () => {
@@ -118,15 +118,16 @@ export class UserService {
                 err.message = "Something went wrong when attempting to update this user.";
                 throw new HttpException(err, HttpStatus.BAD_GATEWAY);
             }
+            return {
+                status: 200,
+                message: "Successfully updated user!"
+            }
         }).catch((error: FirebaseError) => {
             const err = new HttpError();
             err.status = error.code;
             err.message = error.message;
             throw new HttpException(err, HttpStatus.BAD_GATEWAY);
         })
-        return {
-            status: 200,
-            message: "Successfully updated user!"
-        }
+
     }
 }

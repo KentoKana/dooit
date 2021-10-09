@@ -1,7 +1,7 @@
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
 import { Button } from "@chakra-ui/button";
-import { Flex, FormErrorMessage } from "@chakra-ui/react";
+import { Flex, FormErrorMessage, useToast } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
 import { LoadingState } from "../../../enums/LoadingState";
 import { useResetQuery } from "../../../hooks/useResetQuery";
@@ -9,8 +9,12 @@ import { AuthService } from "../../../classes/AuthService";
 import { UseStores } from "../../../stores/StoreContexts";
 import { useForm } from "react-hook-form";
 import { observer } from "mobx-react-lite";
-import { isNullOrUndefined } from "../../../utils";
+import {
+  generateFirebaseAuthErrorMessage,
+  isNullOrUndefined,
+} from "../../../utils";
 import { Redirect } from "react-router";
+import { HttpError } from "../../../Dtos/HttpError.dto";
 interface ISignUpForm {
   firstName: string;
   lastName: string;
@@ -19,10 +23,13 @@ interface ISignUpForm {
 }
 export const SignUpForm = observer(() => {
   const { uiStore, userStore } = UseStores();
+  const toast = useToast();
   const reset = useResetQuery();
   const {
     handleSubmit,
     register,
+    setError,
+    clearErrors,
     formState: { errors },
   } = useForm();
   //#region Local States
@@ -46,14 +53,23 @@ export const SignUpForm = observer(() => {
         .then(() => {
           setLoadingState(LoadingState.Loaded);
           setCreationSuccessful(true);
+          toast({
+            title: `Congratulations, You've created your account!`,
+            status: "success",
+            isClosable: true,
+            position: "top",
+          });
         })
-        .catch((error) => {
-          console.log(error);
+        .catch((error: HttpError) => {
+          setError("serverError", {
+            type: "server",
+            message: generateFirebaseAuthErrorMessage(error.status),
+          });
           setLoadingState(LoadingState.Error);
           reset();
         });
     },
-    [uiStore, userStore, reset]
+    [uiStore, userStore, reset, setError, toast]
   );
 
   if (
@@ -137,8 +153,16 @@ export const SignUpForm = observer(() => {
           {errors.password && errors.password.message}
         </FormErrorMessage>
       </FormControl>
+      <FormControl isInvalid={!!errors.serverError}>
+        <FormErrorMessage justifyContent="center">
+          {errors.serverError && errors.serverError.message}
+        </FormErrorMessage>
+      </FormControl>
       <Flex justifyContent="center">
         <Button
+          onClick={() => {
+            clearErrors(["serverError"]);
+          }}
           isLoading={loadingState === LoadingState.Loading}
           type="submit"
           variant="primary"

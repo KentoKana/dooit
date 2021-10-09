@@ -6,6 +6,8 @@ export const generateFirebaseAuthErrorMessage = (errorCode: string) => {
             return "Invalid password."
         case "auth/too-many-requests":
             return "Too many wrong attemps. Please try again later."
+        case "auth/email-already-exists":
+            return "User with this e-mail already exists.";
         default:
             return "Something went wrong ..."
     }
