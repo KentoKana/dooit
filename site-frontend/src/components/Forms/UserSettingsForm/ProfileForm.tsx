@@ -25,6 +25,7 @@ interface IProfileEditForm {
   lastName: string;
   email: string;
   bio?: string;
+  title?: string;
 }
 interface IUserProfileFormProp {
   data: UserProfileViewDto;
@@ -82,13 +83,14 @@ export const UserProfileForm = observer(({ data }: IUserProfileFormProp) => {
     async (formData: IProfileEditForm) => {
       setLoadingState(LoadingState.Loading);
       let userEditDto = new UserEditDto();
-      const { email, firstName, lastName, bio } = formData;
+      const { email, firstName, lastName, bio, title } = formData;
       userEditDto = {
         email,
         firstName,
         lastName,
         profile: {
           bio,
+          title,
         },
       };
       mutate(userEditDto);
@@ -132,6 +134,22 @@ export const UserProfileForm = observer(({ data }: IUserProfileFormProp) => {
           />
           <FormErrorMessage>
             {errors.lastName && errors.lastName.message}
+          </FormErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={errors.title} mb={3}>
+          <FormLabel htmlFor="title" mr={0} mb={2}>
+            Title:{" "}
+          </FormLabel>
+          <Input
+            defaultValue={data.profile.title}
+            disabled={loadingState === LoadingState.Loading}
+            id="title"
+            type="text"
+            placeholder="Title"
+            {...register("title")}
+          />
+          <FormErrorMessage>
+            {errors.title && errors.title.message}
           </FormErrorMessage>
         </FormControl>
         <FormControl isInvalid={errors.email} mb={3}>

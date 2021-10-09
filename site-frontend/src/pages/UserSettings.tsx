@@ -5,7 +5,6 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
-  Spinner,
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { UserProfileForm } from "../components/Forms/UserSettingsForm/index";

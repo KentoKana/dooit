@@ -1,7 +1,5 @@
 import { Body, HttpException, HttpStatus, Injectable, Req } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Request } from 'express';
-import { getConnection, getRepository, Repository } from 'typeorm';
 import { User } from '../models/user.entity';
 import { UserCreateDto } from './dto/UserCreateDto.dto'
 import { FirebaseAuthenticationService } from '@aginix/nestjs-firebase-admin';
@@ -14,10 +12,11 @@ import { UserGetLoggedIn } from './dto/UserGetLoggedInDto.dto';
 import { UserEditDto } from './dto/UserEditDto.dto';
 import { Profile } from 'src/models/profile.entity';
 import { UserProfileViewDto } from './dto/UserProfileViewDto.dto';
+import { UserRepository } from 'src/repository/UserRepository.repository';
 
 @Injectable()
 export class UserService {
-    constructor(@InjectRepository(User) private usersRepository: Repository<User>, private firebaseAuth: FirebaseAuthenticationService) { }
+    constructor(private readonly usersRepository: UserRepository, private firebaseAuth: FirebaseAuthenticationService) { }
     async get(@Req() request: Request): Promise<UserGetDto> {
         // return request.user
         const user = await this.usersRepository.findOne(request.user.user_id);
@@ -97,17 +96,15 @@ export class UserService {
     }
 
     async getUserProfile(@Req() request: Request): Promise<UserProfileViewDto> {
-        const user = this.usersRepository
-            .createQueryBuilder("user")
-            .leftJoinAndSelect("user.profile", "profile")
-            .where("user.id = :id", { id: request.user.user_id })
-        if (!user.getOne()) {
+        const user = await this.usersRepository.getUserWithProfileByUserId(request.user.user_id)
+        if (!user) {
             throw new HttpException({
                 status: HttpStatus.NOT_FOUND,
                 error: 'User Not Found',
             }, HttpStatus.NOT_FOUND);
         }
-        const { firstName, lastName, email, profile } = await user.getOne();
+
+        const { firstName, lastName, email, profile } = user;
 
         return {
             firstName,
@@ -118,34 +115,35 @@ export class UserService {
     }
 
     async updateUserProfile(@Body() userEditDto: UserEditDto, @Req() request: Request) {
-        console.log(userEditDto);
 
-        let userToUpdate = this.usersRepository
-            .createQueryBuilder("user")
-            .leftJoinAndSelect("user.profile", "profile")
-            .where("user.id = :id", { id: request.user.user_id })
+        const userToUpdate = await this.usersRepository.getUserWithProfileByUserId(request.user.user_id);
 
         // Check if user to update exists
-        if (!userToUpdate.getOne()) {
+        if (!userToUpdate) {
             throw new HttpException({
                 status: HttpStatus.NOT_FOUND,
                 error: 'User Not Found',
             }, HttpStatus.NOT_FOUND);
         }
+
         // Update Firebase user instance
         return this.firebaseAuth.updateUser(request.user.user_id, {
             email:
                 userEditDto.email
         }).then(async () => {
+            const err = new HttpError();
+            err.status = "server-side-error";
+            err.message = "Something went wrong when attempting to update this user.";
             if (!userToUpdate) {
-                const err = new HttpError();
-                err.status = "server-side-error";
-                err.message = "Something went wrong when attempting to update this user.";
                 throw new HttpException(err, HttpStatus.BAD_GATEWAY);
             }
+
+            //#region Build User to Update and Save.
+            // Build user to save.
             const profile = new Profile();
             profile.bio = userEditDto.profile.bio;
-            let user = await userToUpdate.getOne();
+            profile.title = userEditDto.profile.title;
+            let user = userToUpdate;
             user.firstName = userEditDto.firstName;
             user.lastName = userEditDto.lastName;
             user.email = userEditDto.email;
@@ -153,7 +151,13 @@ export class UserService {
                 ...user.profile,
                 ...profile
             };
-            await this.usersRepository.manager.save(user)
+            //#endregion
+
+            // Save User
+            const savedUser = await this.usersRepository.manager.save(user)
+            if (!savedUser) {
+                throw new HttpException(err, HttpStatus.BAD_GATEWAY);
+            }
             return {
                 status: 200,
                 message: "Successfully updated user!"
