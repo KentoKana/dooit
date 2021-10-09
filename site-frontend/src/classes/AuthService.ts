@@ -60,6 +60,7 @@ class AuthByEmailPassword {
                 })
                 .then((data) => {
                     userStore.user = {
+                        id: data.id,
                         firstName: data.firstName,
                         lastName: data.lastName,
                         email: data.email,
@@ -77,6 +78,7 @@ class AuthByEmailPassword {
             .then((data) => {
                 userStore.userToken = data.token;
                 userStore.user = {
+                    id: data.id,
                     firstName: data.firstName,
                     lastName: data.firstName,
                     email: data.firstName,

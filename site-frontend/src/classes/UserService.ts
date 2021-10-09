@@ -22,6 +22,7 @@ export class UserService {
             const { firstName, lastName, email } = userEditDto;
             this._userStore.user = {
                 ...this._userStore.user,
+                id: this._userStore.user?.id!,
                 firstName,
                 lastName,
                 email
@@ -39,7 +40,6 @@ export class UserService {
     }
 
     updateUserPassword = async (oldPassword: string, newPassword: string) => {
-
         if (auth.currentUser) {
             return await reauthenticateWithCredential(auth.currentUser, EmailAuthProvider.credential(auth.currentUser.email!, oldPassword))
                 .then((userCred) => {

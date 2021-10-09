@@ -56,7 +56,7 @@ export const AccountSecurityForm = observer(() => {
         })
         .catch((error: FirebaseError) => {
           setLoadingState(LoadingState.Error);
-          console.log(error.code);
+
           let message = generateFirebaseAuthErrorMessage(error.code);
           if (error.code === "auth/wrong-password") {
             message = "Your old password is incorrect.";

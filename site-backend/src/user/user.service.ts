@@ -26,6 +26,7 @@ export class UserService {
             }, HttpStatus.NOT_FOUND);
         }
         return {
+            id: user.id,
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
@@ -85,6 +86,7 @@ export class UserService {
             throw new HttpException(err, HttpStatus.NOT_FOUND);
         }
         return {
+            id: user.id,
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email
