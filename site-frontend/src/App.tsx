@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Route,
+  Switch,
+} from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import { PrivateRoute } from "./components/PrivateRoute";
 import { useEffect, useState } from "react";
@@ -15,7 +20,11 @@ export const App = observer(() => {
 
   useEffect(() => {
     const app = new AppInit(userStore, uiStore);
-    app.init((loaded) => setAppInitialized(loaded));
+    app
+      .init((loaded) => setAppInitialized(loaded))
+      .catch((error) => {
+        return <Redirect to={LocalRoutes.Login} />;
+      });
   }, [userStore, uiStore]);
 
   return (

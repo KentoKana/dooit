@@ -54,9 +54,9 @@ export class UiStore {
                 // Concatenate to string and parse for JSON
                 const resultJson = JSON.parse(chunks.join(""));
                 if (res.status === 401) {
-                    localStorage.removeItem("user-jwt");
-                    this.userStore.userToken = null;
                     this.userStore.isSignedIn = false;
+                    this.userStore.userToken = null;
+                    localStorage.removeItem("user-jwt");
                     return Promise.reject({ status: resultJson.status, message: resultJson.message, httpCodeStatus: res.status })
                 }
 
