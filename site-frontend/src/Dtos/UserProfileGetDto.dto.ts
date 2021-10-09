@@ -1,3 +1,4 @@
 export class UserProfileGetDto {
-    bio?: string
+    title?: string;
+    bio?: string;
 }
