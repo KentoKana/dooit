@@ -27,7 +27,8 @@ export class UserService {
                 lastName,
                 email
             }
-        }).then(() => {
+            return userEditDto;
+        }).then((data) => {
             auth.onAuthStateChanged(async (user) => {
                 user?.getIdToken().then((token) => {
                     if (token) {
@@ -36,6 +37,7 @@ export class UserService {
                     }
                 })
             })
+            return data
         })
     }
 

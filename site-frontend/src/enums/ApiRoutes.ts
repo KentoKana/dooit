@@ -7,5 +7,6 @@ export enum AuthRoute {
 }
 
 export enum UserRoute {
+    GetUserProfile = "http://localhost:4000/user/user-profile",
     UpdateUserProfile = "http://localhost:4000/user/update-user-profile"
 }

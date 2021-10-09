@@ -1,7 +1,13 @@
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
 import { Button } from "@chakra-ui/button";
-import { Box, Flex, FormErrorMessage, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  FormErrorMessage,
+  Textarea,
+  useToast,
+} from "@chakra-ui/react";
 import { useCallback, useState } from "react";
 import { LoadingState } from "../../../enums/LoadingState";
 import { UseStores } from "../../../stores/StoreContexts";
@@ -10,14 +16,22 @@ import { observer } from "mobx-react-lite";
 import { UserService } from "../../../classes/UserService";
 import { generateFirebaseAuthErrorMessage } from "../../../utils";
 import { HttpError } from "../../../Dtos/HttpError.dto";
+import { UserEditDto } from "../../../Dtos/UserEditDto.dto";
+import { UserProfileViewDto } from "../../../Dtos/UserProfileViewDto.dto";
+import { useMutation } from "react-query";
 
 interface IProfileEditForm {
   firstName: string;
   lastName: string;
   email: string;
+  bio?: string;
 }
-export const UserProfileForm = observer(() => {
+interface IUserProfileFormProp {
+  data: UserProfileViewDto;
+}
+export const UserProfileForm = observer(({ data }: IUserProfileFormProp) => {
   const { uiStore, userStore } = UseStores();
+  const userService = new UserService(userStore, uiStore);
   const {
     handleSubmit,
     register,
@@ -32,38 +46,54 @@ export const UserProfileForm = observer(() => {
     LoadingState.None
   );
   //#endregion
+  const onError = (err: HttpError) => {
+    setLoadingState(LoadingState.Error);
+    setError("serverError", {
+      type: "server",
+      message: generateFirebaseAuthErrorMessage(err.status),
+    });
+    toast({
+      title: `Uh oh... :(`,
+      description: generateFirebaseAuthErrorMessage(err.status),
+      status: "error",
+      isClosable: true,
+      position: "top",
+    });
+  };
+  const onSuccess = (dto: UserEditDto) => {
+    setLoadingState(LoadingState.Loaded);
+    toast({
+      title: `Successfully updated your profile!`,
+      status: "success",
+      isClosable: true,
+      position: "top",
+    });
+  };
+  const { mutate } = useMutation(
+    async (userEditDto: UserEditDto) => {
+      return await userService.updateUserProfile(userEditDto);
+    },
+    {
+      onError: onError,
+      onSuccess: onSuccess,
+    }
+  );
   const onSubmit = useCallback(
     async (formData: IProfileEditForm) => {
       setLoadingState(LoadingState.Loading);
-      const userService = new UserService(userStore, uiStore);
-
-      userService
-        .updateUserProfile(formData)
-        .then(() => {
-          setLoadingState(LoadingState.Loaded);
-          toast({
-            title: `Successfully updated your profile!`,
-            status: "success",
-            isClosable: true,
-            position: "top",
-          });
-        })
-        .catch((error: HttpError) => {
-          setLoadingState(LoadingState.Error);
-          setError("serverError", {
-            type: "server",
-            message: generateFirebaseAuthErrorMessage(error.status),
-          });
-          toast({
-            title: `Uh oh... :(`,
-            description: generateFirebaseAuthErrorMessage(error.status),
-            status: "error",
-            isClosable: true,
-            position: "top",
-          });
-        });
+      let userEditDto = new UserEditDto();
+      const { email, firstName, lastName, bio } = formData;
+      userEditDto = {
+        email,
+        firstName,
+        lastName,
+        profile: {
+          bio,
+        },
+      };
+      mutate(userEditDto);
     },
-    [uiStore, userStore, toast, setError]
+    [mutate]
   );
 
   return (
@@ -74,7 +104,7 @@ export const UserProfileForm = observer(() => {
             First Name:{" "}
           </FormLabel>
           <Input
-            defaultValue={userStore.user?.firstName}
+            defaultValue={data.firstName}
             id="firstName"
             disabled={loadingState === LoadingState.Loading}
             placeholder="First Name"
@@ -91,7 +121,7 @@ export const UserProfileForm = observer(() => {
             Last Name:{" "}
           </FormLabel>
           <Input
-            defaultValue={userStore.user?.lastName}
+            defaultValue={data.lastName}
             disabled={loadingState === LoadingState.Loading}
             id="lastName"
             type="text"
@@ -109,7 +139,7 @@ export const UserProfileForm = observer(() => {
             E-mail:{" "}
           </FormLabel>
           <Input
-            defaultValue={userStore.user?.email}
+            defaultValue={data.email}
             disabled={loadingState === LoadingState.Loading}
             id="email"
             type="text"
@@ -124,6 +154,21 @@ export const UserProfileForm = observer(() => {
           />
           <FormErrorMessage>
             {errors.email && errors.email.message}
+          </FormErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={errors.bio} mb={3}>
+          <FormLabel htmlFor="bio" mr={0} mb={2}>
+            Bio:{" "}
+          </FormLabel>
+          <Textarea
+            defaultValue={data.profile.bio}
+            disabled={loadingState === LoadingState.Loading}
+            id="bio"
+            placeholder="Bio"
+            {...register("bio")}
+          />
+          <FormErrorMessage>
+            {errors.bio && errors.bio.message}
           </FormErrorMessage>
         </FormControl>
         <FormControl isInvalid={!!errors.serverError}>

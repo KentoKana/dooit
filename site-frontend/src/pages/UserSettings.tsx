@@ -5,13 +5,19 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
+  Spinner,
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { UserProfileForm } from "../components/Forms/UserSettingsForm/index";
 import { AccountSecurityForm } from "../components/Forms/UserSettingsForm/SecurityForm";
+import { FormSkeleton } from "../components/Skeletons/FormSkeleton";
+import { useUserSettingsData } from "../hooks/useUserSettings";
 import { PageWrapper } from "./PageWrapper";
 
 export const UserSettings = observer(() => {
+  const userSettingsData = useUserSettingsData();
+  const { data } = userSettingsData;
+
   return (
     <PageWrapper>
       <Heading as="h1" fontSize="18px" color="grey.700">
@@ -24,7 +30,7 @@ export const UserSettings = observer(() => {
         </TabList>
         <TabPanels maxW="500px">
           <TabPanel>
-            <UserProfileForm />
+            {data ? <UserProfileForm data={data} /> : <FormSkeleton />}
           </TabPanel>
           <TabPanel>
             <AccountSecurityForm />
