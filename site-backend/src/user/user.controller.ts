@@ -29,6 +29,12 @@ export class UserController {
         return this.userService.loginByEmail(request);
     }
 
+    @Get("user-profile")
+    @UseGuards(AuthGuard('jwt'))
+    getUserProfile(@Req() request: Request) {
+        return this.userService.getUserProfile(request);
+    }
+
     @Patch("update-user-profile")
     @UseGuards(AuthGuard('jwt'))
     updateUserProfile(@Body() userEditDto: UserEditDto, @Req() request: Request) {

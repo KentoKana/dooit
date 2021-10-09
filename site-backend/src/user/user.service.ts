@@ -1,8 +1,8 @@
-import { Body, HttpException, HttpStatus, Injectable, NotFoundException, Req } from '@nestjs/common';
+import { Body, HttpException, HttpStatus, Injectable, Req } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Request } from 'express';
-import { Repository } from 'typeorm';
-import { User } from './user.entity';
+import { getConnection, getRepository, Repository } from 'typeorm';
+import { User } from '../models/user.entity';
 import { UserCreateDto } from './dto/UserCreateDto.dto'
 import { FirebaseAuthenticationService } from '@aginix/nestjs-firebase-admin';
 import { FirebaseError } from '@firebase/util';
@@ -12,6 +12,8 @@ import { generateFirebaseAuthErrorMessage } from 'src/helpers/firebase';
 import { UserGetDto } from './dto/UserGetDto.dto';
 import { UserGetLoggedIn } from './dto/UserGetLoggedInDto.dto';
 import { UserEditDto } from './dto/UserEditDto.dto';
+import { Profile } from 'src/models/profile.entity';
+import { UserProfileViewDto } from './dto/UserProfileViewDto.dto';
 
 @Injectable()
 export class UserService {
@@ -19,6 +21,7 @@ export class UserService {
     async get(@Req() request: Request): Promise<UserGetDto> {
         // return request.user
         const user = await this.usersRepository.findOne(request.user.user_id);
+
         if (!user) {
             throw new HttpException({
                 status: HttpStatus.NOT_FOUND,
@@ -93,33 +96,64 @@ export class UserService {
         };
     }
 
-
-    async updateUserProfile(@Body() userEditDto: UserEditDto, @Req() request: Request) {
-        let userToUpdate = await this.usersRepository.findOne(request.user.user_id)
-        // Check if user to update exists
-        if (!userToUpdate) {
+    async getUserProfile(@Req() request: Request): Promise<UserProfileViewDto> {
+        const user = this.usersRepository
+            .createQueryBuilder("user")
+            .leftJoinAndSelect("user.profile", "profile")
+            .where("user.id = :id", { id: request.user.user_id })
+        if (!user.getOne()) {
             throw new HttpException({
                 status: HttpStatus.NOT_FOUND,
                 error: 'User Not Found',
             }, HttpStatus.NOT_FOUND);
         }
-        userToUpdate = {
-            ...userToUpdate,
-            ...userEditDto,
-            dateModified: new Date(),
+        const { firstName, lastName, email, profile } = await user.getOne();
+
+        return {
+            firstName,
+            lastName,
+            email,
+            profile
+        };
+    }
+
+    async updateUserProfile(@Body() userEditDto: UserEditDto, @Req() request: Request) {
+        console.log(userEditDto);
+
+        let userToUpdate = this.usersRepository
+            .createQueryBuilder("user")
+            .leftJoinAndSelect("user.profile", "profile")
+            .where("user.id = :id", { id: request.user.user_id })
+
+        // Check if user to update exists
+        if (!userToUpdate.getOne()) {
+            throw new HttpException({
+                status: HttpStatus.NOT_FOUND,
+                error: 'User Not Found',
+            }, HttpStatus.NOT_FOUND);
         }
         // Update Firebase user instance
         return this.firebaseAuth.updateUser(request.user.user_id, {
             email:
                 userEditDto.email
         }).then(async () => {
-            const updatedUser = await this.usersRepository.save(userToUpdate);
-            if (!updatedUser) {
+            if (!userToUpdate) {
                 const err = new HttpError();
                 err.status = "server-side-error";
                 err.message = "Something went wrong when attempting to update this user.";
                 throw new HttpException(err, HttpStatus.BAD_GATEWAY);
             }
+            const profile = new Profile();
+            profile.bio = userEditDto.profile.bio;
+            let user = await userToUpdate.getOne();
+            user.firstName = userEditDto.firstName;
+            user.lastName = userEditDto.lastName;
+            user.email = userEditDto.email;
+            user.profile = {
+                ...user.profile,
+                ...profile
+            };
+            await this.usersRepository.manager.save(user)
             return {
                 status: 200,
                 message: "Successfully updated user!"
