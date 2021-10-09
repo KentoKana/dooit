@@ -106,6 +106,7 @@ export const UserProfileForm = observer(
       <Box>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormElement
+            isRequired
             formLabel="First Name"
             formFor={"firstName"}
             isInvalid={errors.firstName}
@@ -124,6 +125,7 @@ export const UserProfileForm = observer(
             errorMessage={errors.firstName && errors.firstName.message}
           />
           <FormElement
+            isRequired
             formLabel="Last Name"
             formFor={"lastName"}
             isInvalid={errors.lastName}
@@ -158,6 +160,7 @@ export const UserProfileForm = observer(
             errorMessage={errors.title && errors.title.message}
           />
           <FormElement
+            isRequired
             formLabel="Email"
             formFor={"email"}
             isInvalid={errors.email}
