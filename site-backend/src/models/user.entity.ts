@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryColumn, CreateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, CreateDateColumn, OneToOne } from 'typeorm';
+import { Profile } from './profile.entity';
 
 @Entity({ name: "users" })
 export class User {
@@ -17,9 +18,12 @@ export class User {
     @Column({ length: 200 })
     email: string;
 
+    @OneToOne(() => Profile, profile => profile.user, { cascade: true })
+    profile: Profile
+
     @CreateDateColumn()
     dateCreated: Date;
 
     @Column()
-    dateModified: Date;
+    dateModified?: Date;
 }
