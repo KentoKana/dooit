@@ -26,7 +26,7 @@ export const Sidebar = observer(() => {
             return (
               <ListItem fontWeight="600" key={route.url}>
                 <Link
-                  onClick={() => {}}
+                  ml={5}
                   as={RouteLink}
                   to={route.url}
                   variant={
@@ -35,7 +35,12 @@ export const Sidebar = observer(() => {
                       : "dashboard_inactive"
                   }
                 >
-                  <Text ml={5}>{route.label}</Text>
+                  <Text as="span" display="flex" alignItems="center">
+                    <Text as="span" mr={2}>
+                      {route.icon}
+                    </Text>{" "}
+                    {route.label}
+                  </Text>
                 </Link>
               </ListItem>
             );
