@@ -4,10 +4,8 @@ import { Request } from 'express';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { UserCreateDto } from './dto/UserCreateDto.dto'
-import { browserLocalPersistence, createUserWithEmailAndPassword, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword, updateEmail } from '@firebase/auth';
+import { FirebaseAuthenticationService } from '@aginix/nestjs-firebase-admin';
 import { FirebaseError } from '@firebase/util';
-import { Firebase } from 'src/firebase/firebase';
-import { UserLoginByEmailDto } from './dto/UserLoginByEmailDto.dto';
 import { UserGetCreatedDto } from './dto/UserGetCreatedDto.dto';
 import { HttpError } from 'src/shared/dto/HttpError.dto';
 import { generateFirebaseAuthErrorMessage } from 'src/helpers/firebase';
@@ -17,7 +15,7 @@ import { UserEditDto } from './dto/UserEditDto.dto';
 
 @Injectable()
 export class UserService {
-    constructor(@InjectRepository(User) private usersRepository: Repository<User>) { }
+    constructor(@InjectRepository(User) private usersRepository: Repository<User>, private firebaseAuth: FirebaseAuthenticationService) { }
     async get(@Req() request: Request): Promise<UserGetDto> {
         // return request.user
         const user = await this.usersRepository.findOne(request.user.user_id);
@@ -33,32 +31,39 @@ export class UserService {
             email: user.email,
         };
     }
-    readonly firebase = new Firebase()
 
     async create(@Body() userDto: UserCreateDto): Promise<UserGetCreatedDto> {
-        return createUserWithEmailAndPassword(this.firebase.auth, userDto.email, userDto.password)
+        return this.firebaseAuth.createUser({ email: userDto.email, password: userDto.password })
             .then(async (userCred) => {
-                return userCred.user.getIdToken(true).then(async (token) => {
-                    const userToCreate: User = new User();
-                    userToCreate.firstName = userDto.firstName;
-                    userToCreate.lastName = userDto.lastName;
-                    userToCreate.isActive = true;
-                    userToCreate.email = userDto.email;
-                    userToCreate.id = userCred.user.uid;
+                const uid = userCred.uid;
+                return this.firebaseAuth.createCustomToken(uid).then(async (token) => {
+                    let userToCreate: User = new User();
+                    const { firstName, lastName, email } = userDto;
+                    userToCreate = {
+                        ...userToCreate,
+                        firstName,
+                        lastName,
+                        email,
+                        id: userCred.uid,
+                        isActive: true
+                    }
                     const created = await this.usersRepository.save(userToCreate);
                     return {
+                        id: userCred.uid,
                         firstName: created.firstName,
                         lastName: created.lastName,
                         email: created.email,
-                        token: token
+                        token: token,
+
                     }
-                }).catch((error) => {
-                    this.firebase.auth.currentUser.delete();
-                    const err = new HttpError()
-                    err.status = error.code;
-                    err.message = generateFirebaseAuthErrorMessage(error.code)
-                    throw new HttpException(err, HttpStatus.BAD_REQUEST);
                 })
+                    .catch((error) => {
+                        this.firebaseAuth.deleteUser(userCred.uid);
+                        const err = new HttpError()
+                        err.status = error.code;
+                        err.message = generateFirebaseAuthErrorMessage(error.code)
+                        throw new HttpException(err, HttpStatus.BAD_REQUEST);
+                    })
             }).then((createdUser) => {
                 return createdUser;
             })
@@ -71,53 +76,21 @@ export class UserService {
 
     }
 
-    async loginByEmail(@Body() loginCred: UserLoginByEmailDto): Promise<UserGetLoggedIn> {
-
-        return setPersistence(this.firebase.auth, browserLocalPersistence).then(async () => {
-            return signInWithEmailAndPassword(this.firebase.auth, loginCred.email, loginCred.password).then((userCred) => {
-                return userCred?.user.getIdToken(true).then(async (token) => {
-                    const user = await this.usersRepository.findOne(userCred.user.uid);
-                    return {
-                        token: token,
-                        firstName: user.firstName,
-                        lastName: user.lastName,
-                        email: user.email
-                    };
-                })
-            })
-        }).catch((error: FirebaseError) => {
-            const err = new HttpError()
-            err.status = error.code;
-            err.message = generateFirebaseAuthErrorMessage(error.code)
-            throw new HttpException(err, HttpStatus.BAD_REQUEST);
-        })
-    }
-
-    async signOut() {
-        this.firebase.auth.signOut()
-        return {
-            status: 200,
-            message: "Successfully signed out!"
+    async loginByEmail(@Req() request: Request): Promise<UserGetLoggedIn> {
+        const user = await this.usersRepository.findOne(request.user.user_id);
+        if (!user) {
+            const err = new HttpError();
+            err.status = "404";
+            err.message = "Could not find user."
+            throw new HttpException(err, HttpStatus.NOT_FOUND);
         }
+        return {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email
+        };
     }
 
-    async resetPassword(@Body() email: string) {
-        return sendPasswordResetEmail(this.firebase.auth, email)
-            .then(() => {
-                return {
-                    status: 200,
-                    message: "Success!"
-                }
-            }).catch((error: FirebaseError) => {
-                const err = new HttpError()
-                err.status = error.code;
-
-                err.message = generateFirebaseAuthErrorMessage(error.code)
-                console.log(error, err);
-                throw new HttpException(err, HttpStatus.BAD_REQUEST);
-                // throw new NotFoundException(err)
-            })
-    }
 
     async updateUser(@Body() userEditDto: UserEditDto, @Req() request: Request) {
         let userToUpdate = await this.usersRepository.findOne(request.user.user_id)
@@ -130,15 +103,14 @@ export class UserService {
         }
         userToUpdate = {
             ...userToUpdate,
+            ...userEditDto,
             dateModified: new Date(),
-            ...userEditDto
         }
         // Update Firebase user instance
-        const currentUser = this.firebase.auth.currentUser;
-        let newToken: string = null;
-        await updateEmail(currentUser, userEditDto.email).then(async () => {
-            newToken = await currentUser.getIdToken();
-            // Update user on DB
+        this.firebaseAuth.updateUser(request.user.user_id, {
+            email:
+                userEditDto.email
+        }).then(async () => {
             const updatedUser = await this.usersRepository.save(userToUpdate);
             if (!updatedUser) {
                 const err = new HttpError();
@@ -152,9 +124,9 @@ export class UserService {
             err.message = error.message;
             throw new HttpException(err, HttpStatus.BAD_GATEWAY);
         })
-
         return {
-            token: newToken
+            status: 200,
+            message: "Successfully updated user!"
         }
     }
 }

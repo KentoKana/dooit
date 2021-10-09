@@ -8,9 +8,21 @@ import { UserModule } from './user/user.module';
 import { UserService } from './user/user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
-
+import { FirebaseAdminModule } from '@aginix/nestjs-firebase-admin'
+import * as admin from 'firebase-admin'
+import * as serviceAccountKey from "./firebase/serviceaccount.json"
+//@ts-ignore
+const serviceAccount: admin.ServiceAccount = serviceAccountKey;
 @Module({
-  imports: [ConfigModule.forRoot(), TypeOrmModule.forRoot(), UserModule],
+  imports: [
+    ConfigModule.forRoot(),
+    TypeOrmModule.forRoot(),
+    UserModule,
+    FirebaseAdminModule.forRootAsync({
+      useFactory: () => ({
+        credential: admin.credential.cert(serviceAccount)
+      })
+    }),],
   controllers: [AppController, UserController],
   providers: [AppService, AuthStrategy, UserService],
 })
