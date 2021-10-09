@@ -29,10 +29,9 @@ export class UserController {
         return this.userService.loginByEmail(request);
     }
 
-    @Patch("update-user")
+    @Patch("update-user-profile")
     @UseGuards(AuthGuard('jwt'))
-    updateUser(@Body() userEditDto: UserEditDto, @Req() request: Request) {
-        return this.userService.updateUser(userEditDto, request)
+    updateUserProfile(@Body() userEditDto: UserEditDto, @Req() request: Request) {
+        return this.userService.updateUserProfile(userEditDto, request)
     }
-
 }

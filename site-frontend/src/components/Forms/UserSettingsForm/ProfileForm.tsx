@@ -38,7 +38,7 @@ export const UserProfileForm = observer(() => {
       const userService = new UserService(userStore, uiStore);
 
       userService
-        .updateUser(formData)
+        .updateUserProfile(formData)
         .then(() => {
           setLoadingState(LoadingState.Loaded);
           toast({

@@ -92,7 +92,7 @@ export class UserService {
     }
 
 
-    async updateUser(@Body() userEditDto: UserEditDto, @Req() request: Request) {
+    async updateUserProfile(@Body() userEditDto: UserEditDto, @Req() request: Request) {
         let userToUpdate = await this.usersRepository.findOne(request.user.user_id)
         // Check if user to update exists
         if (!userToUpdate) {

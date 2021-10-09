@@ -13,8 +13,8 @@ export class UserService {
     private _uiStore: UiStore;
     private _userStore: UserStore;
 
-    updateUser = async (userEditDto: UserEditDto) => {
-        return await this._uiStore.apiRequest<UserEditDto>(UserRoute.UpdateUser, {
+    updateUserProfile = async (userEditDto: UserEditDto) => {
+        return await this._uiStore.apiRequest<UserEditDto>(UserRoute.UpdateUserProfile, {
             method: "PATCH",
             bodyData: userEditDto
         }).then(() => {
