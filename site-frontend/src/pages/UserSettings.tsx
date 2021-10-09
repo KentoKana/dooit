@@ -16,7 +16,7 @@ import { AiFillLock, AiOutlineUser, AiTwotoneSetting } from "react-icons/ai";
 
 export const UserSettings = observer(() => {
   const userSettingsData = useUserSettingsData();
-  const { data } = userSettingsData;
+  const { data, refetch } = userSettingsData;
 
   return (
     <PageWrapper>
@@ -40,7 +40,16 @@ export const UserSettings = observer(() => {
         </TabList>
         <TabPanels maxW="500px">
           <TabPanel>
-            {data ? <UserProfileForm data={data} /> : <FormSkeleton />}
+            {data ? (
+              <UserProfileForm
+                data={data}
+                onFormSave={() => {
+                  refetch();
+                }}
+              />
+            ) : (
+              <FormSkeleton />
+            )}
           </TabPanel>
           <TabPanel>
             <AccountSecurityForm />
