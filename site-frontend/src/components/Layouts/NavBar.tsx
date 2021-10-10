@@ -6,6 +6,7 @@ import {
   UnorderedList,
   Text,
   Button,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { UnlockIcon } from "@chakra-ui/icons";
 import { observer } from "mobx-react-lite";
@@ -14,8 +15,11 @@ import { UseStores } from "../../stores/StoreContexts";
 import { useEffect, useState } from "react";
 import { LocalRoutes } from "../../enums/LocalRoutes";
 import { AiOutlinePlus } from "react-icons/ai";
+import { CreationDrawer } from "../CreationDrawer";
 
 export const NavBar = observer(() => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const { userStore } = UseStores();
   const [isSignedIn, setIsSignedIn] = useState(false);
   useEffect(() => {
@@ -65,22 +69,23 @@ export const NavBar = observer(() => {
             ) : (
               <>
                 <ListItem pl={5}>
-                  <Link to="#">
-                    <Button variant="outline">
-                      <Text as="span" display="flex" alignItems="center">
-                        <Text as="span" mr={2} marginTop="3px">
-                          <AiOutlinePlus />
-                        </Text>{" "}
-                        Create
-                      </Text>
-                    </Button>
-                  </Link>
+                  <Button variant="outline" onClick={onOpen}>
+                    <Text as="span" display="flex" alignItems="center">
+                      <Text as="span" mr={1} marginTop="3px">
+                        <AiOutlinePlus />
+                      </Text>{" "}
+                      Create
+                    </Text>
+                  </Button>
                 </ListItem>
               </>
             )}
           </UnorderedList>
         </Flex>
       </Container>
+      {userStore.isSignedIn && (
+        <CreationDrawer onClose={onClose} isOpen={isOpen} />
+      )}
     </Box>
   );
 });
