@@ -21,6 +21,12 @@ export const ButtonStyles: ComponentSingleStyleConfig = {
                 ...primaryButton(props),
                 _disabled: primaryButton(props),
             },
+        }),
+        outline: (props: any) => ({
+            color: "grey.700",
+            bg: "#fff",
+            borderRadius: "3px",
+            borderColor: "grey.700",
         })
     },
     defaultProps: {}

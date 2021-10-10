@@ -1,17 +1,10 @@
-import {
-  Heading,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-} from "@chakra-ui/react";
+import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { UserProfileForm } from "../components/Forms/UserSettingsForm/index";
 import { AccountSecurityForm } from "../components/Forms/UserSettingsForm/SecurityForm";
 import { FormSkeleton } from "../components/Skeletons/FormSkeleton";
 import { useUserSettingsData } from "../hooks/useUserSettings";
-import { PageWrapper } from "./PageWrapper";
+import { PageWrapper } from "../components/Layouts/PageWrapper";
 import { AiFillLock, AiOutlineUser, AiTwotoneSetting } from "react-icons/ai";
 
 export const UserSettings = observer(() => {
@@ -19,16 +12,7 @@ export const UserSettings = observer(() => {
   const { data, refetch } = userSettingsData;
 
   return (
-    <PageWrapper>
-      <Heading
-        as="h1"
-        fontSize="18px"
-        color="grey.700"
-        display="flex"
-        alignItems="center"
-      >
-        <AiTwotoneSetting /> User Settings
-      </Heading>
+    <PageWrapper headingIcon={<AiTwotoneSetting />} pageHeading="User Settings">
       <Tabs my="10">
         <TabList>
           <Tab>

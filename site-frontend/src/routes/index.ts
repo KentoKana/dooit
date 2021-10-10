@@ -1,5 +1,6 @@
 import { ComponentType } from "react";
 import { LocalRoutes } from "../enums/LocalRoutes";
+import { Portfolio } from "../pages/Portfolio";
 import { Dashboard } from "../pages/Dashboard";
 import { ForgotPassword } from "../pages/ForgotPassword";
 import { Home } from "../pages/Home";
@@ -44,5 +45,10 @@ export const mainRoutes: IRoutes[] = [
         isPrivate: true,
         component: UserSettings,
         path: LocalRoutes.UserSettings
+    },
+    {
+        isPrivate: true,
+        component: Portfolio,
+        path: LocalRoutes.Portfolio
     },
 ];

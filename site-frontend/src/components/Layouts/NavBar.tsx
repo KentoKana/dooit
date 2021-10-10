@@ -11,15 +11,12 @@ import { UnlockIcon } from "@chakra-ui/icons";
 import { observer } from "mobx-react-lite";
 import { Link } from "react-router-dom";
 import { UseStores } from "../../stores/StoreContexts";
-import { AuthService } from "../../classes/AuthService";
-import { useResetQuery } from "../../hooks/useResetQuery";
 import { useEffect, useState } from "react";
 import { LocalRoutes } from "../../enums/LocalRoutes";
+import { AiOutlinePlus } from "react-icons/ai";
 
 export const NavBar = observer(() => {
-  const { userStore, uiStore } = UseStores();
-  const authService = new AuthService(userStore, uiStore);
-  const reset = useResetQuery();
+  const { userStore } = UseStores();
   const [isSignedIn, setIsSignedIn] = useState(false);
   useEffect(() => {
     setIsSignedIn(userStore.isSignedIn);
@@ -68,14 +65,15 @@ export const NavBar = observer(() => {
             ) : (
               <>
                 <ListItem pl={5}>
-                  <Link
-                    to={LocalRoutes.Home}
-                    onClick={() => {
-                      authService.signOut();
-                      reset();
-                    }}
-                  >
-                    <Button variant="primary">Log Out</Button>
+                  <Link to="#">
+                    <Button variant="outline">
+                      <Text as="span" display="flex" alignItems="center">
+                        <Text as="span" mr={2} marginTop="3px">
+                          <AiOutlinePlus />
+                        </Text>{" "}
+                        Create
+                      </Text>
+                    </Button>
                   </Link>
                 </ListItem>
               </>

@@ -1,11 +1,21 @@
 import { LocalRoutes } from "../enums/LocalRoutes";
-import { AiTwotoneSetting, AiFillAppstore } from "react-icons/ai";
+import {
+  AiTwotoneSetting,
+  AiFillAppstore,
+  // AiOutlineEdit,
+  AiOutlineFolderOpen,
+} from "react-icons/ai";
 
 export const sidebarRoutes = [
   {
     url: LocalRoutes.Dashboard,
     label: "Dashboard",
     icon: <AiFillAppstore />,
+  },
+  {
+    url: LocalRoutes.Portfolio,
+    label: "My Portfolio",
+    icon: <AiOutlineFolderOpen />,
   },
   {
     url: LocalRoutes.UserSettings,
