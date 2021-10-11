@@ -1,4 +1,4 @@
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Flex, useDisclosure } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import {
@@ -8,16 +8,20 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { useState } from "react";
+import { AddStoryItemCard } from "./AddStoryItemCard";
+import { StoryItemModal } from "./StoryItemModal";
 
-const test = ["1", "2", "3", "4"];
 export const ProjectStory = observer(() => {
-  const [stories, setStories] = useState(test);
+  const { isOpen, onClose, onOpen } = useDisclosure();
+
+  const [storyItems, setStoryItems] = useState([]);
+
   const handleOnDragEnd = (result: DropResult) => {
     if (!result.destination) return;
-    const items = Array.from(stories);
+    const items = Array.from(storyItems);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result!.destination!.index!, 0, reorderedItem);
-    setStories(items);
+    setStoryItems(items);
   };
   return (
     <>
@@ -27,7 +31,7 @@ export const ProjectStory = observer(() => {
             {(provided) => {
               return (
                 <Flex {...provided.droppableProps} ref={provided.innerRef}>
-                  {stories.map((item, index) => {
+                  {storyItems.map((item, index) => {
                     return (
                       <Draggable key={item} index={index} draggableId={item}>
                         {(provided) => {
@@ -58,25 +62,14 @@ export const ProjectStory = observer(() => {
                     );
                   })}
                   {provided.placeholder}
-                  <Box height={"200px"} width={"200px"} border="1px solid grey">
-                    <Flex
-                      justifyContent="center"
-                      alignItems="center"
-                      height="100%"
-                      flexDirection="column"
-                    >
-                      <Box>
-                        <AiOutlinePlusCircle />
-                      </Box>
-                      Add Story
-                    </Flex>
-                  </Box>
+                  <AddStoryItemCard onClick={onOpen} />
                 </Flex>
               );
             }}
           </Droppable>
         </Flex>
       </DragDropContext>
+      <StoryItemModal isOpen={isOpen} onClose={onClose} />
     </>
   );
 });

@@ -1,7 +1,6 @@
-import { Box, Button, Flex } from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { DrawerTemplate } from "../DrawerTemplate";
-import { AiOutlinePlusCircle } from "react-icons/ai";
 import { ProjectStory } from "./ProjectStory";
 
 interface ICreationDrawerProps {
