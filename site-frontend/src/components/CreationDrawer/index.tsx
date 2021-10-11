@@ -1,16 +1,8 @@
-import {
-  Drawer,
-  DrawerContent,
-  DrawerOverlay,
-  DrawerCloseButton,
-  DrawerBody,
-  Input,
-  Button,
-  DrawerFooter,
-  DrawerHeader,
-} from "@chakra-ui/react";
+import { Box, Button, Flex } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { DrawerTemplate } from "../DrawerTemplate";
+import { AiOutlinePlusCircle } from "react-icons/ai";
+import { ProjectStory } from "./ProjectStory";
 
 interface ICreationDrawerProps {
   isOpen: boolean;
@@ -35,7 +27,7 @@ export const CreationDrawer = observer(
           </>
         }
       >
-        Hey this is a body
+        <ProjectStory />
       </DrawerTemplate>
     );
   }
