@@ -27,6 +27,7 @@ export class UserService {
                 error: 'User Not Found',
             }, HttpStatus.NOT_FOUND);
         }
+
         return {
             id: user.id,
             firstName: user.firstName,

@@ -13,7 +13,7 @@ export class UserController {
     }
 
     @Get()
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthGuard('firebase-jwt'))
     get(@Req() request: Request) {
         return this.userService.get(request);
     }
@@ -24,19 +24,19 @@ export class UserController {
     }
 
     @Get("login")
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthGuard('firebase-jwt'))
     login(@Req() request: Request) {
         return this.userService.loginByEmail(request);
     }
 
     @Get("user-profile")
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthGuard('firebase-jwt'))
     getUserProfile(@Req() request: Request) {
         return this.userService.getUserProfile(request);
     }
 
     @Patch("update-user-profile")
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthGuard('firebase-jwt'))
     updateUserProfile(@Body() userEditDto: UserEditDto, @Req() request: Request) {
         return this.userService.updateUserProfile(userEditDto, request)
     }
