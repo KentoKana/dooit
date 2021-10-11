@@ -1,6 +1,5 @@
 import { Box, Flex, useDisclosure } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
-import { AiOutlinePlusCircle } from "react-icons/ai";
 import {
   DragDropContext,
   Droppable,
@@ -8,20 +7,20 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { useState } from "react";
-import { AddStoryItemCard } from "./AddStoryItemCard";
-import { StoryItemModal } from "./StoryItemModal";
+import { AddItemCard } from "./AddItemCard";
+import { IProjectItem, ItemModal } from "./ItemModal";
 
-export const ProjectStory = observer(() => {
+export const ProjectItem = observer(() => {
   const { isOpen, onClose, onOpen } = useDisclosure();
 
-  const [storyItems, setStoryItems] = useState([]);
+  const [projectItems, setProjectItems] = useState<IProjectItem[]>([]);
 
   const handleOnDragEnd = (result: DropResult) => {
     if (!result.destination) return;
-    const items = Array.from(storyItems);
+    const items = Array.from(projectItems);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result!.destination!.index!, 0, reorderedItem);
-    setStoryItems(items);
+    setProjectItems(items);
   };
   return (
     <>
@@ -31,9 +30,13 @@ export const ProjectStory = observer(() => {
             {(provided) => {
               return (
                 <Flex {...provided.droppableProps} ref={provided.innerRef}>
-                  {storyItems.map((item, index) => {
+                  {projectItems.map((item, index) => {
                     return (
-                      <Draggable key={item} index={index} draggableId={item}>
+                      <Draggable
+                        key={item.title + index}
+                        index={index}
+                        draggableId={item.title + index}
+                      >
                         {(provided) => {
                           return (
                             <Box
@@ -50,10 +53,7 @@ export const ProjectStory = observer(() => {
                                 height="100%"
                                 flexDirection="column"
                               >
-                                <Box>
-                                  <AiOutlinePlusCircle />
-                                </Box>
-                                Add Story {item}
+                                {item.title}
                               </Flex>
                             </Box>
                           );
@@ -62,14 +62,22 @@ export const ProjectStory = observer(() => {
                     );
                   })}
                   {provided.placeholder}
-                  <AddStoryItemCard onClick={onOpen} />
+                  <AddItemCard onClick={onOpen} />
                 </Flex>
               );
             }}
           </Droppable>
         </Flex>
       </DragDropContext>
-      <StoryItemModal isOpen={isOpen} onClose={onClose} />
+      <ItemModal
+        isOpen={isOpen}
+        onClose={onClose}
+        onCreate={(newItem) => {
+          setProjectItems((prev) => {
+            return [...prev, newItem];
+          });
+        }}
+      />
     </>
   );
 });

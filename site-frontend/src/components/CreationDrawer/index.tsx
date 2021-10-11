@@ -1,7 +1,7 @@
 import { Button } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { DrawerTemplate } from "../DrawerTemplate";
-import { ProjectStory } from "./ProjectStory";
+import { ProjectItem } from "./ProjectItem";
 
 interface ICreationDrawerProps {
   isOpen: boolean;
@@ -26,7 +26,7 @@ export const CreationDrawer = observer(
           </>
         }
       >
-        <ProjectStory />
+        <ProjectItem />
       </DrawerTemplate>
     );
   }
