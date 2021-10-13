@@ -1,22 +1,28 @@
 import { observer } from "mobx-react-lite";
-import { ProjectCreationForm } from "../Forms/ProjectCreationForm";
+import { ProjectItemCreationForm } from "../Forms/ProjectCreationForm/ProjectItemCreationForm";
 import { ModalTemplate } from "../ModalTemplate";
 
 export interface IProjectItem {
   title: string;
   description: string;
+  imageUrl?: string;
+  alt?: string;
+  image?: File;
 }
 
 interface IItemModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreate: (newItem: IProjectItem) => void;
+  onItemCreate: (newItem: IProjectItem) => void;
 }
 export const ItemModal = observer(
-  ({ isOpen, onClose, onCreate }: IItemModalProps) => {
+  ({ isOpen, onClose, onItemCreate }: IItemModalProps) => {
     return (
       <ModalTemplate isOpen={isOpen} onClose={onClose}>
-        <ProjectCreationForm onCreate={onCreate} onClose={onClose} />
+        <ProjectItemCreationForm
+          onItemCreate={onItemCreate}
+          onClose={onClose}
+        />
       </ModalTemplate>
     );
   }

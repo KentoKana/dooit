@@ -1,7 +1,15 @@
 import { Button } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
+import { useState } from "react";
+import { ProjectCreationService } from "../../classes/ProjectCreationService";
+import { UseStores } from "../../stores/StoreContexts";
 import { DrawerTemplate } from "../DrawerTemplate";
-import { ProjectItem } from "./ProjectItem";
+import { IProjectItem } from "./ItemModal";
+import { ProjectItems } from "./ProjectItems";
+
+interface IProject {
+  projectItems: IProjectItem[];
+}
 
 interface ICreationDrawerProps {
   isOpen: boolean;
@@ -10,6 +18,30 @@ interface ICreationDrawerProps {
 
 export const CreationDrawer = observer(
   ({ isOpen, onClose }: ICreationDrawerProps) => {
+    const { userStore, uiStore } = UseStores();
+    const service = new ProjectCreationService(userStore, uiStore);
+
+    const [project, setProject] = useState<IProject>();
+
+    const handleUpload = () => {
+      project?.projectItems.flatMap((item) => {
+        if (item.image) {
+          return service.uploadImage(
+            item.image,
+            (progress) => {
+              console.log(progress);
+            },
+            (url) => {
+              console.log(url);
+            },
+            (error) => {
+              console.log(error);
+            }
+          );
+        }
+        return null;
+      });
+    };
     return (
       <DrawerTemplate
         isOpen={isOpen}
@@ -22,11 +54,22 @@ export const CreationDrawer = observer(
             <Button variant="outline" mr={3} onClick={onClose}>
               Cancel
             </Button>
-            <Button colorScheme="blue">Save</Button>
+            <Button colorScheme="blue" onClick={handleUpload}>
+              Save
+            </Button>
           </>
         }
       >
-        <ProjectItem />
+        <ProjectItems
+          onChange={(newItems) => {
+            setProject((prev) => {
+              return {
+                ...prev,
+                projectItems: newItems,
+              };
+            });
+          }}
+        />
       </DrawerTemplate>
     );
   }

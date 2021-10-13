@@ -6,14 +6,19 @@ import {
   Draggable,
   DropResult,
 } from "react-beautiful-dnd";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AddItemCard } from "./AddItemCard";
 import { IProjectItem, ItemModal } from "./ItemModal";
 
-export const ProjectItem = observer(() => {
+interface IProjectItemProps {
+  onChange: (newItemsState: IProjectItem[]) => void;
+}
+
+export const ProjectItems = observer(({ onChange }: IProjectItemProps) => {
   const { isOpen, onClose, onOpen } = useDisclosure();
 
   const [projectItems, setProjectItems] = useState<IProjectItem[]>([]);
+  const projectItemsRef = useRef(projectItems);
 
   const handleOnDragEnd = (result: DropResult) => {
     if (!result.destination) return;
@@ -22,6 +27,14 @@ export const ProjectItem = observer(() => {
     items.splice(result!.destination!.index!, 0, reorderedItem);
     setProjectItems(items);
   };
+
+  useEffect(() => {
+    // Check if project item length changed from previous render
+    if (projectItemsRef.current.length !== projectItems.length) {
+      onChange(projectItems);
+      projectItemsRef.current.length = projectItems.length;
+    }
+  }, [projectItems, onChange]);
   return (
     <>
       <DragDropContext onDragEnd={handleOnDragEnd}>
@@ -54,6 +67,7 @@ export const ProjectItem = observer(() => {
                                 flexDirection="column"
                               >
                                 {item.title}
+                                <img src={item.imageUrl} alt="" />
                               </Flex>
                             </Box>
                           );
@@ -72,7 +86,7 @@ export const ProjectItem = observer(() => {
       <ItemModal
         isOpen={isOpen}
         onClose={onClose}
-        onCreate={(newItem) => {
+        onItemCreate={(newItem) => {
           setProjectItems((prev) => {
             return [...prev, newItem];
           });
