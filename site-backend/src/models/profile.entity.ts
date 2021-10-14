@@ -12,7 +12,7 @@ export class Profile {
     @Column({ length: 100 })
     title?: string;
 
-    @OneToOne(() => User, user => user.profile, { onDelete: "CASCADE", onUpdate: "CASCADE" })
+    @OneToOne(() => User, user => user.profile, { onDelete: "CASCADE" })
     @JoinColumn()
     user: User;
 

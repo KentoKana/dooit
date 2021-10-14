@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryColumn, CreateDateColumn, OneToOne } from 'typeorm';
+import { Entity, Column, PrimaryColumn, CreateDateColumn, OneToOne, OneToMany } from 'typeorm';
 import { Profile } from './profile.entity';
+import { Project } from './project.entity';
 
 @Entity({ name: "users" })
 export class User {
@@ -26,4 +27,7 @@ export class User {
 
     @Column()
     dateModified?: Date;
+
+    @OneToMany(() => Project, project => project.user, { cascade: true })
+    project: Project[]
 }
