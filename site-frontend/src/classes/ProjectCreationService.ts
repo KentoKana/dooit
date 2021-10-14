@@ -21,7 +21,7 @@ export class ProjectCreationService {
      */
     uploadImage = async (image: File, progress?: (progress: number) => void, onSuccess?: (downloadUrl: string) => void, onError?: (error: StorageError) => void) => {
         if (this.userStore.user) {
-            const storageRef = ref(this.storage, `projects/${this.userStore.user.id}/${image.name}`);
+            const storageRef = ref(this.storage, `projects/${this.userStore.user.id}/${Date.now() + image.name}`);
             const uploadTask = uploadBytesResumable(storageRef, image);
             return uploadTask.on(
                 "state_changed",
