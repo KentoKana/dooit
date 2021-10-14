@@ -1,6 +1,6 @@
 import { Button } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { ProjectCreationService } from "../../classes/ProjectCreationService";
 import { UseStores } from "../../stores/StoreContexts";
 import { DrawerTemplate } from "../DrawerTemplate";
@@ -19,29 +19,49 @@ interface ICreationDrawerProps {
 export const CreationDrawer = observer(
   ({ isOpen, onClose }: ICreationDrawerProps) => {
     const { userStore, uiStore } = UseStores();
-    const service = new ProjectCreationService(userStore, uiStore);
 
-    const [project, setProject] = useState<IProject>();
+    const [project, setProject] = useState<IProject>({ projectItems: [] });
+    const [projectItems, setProjectItems] = useState<IProjectItem[]>([]);
 
-    const handleUpload = () => {
+    const handleUpload = useCallback(() => {
+      const service = new ProjectCreationService(userStore, uiStore);
       project?.projectItems.flatMap((item) => {
-        if (item.image) {
-          return service.uploadImage(
-            item.image,
-            (progress) => {
-              console.log(progress);
-            },
-            (url) => {
-              console.log(url);
-            },
-            (error) => {
-              console.log(error);
-            }
-          );
-        }
+        setTimeout(() => {
+          if (item.image) {
+            service.uploadImage(
+              item.image,
+              (progress) => {
+                console.log(progress);
+              },
+              (url) => {
+                setProjectItems((prev) => {
+                  return [
+                    ...prev,
+                    {
+                      ...item,
+                      imageUrl: url,
+                    },
+                  ];
+                });
+              },
+              (error) => {
+                console.log(error);
+              }
+            );
+          }
+        }, 800);
+
         return null;
       });
-    };
+
+      setProject((prev) => {
+        return {
+          ...prev,
+          projectItems: projectItems,
+        };
+      });
+    }, [project?.projectItems, projectItems, uiStore, userStore]);
+
     return (
       <DrawerTemplate
         isOpen={isOpen}

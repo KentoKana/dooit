@@ -6,16 +6,10 @@ import { useForm } from "react-hook-form";
 import { observer } from "mobx-react-lite";
 import { FormElement } from "../FormElement";
 import Compressor from "compressorjs";
-
-export interface IProjectItemCreationForm {
-  title: string;
-  description: string;
-  image?: File;
-  imageUrl?: string;
-}
+import { IProjectItem } from "../../CreationDrawer/ItemModal";
 
 interface IProjectItemCreationFormProps {
-  onItemCreate: (newProjectItem: IProjectItemCreationForm) => void;
+  onItemCreate: (newProjectItem: IProjectItem) => void;
   onClose: () => void;
 }
 export const ProjectItemCreationForm = observer(
@@ -42,7 +36,7 @@ export const ProjectItemCreationForm = observer(
     };
 
     const onSubmit = useCallback(
-      async (formData: IProjectItemCreationForm) => {
+      async (formData: IProjectItem) => {
         formData = {
           ...formData,
           image: image,
@@ -74,10 +68,9 @@ export const ProjectItemCreationForm = observer(
           errorMessage={errors.title && errors.title.message}
         />
         <FormElement
-          isRequired
-          formLabel="image"
+          formLabel="Image"
           formFor={"image"}
-          isInvalid={errors.title}
+          isInvalid={errors.image}
           formField={
             <Input
               id="image"
@@ -119,7 +112,7 @@ export const ProjectItemCreationForm = observer(
             variant="primary"
             type="submit"
           >
-            Save Item
+            Add Item
           </Button>
         </Flex>
       </form>

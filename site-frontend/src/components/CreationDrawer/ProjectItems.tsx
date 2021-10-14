@@ -25,7 +25,14 @@ export const ProjectItems = observer(({ onChange }: IProjectItemProps) => {
     const items = Array.from(projectItems);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result!.destination!.index!, 0, reorderedItem);
-    setProjectItems(items);
+    setProjectItems(
+      items.map((item, index) => {
+        return {
+          ...item,
+          order: index,
+        };
+      })
+    );
   };
 
   useEffect(() => {
@@ -88,7 +95,13 @@ export const ProjectItems = observer(({ onChange }: IProjectItemProps) => {
         onClose={onClose}
         onItemCreate={(newItem) => {
           setProjectItems((prev) => {
-            return [...prev, newItem];
+            return [
+              ...prev,
+              {
+                ...newItem,
+                order: projectItems.length,
+              },
+            ];
           });
         }}
       />

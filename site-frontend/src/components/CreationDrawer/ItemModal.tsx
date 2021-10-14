@@ -8,6 +8,7 @@ export interface IProjectItem {
   imageUrl?: string;
   alt?: string;
   image?: File;
+  order: number;
 }
 
 interface IItemModalProps {
