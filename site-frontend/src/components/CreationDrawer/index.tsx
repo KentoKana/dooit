@@ -31,15 +31,13 @@ export const CreationDrawer = observer(
               (progress) => {
                 item.progress = progress;
                 setProject((prev) => {
-                  const newState = prev.projectItems.map((prevItemState) => {
+                  prev.projectItems.forEach((prevItemState) => {
                     if (prevItemState.order === item.order) {
                       prevItemState.progress = progress;
                     }
-                    return prevItemState;
                   });
                   return {
                     ...prev,
-                    projectItems: newState,
                   };
                 });
               },
