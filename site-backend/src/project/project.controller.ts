@@ -8,9 +8,9 @@ export class ProjectController {
     constructor(private readonly projectService: ProjectService) {
     }
 
-    @Get("get-all-for-user")
+    @Get("get-all-for-logged-in-user")
     @UseGuards(AuthGuard('firebase-jwt'))
-    async getAllForUser(@Req() request: Request) {
-        return this.projectService.getAllForUser(request.user.user_id)
+    async getAllForLoggedInUser(@Req() request: Request) {
+        return this.projectService.getAllForLoggedInUser(request.user.user_id)
     }
 }

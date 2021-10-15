@@ -13,4 +13,13 @@ export class ProjectRepository extends Repository<Project>{
             .getMany();
         return projects;
     }
+
+    async getProject(projectId: number) {
+        const project = await this
+            .createQueryBuilder("project")
+            .where("project.id = :projectId", { projectId: projectId })
+            .leftJoinAndSelect("project.projectItems", "projectItems")
+            .getOne();
+        return project;
+    }
 }

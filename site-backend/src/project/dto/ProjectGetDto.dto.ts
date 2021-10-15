@@ -1,4 +1,4 @@
-export class ProjectsGetDto {
+export class ProjectGetDto {
     id: string;
     name: string;
     userId: string;
