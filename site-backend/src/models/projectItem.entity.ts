@@ -8,7 +8,7 @@ export class ProjectItem {
     id: string;
 
     @Column({ length: 500 })
-    title?: string;
+    heading?: string;
 
     @Column()
     imageUrl?: string;
