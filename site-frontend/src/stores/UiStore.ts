@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx";
+import { auth } from "../firebase";
 import { UserStore } from "./UserStore"
 
 export interface IApiRequestOptions<TData> {
@@ -15,6 +16,17 @@ export class UiStore {
     readonly userStore: UserStore;
 
     async apiRequest<TData, TResult = TData>(url: string, options: IApiRequestOptions<TData> = {}): Promise<TResult> {
+        auth.onAuthStateChanged(async (user) => {
+            const retrievedToken = await user?.getIdToken();
+            if (retrievedToken) {
+                localStorage.setItem("user-jwt", retrievedToken);
+                this.userStore.userToken = retrievedToken;
+            } else {
+                this.userStore.isSignedIn = false;
+                localStorage.removeItem("user-jwt");
+                return Promise.reject({ status: 401, message: "Not Authorized.", httpCodeStatus: 404 })
+            }
+        });
         options = {
             method: "GET",
             ...options

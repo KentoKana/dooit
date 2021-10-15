@@ -10,17 +10,16 @@ import {
 } from "@chakra-ui/react";
 import { UnlockIcon } from "@chakra-ui/icons";
 import { observer } from "mobx-react-lite";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { UseStores } from "../../stores/StoreContexts";
 import { useEffect, useState } from "react";
 import { LocalRoutes } from "../../enums/LocalRoutes";
 import { AiOutlinePlus } from "react-icons/ai";
 import { CreationDrawer } from "../CreationDrawer";
-import { auth } from "../../firebase";
 
 export const NavBar = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const history = useHistory();
+  // const history = useHistory();
 
   const { userStore } = UseStores();
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -28,17 +27,29 @@ export const NavBar = observer(() => {
     setIsSignedIn(userStore.isSignedIn);
   }, [userStore.isSignedIn]);
 
-  useEffect(() => {
-    history?.listen(() => {
-      auth.onAuthStateChanged(async (user) => {
-        const newToken = await user?.getIdToken();
-        if (newToken) {
-          localStorage.setItem("user-jwt", newToken);
-          userStore.userToken = newToken;
-        }
-      });
-    });
-  }, [history, userStore]);
+  // // useEffect(() => {
+  // //   history?.listen(() => {
+  // //     auth.onAuthStateChanged(async (user) => {
+  // //       const retrievedToken = await user?.getIdToken();
+  // //       if (retrievedToken) {
+  // //         setNewToken(retrievedToken);
+  // //       }
+  // //     });
+  // //   });
+  // // }, [history, userStore]);
+  // auth.onAuthStateChanged(async (user) => {
+  //   const retrievedToken = await user?.getIdToken();
+  //   if (retrievedToken) {
+  //     setNewToken(retrievedToken);
+  //   }
+  // });
+
+  // useEffect(() => {
+  //   if (newToken) {i
+  //     localStorage.setItem("user-jwt", newToken);
+  //     userStore.userToken = newToken;
+  //   }
+  // }, [newToken, userStore]);
 
   return (
     <Box position="fixed" width="100%" backgroundColor={"white"} top="0">
