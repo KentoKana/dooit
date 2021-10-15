@@ -7,7 +7,7 @@ import { DrawerTemplate } from "../DrawerTemplate";
 import { IProjectItem } from "./ItemModal";
 import { ProjectItems } from "./ProjectItems";
 
-interface IProject {
+export interface IProject {
   projectItems: IProjectItem[];
 }
 
@@ -19,9 +19,7 @@ interface ICreationDrawerProps {
 export const CreationDrawer = observer(
   ({ isOpen, onClose }: ICreationDrawerProps) => {
     const { userStore, uiStore } = UseStores();
-
     const [project, setProject] = useState<IProject>({ projectItems: [] });
-    const [projectItems, setProjectItems] = useState<IProjectItem[]>([]);
 
     const handleUpload = useCallback(() => {
       const service = new ProjectCreationService(userStore, uiStore);
@@ -31,17 +29,32 @@ export const CreationDrawer = observer(
             service.uploadImage(
               item.image,
               (progress) => {
-                console.log(progress);
+                item.progress = progress;
+                setProject((prev) => {
+                  const newState = prev.projectItems.map((prevItemState) => {
+                    if (prevItemState.order === item.order) {
+                      prevItemState.progress = progress;
+                    }
+                    return prevItemState;
+                  });
+                  return {
+                    ...prev,
+                    projectItems: newState,
+                  };
+                });
               },
               (url) => {
-                setProjectItems((prev) => {
-                  return [
+                setProject((prev) => {
+                  prev.projectItems.forEach((prevItemState) => {
+                    if (prevItemState.order === item.order) {
+                      prevItemState.image = undefined;
+                      prevItemState.imageUrl = url;
+                      prevItemState.progress = undefined;
+                    }
+                  });
+                  return {
                     ...prev,
-                    {
-                      ...item,
-                      imageUrl: url,
-                    },
-                  ];
+                  };
                 });
               },
               (error) => {
@@ -53,14 +66,7 @@ export const CreationDrawer = observer(
 
         return null;
       });
-
-      setProject((prev) => {
-        return {
-          ...prev,
-          projectItems: projectItems,
-        };
-      });
-    }, [project?.projectItems, projectItems, uiStore, userStore]);
+    }, [project?.projectItems, uiStore, userStore]);
 
     return (
       <DrawerTemplate
@@ -81,13 +87,9 @@ export const CreationDrawer = observer(
         }
       >
         <ProjectItems
-          onChange={(newItems) => {
-            setProject((prev) => {
-              return {
-                ...prev,
-                projectItems: newItems,
-              };
-            });
+          projectState={project}
+          onChange={(newProjectState) => {
+            setProject(newProjectState);
           }}
         />
       </DrawerTemplate>

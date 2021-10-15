@@ -9,6 +9,7 @@ export interface IProjectItem {
   alt?: string;
   image?: File;
   order: number;
+  progress?: number;
 }
 
 interface IItemModalProps {
