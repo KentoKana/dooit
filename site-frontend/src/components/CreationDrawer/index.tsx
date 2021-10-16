@@ -35,6 +35,7 @@ export const CreationDrawer = observer(
     };
     const onSuccess = (dto: ProjectGetDto) => {
       toast({
+        id: dto.id,
         title: `Successfully created project!`,
         status: "success",
         isClosable: true,
