@@ -8,12 +8,12 @@ import { sidebarRoutes } from "../../routes/sidebarRoutes";
 import { useLocation } from "react-router-dom";
 import { UseStores } from "../../stores/StoreContexts";
 import { AuthService } from "../../classes/AuthService";
-import { useResetQuery } from "../../hooks/useResetQuery";
+import { useReset } from "../../hooks/useReset";
 import { AiOutlinePoweroff } from "react-icons/ai";
 
 export const Sidebar = observer(() => {
   const { uiStore, userStore } = UseStores();
-  const reset = useResetQuery();
+  const reset = useReset();
   const authService = new AuthService(userStore, uiStore);
   const [selectedLink, setSelectedLink] = useState<LocalRoutes>(
     LocalRoutes.Dashboard

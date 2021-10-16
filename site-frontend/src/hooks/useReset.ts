@@ -1,7 +1,7 @@
 import { useQueryClient } from "react-query";
 import { UseStores } from "../stores/StoreContexts";
 
-export const useResetQuery = () => {
+export const useReset = () => {
     const queryClient = useQueryClient();
     const { userStore } = UseStores();
     const reset = () => {

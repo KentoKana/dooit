@@ -4,7 +4,7 @@ import { Button } from "@chakra-ui/button";
 import { Flex, FormErrorMessage, useToast } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
 import { LoadingState } from "../../../enums/LoadingState";
-import { useResetQuery } from "../../../hooks/useResetQuery";
+import { useReset } from "../../../hooks/useReset";
 import { AuthService } from "../../../classes/AuthService";
 import { UseStores } from "../../../stores/StoreContexts";
 import { useForm } from "react-hook-form";
@@ -24,7 +24,7 @@ interface ISignUpForm {
 export const SignUpForm = observer(() => {
   const { uiStore, userStore } = UseStores();
   const toast = useToast();
-  const reset = useResetQuery();
+  const reset = useReset();
   const {
     handleSubmit,
     register,
