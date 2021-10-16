@@ -1,4 +1,4 @@
-import { Box, Button, Portal, useToast } from "@chakra-ui/react";
+import { Button, Portal, useToast } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { useCallback, useState } from "react";
 import { useMutation } from "react-query";
@@ -56,6 +56,7 @@ export const CreationDrawer = observer(
     const [project, setProject] = useState<IProject>({ projectItems: [] });
 
     const handleUpload = useCallback(() => {
+      onClose();
       const service = new ProjectCreationService(userStore, uiStore);
       project?.projectItems.flatMap((item) => {
         setTimeout(() => {
@@ -104,7 +105,7 @@ export const CreationDrawer = observer(
 
         return null;
       });
-    }, [project?.projectItems, uiStore, userStore, mutate]);
+    }, [project?.projectItems, uiStore, userStore, mutate, onClose]);
 
     return (
       <DrawerTemplate
@@ -130,6 +131,7 @@ export const CreationDrawer = observer(
             setProject(newProjectState);
           }}
         />
+        <Portal>Hello</Portal>
       </DrawerTemplate>
     );
   }

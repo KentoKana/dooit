@@ -14,7 +14,7 @@ interface IProjectItemCreationFormProps {
 }
 export const ProjectItemCreationForm = observer(
   ({ onItemCreate, onClose }: IProjectItemCreationFormProps) => {
-    const [image, setImage] = useState<File>();
+    const [mediaFile, setMediaFile] = useState<File>();
     const [previewUrl, setPreviewUrl] = useState<string>("");
 
     const {
@@ -27,9 +27,12 @@ export const ProjectItemCreationForm = observer(
       if (e && e.target && e.target.files && e.target.files?.length !== 0) {
         setPreviewUrl(URL.createObjectURL(e.target.files[0]));
         new Compressor(e.target.files[0], {
-          quality: 0.8,
+          quality: 0.7,
+          convertSize: 2000000,
+          maxHeight: 1920,
+          maxWidth: 1920,
           success: (compressedImage: File) => {
-            setImage(compressedImage);
+            setMediaFile(compressedImage);
           },
         });
       }
@@ -39,13 +42,13 @@ export const ProjectItemCreationForm = observer(
       async (formData: IProjectItem) => {
         formData = {
           ...formData,
-          image: image,
+          image: mediaFile,
           imageUrl: previewUrl,
         };
         onItemCreate(formData);
         onClose();
       },
-      [onClose, onItemCreate, image, previewUrl]
+      [onClose, onItemCreate, mediaFile, previewUrl]
     );
 
     return (
@@ -73,6 +76,7 @@ export const ProjectItemCreationForm = observer(
           isInvalid={errors.image}
           formField={
             <Input
+              accept="image/*"
               id="image"
               type="file"
               placeholder="Select file"

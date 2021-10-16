@@ -15,10 +15,7 @@ import { AuthService } from "../../../classes/AuthService";
 import { LoadingState } from "../../../enums/LoadingState";
 import { LocalRoutes } from "../../../enums/LocalRoutes";
 import { UseStores } from "../../../stores/StoreContexts";
-import {
-  generateFirebaseAuthErrorMessage,
-  isNullOrUndefined,
-} from "../../../utils";
+import { generateFirebaseAuthErrorMessage } from "../../../utils";
 
 interface ILoginForm {
   email: string;
@@ -41,7 +38,6 @@ export const LoginForm = observer(() => {
   const [loadingState, setLoadingState] = useState<LoadingState>(
     LoadingState.None
   );
-  const [hasLoggedIn, setHasLoggedIn] = useState<boolean>(false);
   //#endregion
 
   const onSubmit = useCallback(
@@ -55,7 +51,7 @@ export const LoginForm = observer(() => {
           password: loginFormData.password,
         })
         .then(() => {
-          setHasLoggedIn(true);
+          userStore.isSignedIn = true;
         })
         .catch((error: FirebaseError) => {
           setLoadingState(LoadingState.Error);
@@ -68,11 +64,7 @@ export const LoginForm = observer(() => {
     [userStore, uiStore, setError]
   );
 
-  if (
-    (!isNullOrUndefined(userStore.userToken) && hasLoggedIn) ||
-    userStore.isSignedIn
-  ) {
-    userStore.isSignedIn = true;
+  if (userStore.isSignedIn) {
     return <Redirect to={LocalRoutes.Dashboard} />;
   }
   return (
