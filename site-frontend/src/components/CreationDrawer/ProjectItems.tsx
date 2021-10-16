@@ -1,4 +1,4 @@
-import { Box, Flex, useDisclosure, Progress } from "@chakra-ui/react";
+import { Box, Flex, useDisclosure } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import {
   DragDropContext,
@@ -9,7 +9,6 @@ import {
 import { AddItemCard } from "./AddItemCard";
 import { ItemModal } from "./ItemModal";
 import { IProject } from ".";
-import { isNullOrUndefined } from "../../utils";
 
 interface IProjectItemProps {
   projectState: IProject;
@@ -70,9 +69,6 @@ export const ProjectItems = observer(
                                   {item.title}
                                   <img src={item.imageUrl} alt="" />
                                 </Flex>
-                                {!isNullOrUndefined(item.progress) && (
-                                  <Progress value={item.progress} />
-                                )}
                               </Box>
                             );
                           }}

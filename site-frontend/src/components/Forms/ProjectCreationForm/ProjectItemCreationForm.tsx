@@ -54,23 +54,6 @@ export const ProjectItemCreationForm = observer(
     return (
       <form onSubmit={handleSubmit(onSubmit)}>
         <FormElement
-          isRequired
-          formLabel="Title"
-          formFor={"title"}
-          isInvalid={errors.title}
-          formField={
-            <Input
-              id="title"
-              placeholder="Title"
-              borderRadius={2}
-              {...register("title", {
-                required: "Please enter a title.",
-              })}
-            />
-          }
-          errorMessage={errors.title && errors.title.message}
-        />
-        <FormElement
           formLabel="Image"
           formFor={"image"}
           isInvalid={errors.image}
@@ -90,7 +73,19 @@ export const ProjectItemCreationForm = observer(
           errorMessage={errors.title && errors.title.message}
         />
         <FormElement
-          isRequired
+          formLabel="Title"
+          formFor={"title"}
+          isInvalid={errors.title}
+          formField={
+            <Input
+              id="title"
+              placeholder="Title"
+              borderRadius={2}
+              {...register("title")}
+            />
+          }
+        />
+        <FormElement
           formLabel="Description"
           formFor={"description"}
           isInvalid={errors.description}
@@ -99,12 +94,9 @@ export const ProjectItemCreationForm = observer(
               id="description"
               placeholder="Description"
               borderRadius={2}
-              {...register("description", {
-                required: "Please enter a description.",
-              })}
+              {...register("description")}
             />
           }
-          errorMessage={errors.description && errors.description.message}
         />
         <Flex justifyContent="space-between" width="100%" my={5}>
           <Button borderRadius={2} onClick={onClose} type="button">

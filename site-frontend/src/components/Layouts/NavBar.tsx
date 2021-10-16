@@ -7,6 +7,7 @@ import {
   Text,
   Button,
   useDisclosure,
+  Spinner,
 } from "@chakra-ui/react";
 import { UnlockIcon } from "@chakra-ui/icons";
 import { observer } from "mobx-react-lite";
@@ -16,9 +17,12 @@ import { useEffect, useState } from "react";
 import { LocalRoutes } from "../../enums/LocalRoutes";
 import { AiOutlinePlus } from "react-icons/ai";
 import { CreationDrawer } from "../CreationDrawer";
+import { LoadingState } from "../../enums/LoadingState";
 
 export const NavBar = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [projectCreationState, setProjectCreationState] =
+    useState<LoadingState>(LoadingState.None);
   // const history = useHistory();
 
   const { userStore } = UseStores();
@@ -26,30 +30,6 @@ export const NavBar = observer(() => {
   useEffect(() => {
     setIsSignedIn(userStore.isSignedIn);
   }, [userStore.isSignedIn]);
-
-  // // useEffect(() => {
-  // //   history?.listen(() => {
-  // //     auth.onAuthStateChanged(async (user) => {
-  // //       const retrievedToken = await user?.getIdToken();
-  // //       if (retrievedToken) {
-  // //         setNewToken(retrievedToken);
-  // //       }
-  // //     });
-  // //   });
-  // // }, [history, userStore]);
-  // auth.onAuthStateChanged(async (user) => {
-  //   const retrievedToken = await user?.getIdToken();
-  //   if (retrievedToken) {
-  //     setNewToken(retrievedToken);
-  //   }
-  // });
-
-  // useEffect(() => {
-  //   if (newToken) {i
-  //     localStorage.setItem("user-jwt", newToken);
-  //     userStore.userToken = newToken;
-  //   }
-  // }, [newToken, userStore]);
 
   return (
     <Box position="fixed" width="100%" backgroundColor={"white"} top="0">
@@ -95,12 +75,27 @@ export const NavBar = observer(() => {
             ) : (
               <>
                 <ListItem pl={5}>
-                  <Button variant="outline" onClick={onOpen}>
+                  <Button
+                    variant="outline"
+                    onClick={onOpen}
+                    disabled={projectCreationState === LoadingState.Loading}
+                  >
                     <Text as="span" display="flex" alignItems="center">
-                      <Text as="span" mr={1} marginTop="3px">
-                        <AiOutlinePlus />
-                      </Text>{" "}
-                      Create
+                      {projectCreationState === LoadingState.Loading ? (
+                        <>
+                          <Text as="span" mr={1} marginTop="3px">
+                            <Spinner />
+                          </Text>{" "}
+                          Creating Project...
+                        </>
+                      ) : (
+                        <>
+                          <Text as="span" mr={1} marginTop="3px">
+                            <AiOutlinePlus />
+                          </Text>{" "}
+                          Create
+                        </>
+                      )}
                     </Text>
                   </Button>
                 </ListItem>
@@ -110,7 +105,13 @@ export const NavBar = observer(() => {
         </Flex>
       </Container>
       {userStore.isSignedIn && (
-        <CreationDrawer onClose={onClose} isOpen={isOpen} />
+        <CreationDrawer
+          onClose={onClose}
+          isOpen={isOpen}
+          onProjectCreation={(creationState) => {
+            setProjectCreationState(creationState);
+          }}
+        />
       )}
     </Box>
   );

@@ -1,11 +1,12 @@
-import { Button, Portal, useToast } from "@chakra-ui/react";
+import { Button, Flex, Spinner, useToast } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useMutation } from "react-query";
 import { ProjectCreationService } from "../../classes/ProjectCreationService";
 import { HttpError } from "../../Dtos/HttpError.dto";
 import { ProjectCreateDto } from "../../Dtos/ProjectCreateDto.dto";
 import { ProjectGetDto } from "../../Dtos/ProjectGetDto.dto";
+import { LoadingState } from "../../enums/LoadingState";
 import { UseStores } from "../../stores/StoreContexts";
 import { DrawerTemplate } from "../DrawerTemplate";
 import { IProjectItem } from "./ItemModal";
@@ -16,14 +17,20 @@ export interface IProject {
 }
 
 interface ICreationDrawerProps {
+  onProjectCreation: (loadingState: LoadingState) => void;
   isOpen: boolean;
   onClose: () => void;
 }
 
 export const CreationDrawer = observer(
-  ({ isOpen, onClose }: ICreationDrawerProps) => {
+  ({ isOpen, onClose, onProjectCreation }: ICreationDrawerProps) => {
     const { userStore, uiStore } = UseStores();
     const toast = useToast();
+
+    const [project, setProject] = useState<IProject>({ projectItems: [] });
+    const [progressCounter, setProgressCounter] = useState<number>(0);
+
+    //#region Mutation handlers
     const onError = (err: HttpError) => {
       toast({
         title: `Uh oh... :(`,
@@ -34,13 +41,18 @@ export const CreationDrawer = observer(
       });
     };
     const onSuccess = (dto: ProjectGetDto) => {
-      toast({
-        id: dto.id,
-        title: `Successfully created project!`,
-        status: "success",
-        isClosable: true,
-        position: "top",
-      });
+      onProjectCreation(LoadingState.Loaded);
+      if (!toast.isActive("creation-success")) {
+        toast.close("creating-project");
+        toast({
+          id: "creation-success",
+          title: `Successfully created project!`,
+          status: "success",
+          isClosable: true,
+          position: "top",
+        });
+        setProject({ projectItems: [] });
+      }
     };
     const { mutate } = useMutation(
       async (creationDto: ProjectCreateDto) => {
@@ -52,9 +64,9 @@ export const CreationDrawer = observer(
         onSuccess,
       }
     );
+    //#endregion
 
-    const [project, setProject] = useState<IProject>({ projectItems: [] });
-
+    //#region Upload Handler
     const handleUpload = useCallback(() => {
       onClose();
       const service = new ProjectCreationService(userStore, uiStore);
@@ -63,8 +75,9 @@ export const CreationDrawer = observer(
           if (item.image) {
             service.uploadImage(
               item.image,
+              //#region On upload progress
               (progress) => {
-                item.progress = progress;
+                onProjectCreation(LoadingState.Loading);
                 setProject((prev) => {
                   prev.projectItems.forEach((prevItemState) => {
                     if (prevItemState.order === item.order) {
@@ -75,37 +88,77 @@ export const CreationDrawer = observer(
                     ...prev,
                   };
                 });
-              },
-              (url) => {
-                let projectToCreate = new ProjectCreateDto();
-                setProject((prev) => {
-                  prev.projectItems.forEach((prevItemState) => {
-                    if (prevItemState.order === item.order) {
-                      prevItemState.image = undefined;
-                      prevItemState.imageUrl = url;
-                      prevItemState.progress = undefined;
-                    }
+
+                if (!toast.isActive("creating-project")) {
+                  toast({
+                    id: "creating-project",
+                    title: (
+                      <Flex alignItems="center">
+                        Creating your project <Spinner ml="5px" />
+                      </Flex>
+                    ),
+                    status: "info",
+                    isClosable: true,
+                    position: "top",
+                    description: (
+                      <Flex>Frantically generating your project...</Flex>
+                    ),
                   });
-                  projectToCreate = {
-                    name: "test creating this project",
-                    projectItems: prev.projectItems,
-                  };
-                  return {
-                    ...prev,
-                  };
-                });
-                mutate(projectToCreate);
+                }
               },
+              //#endregion
+              //#region On upload completion
+              (url) => {
+                if (url) {
+                  setProgressCounter((prev) => {
+                    return (prev += 1);
+                  });
+                  setProject((prev) => {
+                    prev.projectItems.forEach((prevItemState) => {
+                      if (prevItemState.order === item.order) {
+                        prevItemState.image = undefined;
+                        prevItemState.imageUrl = url;
+                        prevItemState.progress = undefined;
+                      }
+                    });
+                    return {
+                      ...prev,
+                    };
+                  });
+                }
+              },
+              //#endregion
+              //#region On upload error
               (error) => {
                 console.log(error);
               }
+              //#endregion
             );
+          } else {
+            setProgressCounter((prev) => {
+              return (prev += 1);
+            });
           }
         }, 800);
 
         return null;
       });
-    }, [project?.projectItems, uiStore, userStore, mutate, onClose]);
+    }, [project, uiStore, userStore, onClose, toast, onProjectCreation]);
+    //#endregion
+
+    // Submit data once all project items have been processed.
+    useEffect(() => {
+      if (
+        progressCounter === project.projectItems.length &&
+        project.projectItems.length !== 0
+      ) {
+        mutate({
+          name: "new proj",
+          projectItems: project.projectItems,
+        });
+        setProgressCounter(0);
+      }
+    }, [progressCounter, project, mutate]);
 
     return (
       <DrawerTemplate
@@ -131,7 +184,6 @@ export const CreationDrawer = observer(
             setProject(newProjectState);
           }}
         />
-        <Portal>Hello</Portal>
       </DrawerTemplate>
     );
   }
