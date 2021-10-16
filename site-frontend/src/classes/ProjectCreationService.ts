@@ -1,16 +1,19 @@
 import { getStorage, StorageError, uploadBytesResumable } from "@firebase/storage";
 import { getDownloadURL, ref } from "firebase/storage";
+import { ProjectCreateDto } from "../Dtos/ProjectCreateDto.dto";
+import { ProjectGetDto } from "../Dtos/ProjectGetDto.dto";
+import { ProjectRoute } from "../enums/ApiRoutes";
 import { UiStore } from "../stores/UiStore";
 import { UserStore } from "../stores/UserStore";
 
 export class ProjectCreationService {
     constructor(userStore: UserStore, uiStore: UiStore) {
-        this.userStore = userStore;
-        this.uiStore = uiStore;
+        this._userSTore = userStore;
+        this._uiStore = uiStore;
     }
     private readonly storage = getStorage();
-    private userStore: UserStore;
-    private uiStore: UiStore;
+    private _userSTore: UserStore;
+    private _uiStore: UiStore;
 
     /**
      * Uploads image to Firebase storage.
@@ -20,8 +23,8 @@ export class ProjectCreationService {
      * @param onError 
      */
     uploadImage = async (image: File, progress?: (progress: number) => void, onSuccess?: (downloadUrl: string) => void, onError?: (error: StorageError) => void) => {
-        if (this.userStore.user) {
-            const storageRef = ref(this.storage, `projects/${this.userStore.user.id}/${Date.now() + image.name}`);
+        if (this._userSTore.user) {
+            const storageRef = ref(this.storage, `projects/${this._userSTore.user.id}/${Date.now() + image.name}`);
             const uploadTask = uploadBytesResumable(storageRef, image);
             return uploadTask.on(
                 "state_changed",
@@ -36,5 +39,14 @@ export class ProjectCreationService {
                 }
             );
         }
+    }
+
+    createProject = async (projectDto: ProjectCreateDto) => {
+        return await this._uiStore.apiRequest<ProjectCreateDto, ProjectGetDto>(ProjectRoute.CreateProject, {
+            method: "POST",
+            bodyData: projectDto
+        }).then((data) => {
+            return data;
+        })
     }
 }

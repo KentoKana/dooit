@@ -1,6 +1,9 @@
+import { ProjectItemGetDto } from "./ProjectItemGetDto.dto";
+
 export class ProjectGetDto {
-    id: string;
+    id: number;
     name: string;
     userId: string;
     dateCreated: Date;
+    projectItems: ProjectItemGetDto[]
 }

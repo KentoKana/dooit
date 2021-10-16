@@ -10,3 +10,8 @@ export enum UserRoute {
     GetUserProfile = "http://localhost:4000/user/user-profile",
     UpdateUserProfile = "http://localhost:4000/user/update-user-profile"
 }
+
+export enum ProjectRoute {
+    GetLoggedInUserProject = "http://localhost:4000/project/get-all-for-logged-in-user",
+    CreateProject = "http://localhost:4000/project/create-project"
+}

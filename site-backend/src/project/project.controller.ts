@@ -15,7 +15,7 @@ export class ProjectController {
         return this.projectService.getAllForLoggedInUser(request.user.user_id)
     }
 
-    @Post("create-project-for-logged-in-user")
+    @Post("create-project")
     @UseGuards(AuthGuard('firebase-jwt'))
     async createProjectForLoggedInUser(@Body() body: ProjectCreateDto, @Req() request: Request) {
         return this.projectService.createProject(body, request.user.user_id);

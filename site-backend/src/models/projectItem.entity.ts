@@ -1,11 +1,10 @@
 import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Project } from './project.entity';
-import { User } from './user.entity';
 
 @Entity({ name: "project_items" })
 export class ProjectItem {
     @PrimaryGeneratedColumn()
-    id: string;
+    id: number;
 
     @Column({ length: 500 })
     heading?: string;

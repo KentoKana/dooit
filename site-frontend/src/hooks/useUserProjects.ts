@@ -1,14 +1,14 @@
 import { useQuery } from "react-query";
-import { UserProfileViewDto } from "../Dtos/UserProfileViewDto.dto";
-import { UserRoute } from "../enums/ApiRoutes";
+import { ProjectGetDto } from "../Dtos/ProjectGetDto.dto";
+import { ProjectRoute } from "../enums/ApiRoutes";
 import { UseStores } from "../stores/StoreContexts";
 import { isNullOrUndefined } from "../utils";
 
-export const useUserSettingsData = () => {
+export const useUserProjects = () => {
     const { uiStore, userStore } = UseStores();
 
-    return useQuery("userSettings", async () => {
-        return await uiStore.apiRequest<UserProfileViewDto>(UserRoute.GetUserProfile)
+    return useQuery("loggedInUserProjects", async () => {
+        return await uiStore.apiRequest<ProjectGetDto[]>(ProjectRoute.GetLoggedInUserProject)
             .then((data) => {
                 return data
             })
