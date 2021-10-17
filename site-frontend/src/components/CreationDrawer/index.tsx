@@ -1,4 +1,5 @@
 import { Button, Flex, Spinner, useToast } from "@chakra-ui/react";
+import Compressor from "compressorjs";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useState } from "react";
 import { useMutation } from "react-query";
@@ -71,76 +72,90 @@ export const CreationDrawer = observer(
       onClose();
       const service = new ProjectCreationService(userStore, uiStore);
       project?.projectItems.flatMap((item) => {
-        setTimeout(() => {
-          if (item.image) {
-            service.uploadImage(
-              item.image,
-              //#region On upload progress
-              (progress) => {
-                onProjectCreation(LoadingState.Loading);
-                setProject((prev) => {
-                  prev.projectItems.forEach((prevItemState) => {
-                    if (prevItemState.order === item.order) {
-                      prevItemState.progress = progress;
-                    }
-                  });
-                  return {
-                    ...prev,
-                  };
-                });
-
-                if (!toast.isActive("creating-project")) {
-                  toast({
-                    id: "creating-project",
-                    title: (
-                      <Flex alignItems="center">
-                        Creating your project <Spinner ml="5px" />
-                      </Flex>
-                    ),
-                    status: "info",
-                    isClosable: true,
-                    position: "top",
-                    description: (
-                      <Flex>Frantically generating your project...</Flex>
-                    ),
-                  });
-                }
-              },
-              //#endregion
-              //#region On upload completion
-              (url) => {
-                if (url) {
-                  setProgressCounter((prev) => {
-                    return (prev += 1);
-                  });
+        const promise = new Promise((resolve) => {
+          new Compressor(item.image!, {
+            quality: 0.7,
+            convertSize: 2000000,
+            maxHeight: 1920,
+            maxWidth: 1920,
+            success: (compressedImage: File) => {
+              item.image = compressedImage;
+              item.imageUrl = URL.createObjectURL(compressedImage);
+              resolve(item);
+            },
+          });
+        });
+        promise.then(() => {
+          setTimeout(() => {
+            if (item.image) {
+              service.uploadImage(
+                item.image,
+                //#region On upload progress
+                (progress) => {
+                  onProjectCreation(LoadingState.Loading);
                   setProject((prev) => {
                     prev.projectItems.forEach((prevItemState) => {
                       if (prevItemState.order === item.order) {
-                        prevItemState.image = undefined;
-                        prevItemState.imageUrl = url;
-                        prevItemState.progress = undefined;
+                        prevItemState.progress = progress;
                       }
                     });
                     return {
                       ...prev,
                     };
                   });
-                }
-              },
-              //#endregion
-              //#region On upload error
-              (error) => {
-                console.log(error);
-              }
-              //#endregion
-            );
-          } else {
-            setProgressCounter((prev) => {
-              return (prev += 1);
-            });
-          }
-        }, 800);
 
+                  if (!toast.isActive("creating-project")) {
+                    toast({
+                      id: "creating-project",
+                      title: (
+                        <Flex alignItems="center">
+                          Creating your project <Spinner ml="5px" />
+                        </Flex>
+                      ),
+                      status: "info",
+                      isClosable: true,
+                      position: "top",
+                      description: (
+                        <Flex>Frantically generating your project...</Flex>
+                      ),
+                    });
+                  }
+                },
+                //#endregion
+                //#region On upload completion
+                (url) => {
+                  if (url) {
+                    setProgressCounter((prev) => {
+                      return (prev += 1);
+                    });
+                    setProject((prev) => {
+                      prev.projectItems.forEach((prevItemState) => {
+                        if (prevItemState.order === item.order) {
+                          prevItemState.image = undefined;
+                          prevItemState.imageUrl = url;
+                          prevItemState.progress = undefined;
+                        }
+                      });
+                      return {
+                        ...prev,
+                      };
+                    });
+                  }
+                },
+                //#endregion
+                //#region On upload error
+                (error) => {
+                  console.log(error);
+                }
+                //#endregion
+              );
+            } else {
+              setProgressCounter((prev) => {
+                return (prev += 1);
+              });
+            }
+          }, 800);
+        });
         return null;
       });
     }, [project, uiStore, userStore, onClose, toast, onProjectCreation]);

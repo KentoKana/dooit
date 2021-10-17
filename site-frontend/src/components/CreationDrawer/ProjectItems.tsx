@@ -1,4 +1,4 @@
-import { Box, Flex, useDisclosure } from "@chakra-ui/react";
+import { Box, Flex, Input, useDisclosure } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import {
   DragDropContext,
@@ -9,6 +9,7 @@ import {
 import { AddItemCard } from "./AddItemCard";
 import { ItemModal } from "./ItemModal";
 import { IProject } from ".";
+import Compressor from "compressorjs";
 
 interface IProjectItemProps {
   projectState: IProject;
@@ -38,50 +39,107 @@ export const ProjectItems = observer(
     return (
       <>
         <DragDropContext onDragEnd={handleOnDragEnd}>
-          <Flex>
-            <Droppable droppableId="stories" direction="horizontal">
-              {(provided) => {
-                return (
-                  <Flex {...provided.droppableProps} ref={provided.innerRef}>
-                    {projectState.projectItems.map((item, index) => {
-                      return (
-                        <Draggable
-                          key={item.title + index}
-                          index={index}
-                          draggableId={item.title + index}
-                        >
-                          {(provided) => {
-                            return (
-                              <Box
-                                {...provided.dragHandleProps}
-                                {...provided.draggableProps}
-                                ref={provided.innerRef}
-                                height={"200px"}
-                                width={"200px"}
-                                border="1px solid grey"
+          <Droppable droppableId="stories">
+            {(provided) => {
+              return (
+                <Box {...provided.droppableProps} ref={provided.innerRef}>
+                  <AddItemCard
+                    onClick={() => {
+                      onChange({
+                        ...projectState,
+                        projectItems: [
+                          ...projectState.projectItems,
+                          {
+                            title: "",
+                            description: "",
+                            order: projectState.projectItems.length,
+                          },
+                        ],
+                      });
+                    }}
+                  />
+                  {projectState.projectItems.map((item, index) => {
+                    return (
+                      <Draggable
+                        key={item.title + index}
+                        index={index}
+                        draggableId={item.title + index}
+                      >
+                        {(provided) => {
+                          return (
+                            <Box
+                              {...provided.dragHandleProps}
+                              {...provided.draggableProps}
+                              ref={provided.innerRef}
+                              height={"200px"}
+                              width={"200px"}
+                              border="1px solid grey"
+                            >
+                              <Flex
+                                justifyContent="center"
+                                alignItems="center"
+                                height="100%"
+                                flexDirection="column"
                               >
-                                <Flex
-                                  justifyContent="center"
-                                  alignItems="center"
-                                  height="100%"
-                                  flexDirection="column"
-                                >
-                                  {item.title}
-                                  <img src={item.imageUrl} alt="" />
-                                </Flex>
-                              </Box>
-                            );
-                          }}
-                        </Draggable>
-                      );
-                    })}
-                    {provided.placeholder}
-                    <AddItemCard onClick={onOpen} />
-                  </Flex>
-                );
-              }}
-            </Droppable>
-          </Flex>
+                                {item.title}
+                                <img src={item.imageUrl} alt="" />
+                                <Input
+                                  type="file"
+                                  onChange={(e) => {
+                                    const newItemsState =
+                                      projectState.projectItems.map(
+                                        (currentItem, i) => {
+                                          if (i === index) {
+                                            currentItem.image =
+                                              e.target.files![0];
+                                            currentItem.imageUrl =
+                                              URL.createObjectURL(
+                                                e.target.files![0]
+                                              );
+                                          }
+                                          return currentItem;
+                                        }
+                                      );
+                                    onChange({
+                                      ...projectState,
+                                      projectItems: newItemsState,
+                                    });
+                                  }}
+                                />
+                                <Input
+                                  type="text"
+                                  value={
+                                    projectState.projectItems[index].description
+                                  }
+                                  onChange={(e) => {
+                                    const newItemsState =
+                                      projectState.projectItems.map(
+                                        (currentItem, i) => {
+                                          if (i === index) {
+                                            currentItem.description =
+                                              e.target.value;
+                                          }
+                                          return currentItem;
+                                        }
+                                      );
+                                    onChange({
+                                      ...projectState,
+                                      projectItems: newItemsState,
+                                    });
+                                  }}
+                                />
+                              </Flex>
+                            </Box>
+                          );
+                        }}
+                      </Draggable>
+                    );
+                  })}
+                  {provided.placeholder}
+                </Box>
+              );
+            }}
+          </Droppable>
         </DragDropContext>
         <ItemModal
           isOpen={isOpen}
