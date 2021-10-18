@@ -1,4 +1,4 @@
-import { Box, Flex, Input } from "@chakra-ui/react";
+import { Box, Button, Flex, Input, Image } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import {
   DragDropContext,
@@ -13,7 +13,6 @@ import {
   UseFormReturn,
   useWatch,
 } from "react-hook-form";
-import { useEffect, useState } from "react";
 export interface IProjectItem {
   title: string;
   description: string;
@@ -30,7 +29,7 @@ interface IProjectItemProps {
 }
 
 export const ProjectItems = observer(({ formHook }: IProjectItemProps) => {
-  const { register, control, getValues, setValue } = formHook;
+  const { register, control, setValue } = formHook;
   const { fields, append, move, remove } = useFieldArray({
     control,
     name: "projectItems",
@@ -54,7 +53,6 @@ export const ProjectItems = observer(({ formHook }: IProjectItemProps) => {
                     append({
                       title: "",
                       description: "",
-                      order: getValues("projectItems").length,
                     });
                   }}
                 />
@@ -82,10 +80,23 @@ export const ProjectItems = observer(({ formHook }: IProjectItemProps) => {
                             {...provided.dragHandleProps}
                             {...provided.draggableProps}
                             ref={provided.innerRef}
-                            height={"200px"}
-                            width={"200px"}
+                            height={"300px"}
+                            width={"100%"}
                             border="1px solid grey"
                           >
+                            <Button
+                              onClick={() => {
+                                remove(index);
+                              }}
+                            >
+                              Remove
+                            </Button>
+                            <Input
+                              value={index}
+                              key={"order" + field.id}
+                              {...register(`projectItems.${index}.order`)}
+                              type="hidden"
+                            />
                             <Flex
                               justifyContent="center"
                               alignItems="center"
@@ -93,7 +104,12 @@ export const ProjectItems = observer(({ formHook }: IProjectItemProps) => {
                               flexDirection="column"
                             >
                               {mediaPreviewUrl && (
-                                <img src={mediaPreviewUrl} alt="" />
+                                <Image
+                                  boxSize="300px"
+                                  objectFit="cover"
+                                  src={mediaPreviewUrl}
+                                  alt=""
+                                />
                               )}
                               <Input
                                 key={"imageAsFileList" + field.id}

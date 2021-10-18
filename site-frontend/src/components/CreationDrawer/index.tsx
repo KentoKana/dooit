@@ -34,7 +34,7 @@ export const CreationDrawer = observer(
     const { userStore, uiStore } = UseStores();
     const toast = useToast();
     const formHook = useForm();
-    const { handleSubmit } = formHook;
+    const { handleSubmit, reset } = formHook;
 
     const [project, setProject] = useState<IProject>({ projectItems: [] });
     const [progressCounter, setProgressCounter] = useState<number>(0);
@@ -62,6 +62,7 @@ export const CreationDrawer = observer(
         });
         setProject({ projectItems: [] });
       }
+      reset();
     };
     const { mutate } = useMutation(
       async (creationDto: ProjectCreateDto) => {
@@ -175,7 +176,14 @@ export const CreationDrawer = observer(
       ) {
         mutate({
           name: "new proj",
-          projectItems: project.projectItems,
+          projectItems: project.projectItems.map((item) => {
+            return {
+              heading: "",
+              imageUrl: item.imageUrl,
+              imageAlt: "",
+              description: item.description,
+            };
+          }),
         });
         setProgressCounter(0);
       }
