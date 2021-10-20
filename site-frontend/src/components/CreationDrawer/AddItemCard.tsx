@@ -11,13 +11,13 @@ export const AddItemCard = observer(({ onClick }: IAddItemCardProps) => {
   return (
     <Button
       borderRadius="sm"
-      height={"50px"}
+      height={"30px"}
       width={"100%"}
       border="1px solid grey"
       onClick={onClick}
     >
       <Flex justifyContent="center" alignItems="center" height="100%">
-        <Box mr="3" mt="2">
+        <Box mr="3" mt="2px">
           <AiOutlinePlusCircle />
         </Box>
         Add Project Item

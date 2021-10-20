@@ -1,4 +1,4 @@
-import { Box, Flex, Input, Image } from "@chakra-ui/react";
+import { Box, Flex, Input, Image, IconButton } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import {
   DragDropContext,
@@ -13,7 +13,11 @@ import {
   UseFormReturn,
   useWatch,
 } from "react-hook-form";
-import { DragHandleIcon } from "@chakra-ui/icons";
+import {
+  DragHandleIcon,
+  TriangleDownIcon,
+  TriangleUpIcon,
+} from "@chakra-ui/icons";
 import { ProjectItemTopBar } from "./ProjectItemTopBar";
 export interface IProjectItem {
   title: string;
@@ -32,7 +36,7 @@ interface IProjectItemProps {
 
 export const ProjectItems = observer(({ formHook }: IProjectItemProps) => {
   const { register, control, setValue } = formHook;
-  const { fields, append, move, remove, insert } = useFieldArray({
+  const { fields, append, move, remove, insert, swap } = useFieldArray({
     control,
     name: "projectItems",
   });
@@ -84,21 +88,55 @@ export const ProjectItems = observer(({ formHook }: IProjectItemProps) => {
                             ref={provided.innerRef}
                             minHeight={"100px"}
                             width={"100%"}
-                            my={4}
+                            my={6}
                           >
                             <Flex
+                              title="Move down"
+                              justifyContent="space-between"
                               alignItems="center"
                               px={3}
                               borderLeft="4px solid"
                               borderColor="primary"
+                              direction="column"
                             >
-                              <DragHandleIcon />
+                              <IconButton
+                                disabled={index === 0}
+                                onClick={() => {
+                                  swap(index, index - 1);
+                                }}
+                                background="transparent"
+                                aria-label="Move Up"
+                                size="xs"
+                                icon={<TriangleUpIcon />}
+                              />
+                              <DragHandleIcon title="Drag item" />
+                              <IconButton
+                                title="Move up"
+                                disabled={
+                                  index === watchProjectItems.length - 1
+                                }
+                                onClick={() => {
+                                  swap(index, index + 1);
+                                }}
+                                background="transparent"
+                                aria-label="Move Down"
+                                size="xs"
+                                icon={<TriangleDownIcon />}
+                              />
                             </Flex>
                             <Box>
                               <ProjectItemTopBar
                                 itemLength={watchProjectItems.length}
                                 onRemove={() => {
-                                  remove(index);
+                                  if (watchProjectItems.length === 1) {
+                                    remove(index);
+                                    insert(index, {
+                                      title: "",
+                                      description: "",
+                                    });
+                                  } else {
+                                    remove(index);
+                                  }
                                 }}
                                 onAdd={() => {
                                   insert(index + 1, {
