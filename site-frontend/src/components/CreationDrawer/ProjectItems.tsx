@@ -1,4 +1,4 @@
-import { Box, Flex, Input, Image, IconButton } from "@chakra-ui/react";
+import { Box, Flex, Input, Image } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import {
   DragDropContext,
@@ -13,7 +13,8 @@ import {
   UseFormReturn,
   useWatch,
 } from "react-hook-form";
-import { DeleteIcon, DragHandleIcon } from "@chakra-ui/icons";
+import { DragHandleIcon } from "@chakra-ui/icons";
+import { ProjectItemTopBar } from "./ProjectItemTopBar";
 export interface IProjectItem {
   title: string;
   description: string;
@@ -31,7 +32,7 @@ interface IProjectItemProps {
 
 export const ProjectItems = observer(({ formHook }: IProjectItemProps) => {
   const { register, control, setValue } = formHook;
-  const { fields, append, move, remove } = useFieldArray({
+  const { fields, append, move, remove, insert } = useFieldArray({
     control,
     name: "projectItems",
   });
@@ -94,18 +95,18 @@ export const ProjectItems = observer(({ formHook }: IProjectItemProps) => {
                               <DragHandleIcon />
                             </Flex>
                             <Box>
-                              <Flex justifyContent="flex-end">
-                                <IconButton
-                                  size="xs"
-                                  background="transparent"
-                                  backgroundColor="transparent"
-                                  onClick={() => {
-                                    remove(index);
-                                  }}
-                                  aria-label="Remove"
-                                  icon={<DeleteIcon />}
-                                />
-                              </Flex>
+                              <ProjectItemTopBar
+                                itemLength={watchProjectItems.length}
+                                onRemove={() => {
+                                  remove(index);
+                                }}
+                                onAdd={() => {
+                                  insert(index + 1, {
+                                    title: "",
+                                    description: "",
+                                  });
+                                }}
+                              />
                               <Input
                                 value={index}
                                 key={"order" + field.id}
@@ -139,13 +140,6 @@ export const ProjectItems = observer(({ formHook }: IProjectItemProps) => {
                                       type="file"
                                     />
                                   </Box>
-                                  {/* <Input
-                                  key={"description" + field.id}
-                                  type="text"
-                                  {...register(
-                                    `projectItems.${index}.description`
-                                  )}
-                                /> */}
                                 </Flex>
                               </Flex>
                             </Box>
