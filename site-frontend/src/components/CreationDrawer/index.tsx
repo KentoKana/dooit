@@ -25,6 +25,7 @@ import { FormElement } from "../Forms/FormElement";
 import { IProjectItem, ProjectItems } from "./ProjectItems";
 
 export interface IProject {
+  name: string;
   projectItems: IProjectItem[];
 }
 
@@ -43,11 +44,13 @@ export const CreationDrawer = observer(
       register,
       handleSubmit,
       reset,
-      getValues,
       formState: { errors },
     } = formHook;
 
-    const [project, setProject] = useState<IProject>({ projectItems: [] });
+    const [project, setProject] = useState<IProject>({
+      name: "",
+      projectItems: [],
+    });
     const [progressCounter, setProgressCounter] = useState<number>(0);
 
     //#region Mutation handlers
@@ -71,7 +74,7 @@ export const CreationDrawer = observer(
           isClosable: true,
           position: "top",
         });
-        setProject({ projectItems: [] });
+        setProject({ name: dto.name, projectItems: [] });
       }
       reset();
     };
@@ -186,7 +189,7 @@ export const CreationDrawer = observer(
         project.projectItems.length !== 0
       ) {
         mutate({
-          name: "new proj",
+          name: project.name,
           projectItems: project.projectItems.map((item) => {
             return {
               heading: "",

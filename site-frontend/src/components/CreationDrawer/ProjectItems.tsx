@@ -1,12 +1,4 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Input,
-  Image,
-  Icon,
-  IconButton,
-} from "@chakra-ui/react";
+import { Box, Flex, Input, Image, IconButton } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import {
   DragDropContext,
