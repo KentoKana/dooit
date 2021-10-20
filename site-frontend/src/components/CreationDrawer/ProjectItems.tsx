@@ -1,4 +1,12 @@
-import { Box, Button, Flex, Input, Image } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Input,
+  Image,
+  Icon,
+  IconButton,
+} from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import {
   DragDropContext,
@@ -13,6 +21,7 @@ import {
   UseFormReturn,
   useWatch,
 } from "react-hook-form";
+import { DeleteIcon, DragHandleIcon } from "@chakra-ui/icons";
 export interface IProjectItem {
   title: string;
   description: string;
@@ -44,7 +53,7 @@ export const ProjectItems = observer(({ formHook }: IProjectItemProps) => {
   return (
     <>
       <DragDropContext onDragEnd={handleOnDragEnd}>
-        <Droppable droppableId="stories">
+        <Droppable droppableId="projects">
           {(provided) => {
             return (
               <Box {...provided.droppableProps} ref={provided.innerRef}>
@@ -76,60 +85,79 @@ export const ProjectItems = observer(({ formHook }: IProjectItemProps) => {
                     >
                       {(provided) => {
                         return (
-                          <Box
+                          <Flex
                             {...provided.dragHandleProps}
                             {...provided.draggableProps}
                             ref={provided.innerRef}
-                            height={"300px"}
+                            minHeight={"100px"}
                             width={"100%"}
-                            border="1px solid grey"
+                            my={4}
                           >
-                            <Button
-                              onClick={() => {
-                                remove(index);
-                              }}
-                            >
-                              Remove
-                            </Button>
-                            <Input
-                              value={index}
-                              key={"order" + field.id}
-                              {...register(`projectItems.${index}.order`)}
-                              type="hidden"
-                            />
                             <Flex
-                              justifyContent="center"
                               alignItems="center"
-                              height="100%"
-                              flexDirection="column"
+                              px={3}
+                              borderLeft="4px solid"
+                              borderColor="primary"
                             >
-                              {mediaPreviewUrl && (
-                                <Image
-                                  boxSize="300px"
-                                  objectFit="cover"
-                                  src={mediaPreviewUrl}
-                                  alt=""
-                                />
-                              )}
-                              <Input
-                                key={"imageAsFileList" + field.id}
-                                onChange={(e) => {
-                                  setValue(
-                                    `projectItems.${index}.imageAsFileList`,
-                                    e.target.files
-                                  );
-                                }}
-                                type="file"
-                              />
-                              <Input
-                                key={"description" + field.id}
-                                type="text"
-                                {...register(
-                                  `projectItems.${index}.description`
-                                )}
-                              />
+                              <DragHandleIcon />
                             </Flex>
-                          </Box>
+                            <Box>
+                              <Flex justifyContent="flex-end">
+                                <IconButton
+                                  size="xs"
+                                  background="transparent"
+                                  backgroundColor="transparent"
+                                  onClick={() => {
+                                    remove(index);
+                                  }}
+                                  aria-label="Remove"
+                                  icon={<DeleteIcon />}
+                                />
+                              </Flex>
+                              <Input
+                                value={index}
+                                key={"order" + field.id}
+                                {...register(`projectItems.${index}.order`)}
+                                type="hidden"
+                              />
+                              <Flex
+                                justifyContent="center"
+                                alignItems="center"
+                                height="100%"
+                              >
+                                <Flex>
+                                  <Box>
+                                    {mediaPreviewUrl && (
+                                      <Image
+                                        boxSize="50px"
+                                        objectFit="cover"
+                                        src={mediaPreviewUrl}
+                                        alt=""
+                                      />
+                                    )}
+                                    <Input
+                                      p={0}
+                                      key={"imageAsFileList" + field.id}
+                                      onChange={(e) => {
+                                        setValue(
+                                          `projectItems.${index}.imageAsFileList`,
+                                          e.target.files
+                                        );
+                                      }}
+                                      type="file"
+                                    />
+                                  </Box>
+                                  {/* <Input
+                                  key={"description" + field.id}
+                                  type="text"
+                                  {...register(
+                                    `projectItems.${index}.description`
+                                  )}
+                                /> */}
+                                </Flex>
+                              </Flex>
+                            </Box>
+                          </Flex>
                         );
                       }}
                     </Draggable>

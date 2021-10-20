@@ -1,7 +1,11 @@
 import {
+  Box,
   Button,
   DrawerFooter,
   Flex,
+  FormLabel,
+  Input,
+  SimpleGrid,
   Spinner,
   useToast,
 } from "@chakra-ui/react";
@@ -17,6 +21,7 @@ import { ProjectGetDto } from "../../Dtos/ProjectGetDto.dto";
 import { LoadingState } from "../../enums/LoadingState";
 import { UseStores } from "../../stores/StoreContexts";
 import { DrawerTemplate } from "../DrawerTemplate";
+import { FormElement } from "../Forms/FormElement";
 import { IProjectItem, ProjectItems } from "./ProjectItems";
 
 export interface IProject {
@@ -34,7 +39,13 @@ export const CreationDrawer = observer(
     const { userStore, uiStore } = UseStores();
     const toast = useToast();
     const formHook = useForm();
-    const { handleSubmit, reset } = formHook;
+    const {
+      register,
+      handleSubmit,
+      reset,
+      getValues,
+      formState: { errors },
+    } = formHook;
 
     const [project, setProject] = useState<IProject>({ projectItems: [] });
     const [progressCounter, setProgressCounter] = useState<number>(0);
@@ -198,9 +209,60 @@ export const CreationDrawer = observer(
         drawerHeader="Create Project"
       >
         <form onSubmit={handleSubmit(handleUpload)}>
-          <ProjectItems formHook={formHook} />
+          <Flex justifyContent="center" width="100%" direction="column">
+            <Box width="300px" mr={["40px"]}>
+              <Box p={3}>
+                <FormElement
+                  isRequired
+                  formLabel="Project Name"
+                  formFor={"name"}
+                  isInvalid={errors.name}
+                  formField={
+                    <Input
+                      borderRadius="sm"
+                      id="name"
+                      type="text"
+                      placeholder="Project Name"
+                      {...register("name", {
+                        required: "Please enter a project name",
+                      })}
+                    />
+                  }
+                  errorMessage={errors.firstName && errors.firstName.message}
+                />
+              </Box>
+              <Box>
+                <Box
+                  p={3}
+                  maxHeight="600px"
+                  overflow="auto"
+                  css={{
+                    scrollbarWidth: "thin",
+                    "&::-webkit-scrollbar": {
+                      width: "4px",
+                    },
+                    "&::-webkit-scrollbar-track": {
+                      width: "6px",
+                    },
+                    "&::-webkit-scrollbar-thumb": {
+                      borderRadius: "24px",
+                    },
+                  }}
+                >
+                  <ProjectItems formHook={formHook} />
+                </Box>
+              </Box>
+            </Box>
+          </Flex>
           <DrawerFooter>
-            <Button variant="outline" mr={3} onClick={onClose}>
+            <Button
+              variant="outline"
+              mr={3}
+              onClick={() => {
+                formHook.reset();
+                onClose();
+              }}
+            >
               Cancel
             </Button>
             <Button colorScheme="blue" type="submit">
