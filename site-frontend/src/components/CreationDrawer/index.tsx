@@ -5,6 +5,7 @@ import {
   Flex,
   Spinner,
   useToast,
+  Image,
 } from "@chakra-ui/react";
 import Compressor from "compressorjs";
 import { observer } from "mobx-react-lite";
@@ -18,6 +19,7 @@ import { ProjectGetDto } from "../../Dtos/ProjectGetDto.dto";
 import { LoadingState } from "../../enums/LoadingState";
 import { UseStores } from "../../stores/StoreContexts";
 import { DrawerTemplate } from "../DrawerTemplate";
+import { MediaArea } from "./MediaArea";
 import { IProjectItem } from "./ProjectItems";
 import { Sidebar } from "./Sidebar";
 
@@ -35,6 +37,7 @@ interface ICreationDrawerProps {
 export const CreationDrawer = observer(
   ({ isOpen, onClose, onProjectCreation }: ICreationDrawerProps) => {
     const { userStore, uiStore } = UseStores();
+
     const toast = useToast();
     const formHook = useForm<object>({
       defaultValues: {
@@ -215,10 +218,22 @@ export const CreationDrawer = observer(
         drawerHeader="Create Project"
       >
         <form onSubmit={handleSubmit(handleUpload)}>
-          <Flex justifyContent="center" width="100%" direction="column">
-            <Box width="300px" mr={["40px"]}>
+          <Flex
+            justifyContent="between"
+            width="100%"
+            maxWidth="1200px"
+            margin="auto"
+          >
+            <Box width="25%" mr={["40px"]} as="section">
               <Sidebar formHook={formHook} />
             </Box>
+            <Flex width="75%" as="section" justifyContent="center">
+              <MediaArea
+                onCropCompletion={(croppedFile) => {
+                  console.log(croppedFile);
+                }}
+              />
+            </Flex>
           </Flex>
           <DrawerFooter>
             <Button

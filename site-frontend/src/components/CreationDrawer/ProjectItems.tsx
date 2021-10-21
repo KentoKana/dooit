@@ -1,4 +1,12 @@
-import { Box, Flex, Input, Image, IconButton } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Input,
+  Image,
+  IconButton,
+  FormLabel,
+  Button,
+} from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import {
   DragDropContext,
@@ -54,14 +62,6 @@ export const ProjectItems = observer(({ formHook }: IProjectItemProps) => {
           {(provided) => {
             return (
               <Box {...provided.droppableProps} ref={provided.innerRef}>
-                <AddItemCard
-                  onClick={() => {
-                    append({
-                      title: "",
-                      description: "",
-                    });
-                  }}
-                />
                 {fields.map((field, index) => {
                   let mediaPreviewUrl: string | null = null;
                   if (
@@ -124,7 +124,7 @@ export const ProjectItems = observer(({ formHook }: IProjectItemProps) => {
                                 icon={<TriangleDownIcon />}
                               />
                             </Flex>
-                            <Box>
+                            <Box width="100%">
                               <ProjectItemTopBar
                                 itemLength={watchProjectItems.length}
                                 onRemove={() => {
@@ -158,25 +158,31 @@ export const ProjectItems = observer(({ formHook }: IProjectItemProps) => {
                               >
                                 <Flex>
                                   <Box>
-                                    {mediaPreviewUrl && (
-                                      <Image
-                                        boxSize="50px"
-                                        objectFit="cover"
-                                        src={mediaPreviewUrl}
-                                        alt=""
+                                    <FormLabel htmlFor={`media-${index}`}>
+                                      {mediaPreviewUrl ? (
+                                        <Image
+                                          boxSize="50px"
+                                          objectFit="cover"
+                                          src={mediaPreviewUrl}
+                                          alt=""
+                                        />
+                                      ) : (
+                                        <>Upload Image</>
+                                      )}
+                                      <Input
+                                        hidden
+                                        id={`media-${index}`}
+                                        p={0}
+                                        key={"imageAsFileList" + field.id}
+                                        onChange={(e) => {
+                                          setValue(
+                                            `projectItems.${index}.imageAsFileList`,
+                                            e.target.files
+                                          );
+                                        }}
+                                        type="file"
                                       />
-                                    )}
-                                    <Input
-                                      p={0}
-                                      key={"imageAsFileList" + field.id}
-                                      onChange={(e) => {
-                                        setValue(
-                                          `projectItems.${index}.imageAsFileList`,
-                                          e.target.files
-                                        );
-                                      }}
-                                      type="file"
-                                    />
+                                    </FormLabel>
                                   </Box>
                                 </Flex>
                               </Flex>

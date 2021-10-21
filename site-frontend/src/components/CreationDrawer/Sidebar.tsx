@@ -14,8 +14,8 @@ export const Sidebar = ({ formHook }: ISidebarProps) => {
   } = formHook;
   return (
     <Box>
-      <Box width="300px" mr={["40px"]}>
-        <Box p={3}>
+      <Box width="100%" mr={["40px"]}>
+        <Box>
           <FormElement
             isRequired
             formLabel="Project Name"
@@ -32,12 +32,11 @@ export const Sidebar = ({ formHook }: ISidebarProps) => {
                 })}
               />
             }
-            errorMessage={errors.firstName && errors.firstName.message}
+            errorMessage={errors.name && errors.name.message}
           />
         </Box>
         <Box>
           <Box
-            p={3}
             maxHeight="600px"
             overflow="auto"
             css={{
