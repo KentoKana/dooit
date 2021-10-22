@@ -4,10 +4,11 @@ import { FieldValues, UseFormReturn } from "react-hook-form";
 import { FormElement } from "../Forms/FormElement";
 import { ProjectItems } from "./ProjectItems";
 interface ISidebarProps {
+  onItemSelect: (itemIndex: number) => void;
   formHook: UseFormReturn<FieldValues, object>;
 }
 
-export const Sidebar = ({ formHook }: ISidebarProps) => {
+export const Sidebar = ({ formHook, onItemSelect }: ISidebarProps) => {
   const {
     register,
     formState: { errors },
@@ -52,7 +53,12 @@ export const Sidebar = ({ formHook }: ISidebarProps) => {
               },
             }}
           >
-            <ProjectItems formHook={formHook} />
+            <ProjectItems
+              onItemSelect={(newSelectedIndex) => {
+                onItemSelect(newSelectedIndex);
+              }}
+              formHook={formHook}
+            />
           </Box>
         </Box>
       </Box>

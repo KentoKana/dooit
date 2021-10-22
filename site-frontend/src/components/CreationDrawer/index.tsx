@@ -5,9 +5,7 @@ import {
   Flex,
   Spinner,
   useToast,
-  Image,
 } from "@chakra-ui/react";
-import Compressor from "compressorjs";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -58,6 +56,7 @@ export const CreationDrawer = observer(
       projectItems: [],
     });
     const [progressCounter, setProgressCounter] = useState<number>(0);
+    const [selectedItemIndex, setSelectedItemIndex] = useState(0);
 
     //#region Mutation handlers
     const onError = (err: HttpError) => {
@@ -102,79 +101,64 @@ export const CreationDrawer = observer(
         onClose();
         const service = new ProjectCreationService(userStore, uiStore);
         projectData?.projectItems.flatMap((item) => {
-          if (item.imageAsFileList && item.imageAsFileList[0]) {
-            const promise = new Promise((resolve) => {
-              new Compressor(item.imageAsFileList![0], {
-                quality: 0.7,
-                convertSize: 2000000,
-                maxHeight: 1920,
-                maxWidth: 1920,
-                success: (compressedImage: File) => {
-                  item.imageAsFile = compressedImage;
-                  item.imageUrl = URL.createObjectURL(compressedImage);
-                  resolve(item);
-                },
-              });
-            });
-            promise.then(() => {
-              setTimeout(() => {
-                if (item.imageAsFile) {
-                  service.uploadImage(
-                    item.imageAsFile,
-                    //#region On upload progress
-                    (progress) => {
-                      onProjectCreation(LoadingState.Loading);
-                      setProject((prev) => {
-                        prev.projectItems.forEach((prevItemState) => {
-                          if (prevItemState.order === item.order) {
-                            prevItemState.progress = progress;
-                          }
-                        });
-                        return {
-                          ...prev,
-                        };
+          if (item.mediaAsFile) {
+            setTimeout(() => {
+              if (item.mediaAsFile) {
+                service.uploadImage(
+                  item.mediaAsFile,
+                  //#region On upload progress
+                  (progress) => {
+                    onProjectCreation(LoadingState.Loading);
+                    setProject((prev) => {
+                      prev.projectItems.forEach((prevItemState) => {
+                        if (prevItemState.order === item.order) {
+                          prevItemState.progress = progress;
+                        }
                       });
+                      return {
+                        ...prev,
+                      };
+                    });
 
-                      if (!toast.isActive("creating-project")) {
-                        toast({
-                          id: "creating-project",
-                          title: (
-                            <Flex alignItems="center">
-                              Creating your project <Spinner ml="5px" />
-                            </Flex>
-                          ),
-                          status: "info",
-                          isClosable: true,
-                          position: "top",
-                          description: (
-                            <Flex>Frantically generating your project...</Flex>
-                          ),
-                        });
-                      }
-                    },
-                    //#endregion
-                    //#region On upload completion
-                    (url) => {
-                      if (url) {
-                        setProgressCounter((prev) => {
-                          return (prev += 1);
-                        });
-                        item.imageAsFile = undefined;
-                        item.imageAsFileList = undefined;
-                        item.imageUrl = url;
-                        item.progress = undefined;
-                      }
-                    },
-                    //#endregion
-                    //#region On upload error
-                    (error) => {
-                      console.log(error);
+                    if (!toast.isActive("creating-project")) {
+                      toast({
+                        id: "creating-project",
+                        title: (
+                          <Flex alignItems="center">
+                            Creating your project <Spinner ml="5px" />
+                          </Flex>
+                        ),
+                        status: "info",
+                        isClosable: true,
+                        position: "top",
+                        description: (
+                          <Flex>Frantically generating your project...</Flex>
+                        ),
+                      });
                     }
-                    //#endregion
-                  );
-                }
-              }, 800);
-            });
+                  },
+                  //#endregion
+                  //#region On upload completion
+                  (url) => {
+                    if (url) {
+                      setProgressCounter((prev) => {
+                        return (prev += 1);
+                      });
+                      item.mediaAsFile = undefined;
+                      item.mediaAsFile = undefined;
+                      item.imageUrl = url;
+                      item.progress = undefined;
+                    }
+                  },
+                  //#endregion
+                  //#region On upload error
+                  (error) => {
+                    console.log(error);
+                  }
+                  //#endregion
+                );
+              }
+            }, 800);
           } else {
             setProgressCounter((prev) => {
               return (prev += 1);
@@ -225,13 +209,17 @@ export const CreationDrawer = observer(
             margin="auto"
           >
             <Box width="25%" mr={["40px"]} as="section">
-              <Sidebar formHook={formHook} />
+              <Sidebar
+                onItemSelect={(selectedItemIndex) => {
+                  setSelectedItemIndex(selectedItemIndex);
+                }}
+                formHook={formHook}
+              />
             </Box>
             <Flex width="75%" as="section" justifyContent="center">
               <MediaArea
-                onCropCompletion={(croppedFile) => {
-                  console.log(croppedFile);
-                }}
+                formHook={formHook}
+                selectedItemIndex={selectedItemIndex}
               />
             </Flex>
           </Flex>
