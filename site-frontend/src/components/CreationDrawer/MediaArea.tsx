@@ -1,4 +1,4 @@
-import { Box, Flex, IconButton, Text } from "@chakra-ui/react";
+import { Box, Flex, IconButton, Text, Image, Skeleton } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
 import Cropper from "react-easy-crop";
 import { UseFormReturn, useWatch } from "react-hook-form";
@@ -9,8 +9,9 @@ import { useDropzone } from "react-dropzone";
 
 import "./styles.css";
 import { Area } from "react-easy-crop/types";
-import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
+import { CheckIcon, CloseIcon, EditIcon } from "@chakra-ui/icons";
 import { IProject } from ".";
+import { LoadingState } from "../../enums/LoadingState";
 
 interface IMediaAreaProps {
   selectedItemIndex: number;
@@ -20,6 +21,10 @@ interface IMediaAreaProps {
 export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
+  const [showCropArea, setShowCropArea] = useState<boolean>(true);
+  const [mediaLoadingState, setMediaLoadingState] = useState<LoadingState>(
+    LoadingState.None
+  );
 
   const [cropCompleted, setCropCompleted] = useState<{
     croppedAreaPixels: Area;
@@ -37,6 +42,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
 
   const onCropComplete = useCallback(
     async (croppedAreaPixels: Area) => {
+      setMediaLoadingState(LoadingState.Loading);
       try {
         if (watchProjectItems && watchProjectItems[selectedItemIndex]) {
           const croppedImage = await getCroppedImg(
@@ -46,8 +52,10 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
           const file = dataURLtoFile(croppedImage.toDataURL(), "");
           setValue(`projectItems.${selectedItemIndex}.mediaAsFile`, file);
         }
+        setMediaLoadingState(LoadingState.Loaded);
       } catch (e) {
         console.error(e);
+        setMediaLoadingState(LoadingState.Error);
       }
     },
     [setValue, selectedItemIndex, watchProjectItems]
@@ -59,53 +67,95 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
       watchProjectItems[selectedItemIndex] &&
       watchProjectItems[selectedItemIndex].mediaUrl ? (
         <>
-          <IconButton
-            icon={<CloseIcon />}
-            aria-label="Remove image"
-            alignSelf="end"
-            onClick={() => {
-              setValue(
-                `projectItems.${selectedItemIndex}.mediaAsFile`,
-                undefined
-              );
-              setValue(`projectItems.${selectedItemIndex}.mediaUrl`, undefined);
-            }}
-          />
-          <IconButton
-            icon={<CheckIcon />}
-            aria-label="Confirm to crop image"
-            alignSelf="end"
-            onClick={() => {
-              if (cropCompleted) {
-                onCropComplete(cropCompleted.croppedAreaPixels);
-                setCropCompleted(undefined);
-              }
-            }}
-          />
-          <Box
-            className="crop-container"
-            css={{
-              width: "100%",
-              height: "400px",
-              position: "relative",
-              background: "#333",
-            }}
-          >
-            <Cropper
-              image={watchProjectItems[selectedItemIndex].mediaUrl}
-              crop={crop}
-              zoom={zoom}
-              aspect={1}
-              onCropChange={setCrop}
-              onCropComplete={(_, croppedAreaPixels) => {
-                setCropCompleted({
-                  croppedAreaPixels,
-                  completed: true,
-                });
+          <Flex justifyContent="flex-end">
+            <IconButton
+              background="transparent"
+              icon={<CloseIcon />}
+              aria-label="Remove image"
+              alignSelf="end"
+              onClick={() => {
+                setValue(
+                  `projectItems.${selectedItemIndex}.mediaAsFile`,
+                  undefined
+                );
+                setValue(
+                  `projectItems.${selectedItemIndex}.mediaUrl`,
+                  undefined
+                );
               }}
-              onZoomChange={setZoom}
             />
-          </Box>
+            {showCropArea && (
+              <IconButton
+                background="transparent"
+                icon={<CheckIcon />}
+                aria-label="Confirm to crop image"
+                alignSelf="end"
+                onClick={() => {
+                  if (cropCompleted) {
+                    onCropComplete(cropCompleted.croppedAreaPixels);
+                    setCropCompleted(undefined);
+                    setShowCropArea(false);
+                  }
+                }}
+              />
+            )}
+            {!showCropArea && (
+              <IconButton
+                background="transparent"
+                icon={<EditIcon />}
+                aria-label="Edit media"
+                alignSelf="end"
+                onClick={() => {
+                  setShowCropArea(true);
+                }}
+              />
+            )}
+          </Flex>
+          {showCropArea ? (
+            <Box
+              className="crop-container"
+              css={{
+                width: "100%",
+                height: "400px",
+                position: "relative",
+                background: "#333",
+              }}
+            >
+              <Cropper
+                image={watchProjectItems[selectedItemIndex].mediaUrl}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                onCropChange={setCrop}
+                onCropComplete={(_, croppedAreaPixels) => {
+                  setCropCompleted({
+                    croppedAreaPixels,
+                    completed: true,
+                  });
+                }}
+                onZoomChange={setZoom}
+              />
+            </Box>
+          ) : (
+            <Flex justifyContent="center">
+              {mediaLoadingState === LoadingState.Loaded ? (
+                <Image
+                  boxSize="400px"
+                  src={URL.createObjectURL(
+                    watchProjectItems[selectedItemIndex].mediaAsFile
+                  )}
+                />
+              ) : (
+                <Skeleton
+                  mt="4"
+                  noOfLines={4}
+                  spacing="4"
+                  height="400px"
+                  width="400px"
+                />
+              )}
+            </Flex>
+          )}
         </>
       ) : (
         <Flex
@@ -121,6 +171,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
           <input
             {...getInputProps()}
             onChange={(e) => {
+              setShowCropArea(true);
               new Compressor(e!.target!.files![0]!, {
                 ...defaultCompressorOptions,
                 success: (compressedImage: File) => {
