@@ -8,10 +8,8 @@ import Compressor from "compressorjs";
 import { useDropzone } from "react-dropzone";
 
 import "./styles.css";
-import { useDebounce } from "../../hooks/useDebounce";
 import { Area } from "react-easy-crop/types";
-import { CloseIcon } from "@chakra-ui/icons";
-import { useDebouncedEffect } from "../../hooks/useDebouncedEffect";
+import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import { IProject } from ".";
 
 interface IMediaAreaProps {
@@ -27,14 +25,6 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
     croppedAreaPixels: Area;
     completed: boolean;
   }>();
-
-  const debouncedCropCompleted = useDebounce<
-    | {
-        croppedAreaPixels: Area;
-        completed: boolean;
-      }
-    | undefined
-  >(cropCompleted, 300);
 
   const { setValue, control } = formHook;
   const watchProjectItems = useWatch({
@@ -54,32 +44,13 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
             croppedAreaPixels
           );
           const file = dataURLtoFile(croppedImage.toDataURL(), "");
-          new Compressor(file!, {
-            ...defaultCompressorOptions,
-            success: (compressedImage: File) => {
-              setValue(
-                `projectItems.${selectedItemIndex}.mediaAsFile`,
-                compressedImage
-              );
-            },
-          });
+          setValue(`projectItems.${selectedItemIndex}.mediaAsFile`, file);
         }
       } catch (e) {
         console.error(e);
       }
     },
     [setValue, selectedItemIndex, watchProjectItems]
-  );
-
-  useDebouncedEffect(
-    () => {
-      if (debouncedCropCompleted?.completed) {
-        onCropComplete(debouncedCropCompleted.croppedAreaPixels);
-        setCropCompleted(undefined);
-      }
-    },
-    [cropCompleted, onCropComplete, debouncedCropCompleted],
-    300
   );
 
   return (
@@ -100,6 +71,17 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
               setValue(`projectItems.${selectedItemIndex}.mediaUrl`, undefined);
             }}
           />
+          <IconButton
+            icon={<CheckIcon />}
+            aria-label="Confirm to crop image"
+            alignSelf="end"
+            onClick={() => {
+              if (cropCompleted) {
+                onCropComplete(cropCompleted.croppedAreaPixels);
+                setCropCompleted(undefined);
+              }
+            }}
+          />
           <Box
             className="crop-container"
             css={{
@@ -113,7 +95,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
               image={watchProjectItems[selectedItemIndex].mediaUrl}
               crop={crop}
               zoom={zoom}
-              aspect={4 / 3}
+              aspect={1}
               onCropChange={setCrop}
               onCropComplete={(_, croppedAreaPixels) => {
                 setCropCompleted({
@@ -139,22 +121,18 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
           <input
             {...getInputProps()}
             onChange={(e) => {
-              const reader = new FileReader();
-              reader.readAsDataURL(e!.target!.files![0]);
-              reader.addEventListener("load", () => {
-                new Compressor(e!.target!.files![0]!, {
-                  ...defaultCompressorOptions,
-                  success: (compressedImage: File) => {
-                    setValue(
-                      `projectItems.${selectedItemIndex}.mediaAsFile`,
-                      compressedImage
-                    );
-                    setValue(
-                      `projectItems.${selectedItemIndex}.mediaUrl`,
-                      reader.result as string
-                    );
-                  },
-                });
+              new Compressor(e!.target!.files![0]!, {
+                ...defaultCompressorOptions,
+                success: (compressedImage: File) => {
+                  setValue(
+                    `projectItems.${selectedItemIndex}.mediaAsFile`,
+                    compressedImage
+                  );
+                  setValue(
+                    `projectItems.${selectedItemIndex}.mediaUrl`,
+                    URL.createObjectURL(compressedImage)
+                  );
+                },
               });
             }}
           />
@@ -166,7 +144,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
 };
 
 const defaultCompressorOptions = {
-  quality: 0.7,
+  quality: 0.6,
   convertSize: 2000000,
   maxHeight: 1920,
   maxWidth: 1920,

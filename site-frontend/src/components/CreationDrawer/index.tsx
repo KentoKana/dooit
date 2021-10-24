@@ -49,7 +49,7 @@ export const CreationDrawer = observer(
         ],
       },
     });
-    const { handleSubmit, reset, getValues } = formHook;
+    const { handleSubmit, reset } = formHook;
 
     const [project, setProject] = useState<IProject>({
       name: "",
@@ -79,8 +79,6 @@ export const CreationDrawer = observer(
           isClosable: true,
           position: "top",
         });
-        reset();
-        setProject({ name: "", projectItems: [] });
       }
     };
 
@@ -192,11 +190,11 @@ export const CreationDrawer = observer(
             };
           }),
         });
+        reset();
         setProgressCounter(0);
       }
       return () => {
         isMounted = false;
-        reset();
       };
     }, [progressCounter, project, mutate, reset]);
 
