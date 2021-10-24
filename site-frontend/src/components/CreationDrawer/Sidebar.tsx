@@ -1,11 +1,12 @@
 import { Input } from "@chakra-ui/input";
 import { Box } from "@chakra-ui/layout";
-import { FieldValues, UseFormReturn } from "react-hook-form";
+import { UseFormReturn } from "react-hook-form";
+import { IProject } from ".";
 import { FormElement } from "../Forms/FormElement";
 import { ProjectItems } from "./ProjectItems";
 interface ISidebarProps {
   onItemSelect: (itemIndex: number) => void;
-  formHook: UseFormReturn<FieldValues, object>;
+  formHook: UseFormReturn<IProject, object>;
 }
 
 export const Sidebar = ({ formHook, onItemSelect }: ISidebarProps) => {
@@ -21,7 +22,7 @@ export const Sidebar = ({ formHook, onItemSelect }: ISidebarProps) => {
             isRequired
             formLabel="Project Name"
             formFor={"name"}
-            isInvalid={errors.name}
+            isInvalid={errors.name ? true : false}
             formField={
               <Input
                 borderRadius="sm"

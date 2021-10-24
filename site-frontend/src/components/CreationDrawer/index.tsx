@@ -37,7 +37,7 @@ export const CreationDrawer = observer(
     const { userStore, uiStore } = UseStores();
 
     const toast = useToast();
-    const formHook = useForm<object>({
+    const formHook = useForm<IProject>({
       defaultValues: {
         name: "",
         projectItems: [
@@ -49,7 +49,7 @@ export const CreationDrawer = observer(
         ],
       },
     });
-    const { handleSubmit, reset } = formHook;
+    const { handleSubmit, reset, getValues } = formHook;
 
     const [project, setProject] = useState<IProject>({
       name: "",
@@ -79,10 +79,11 @@ export const CreationDrawer = observer(
           isClosable: true,
           position: "top",
         });
-        setProject({ name: dto.name, projectItems: [] });
+        reset();
+        setProject({ name: "", projectItems: [] });
       }
-      reset();
     };
+
     const { mutate } = useMutation(
       async (creationDto: ProjectCreateDto) => {
         const projectService = new ProjectCreationService(userStore, uiStore);
@@ -146,7 +147,7 @@ export const CreationDrawer = observer(
                       });
                       item.mediaAsFile = undefined;
                       item.mediaAsFile = undefined;
-                      item.imageUrl = url;
+                      item.mediaUrl = url;
                       item.progress = undefined;
                     }
                   },
@@ -174,7 +175,9 @@ export const CreationDrawer = observer(
 
     // Submit data once all project items have been processed.
     useEffect(() => {
+      let isMounted = true;
       if (
+        isMounted &&
         progressCounter === project.projectItems.length &&
         project.projectItems.length !== 0
       ) {
@@ -183,7 +186,7 @@ export const CreationDrawer = observer(
           projectItems: project.projectItems.map((item) => {
             return {
               heading: "",
-              imageUrl: item.imageUrl,
+              imageUrl: item.mediaUrl,
               imageAlt: "",
               description: item.description,
             };
@@ -191,7 +194,11 @@ export const CreationDrawer = observer(
         });
         setProgressCounter(0);
       }
-    }, [progressCounter, project, mutate]);
+      return () => {
+        isMounted = false;
+        reset();
+      };
+    }, [progressCounter, project, mutate, reset]);
 
     return (
       <DrawerTemplate
@@ -216,7 +223,12 @@ export const CreationDrawer = observer(
                 formHook={formHook}
               />
             </Box>
-            <Flex width="75%" as="section" justifyContent="center">
+            <Flex
+              width="75%"
+              as="section"
+              justifyContent="center"
+              direction="column"
+            >
               <MediaArea
                 formHook={formHook}
                 selectedItemIndex={selectedItemIndex}
@@ -228,7 +240,7 @@ export const CreationDrawer = observer(
               variant="outline"
               mr={3}
               onClick={() => {
-                formHook.reset();
+                reset();
                 onClose();
               }}
             >

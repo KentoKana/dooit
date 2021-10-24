@@ -1,12 +1,4 @@
-import {
-  Box,
-  Flex,
-  Input,
-  Image,
-  IconButton,
-  FormLabel,
-  Link,
-} from "@chakra-ui/react";
+import { Box, Flex, Input, Image, IconButton, Link } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import {
   DragDropContext,
@@ -14,22 +6,18 @@ import {
   Draggable,
   DropResult,
 } from "react-beautiful-dnd";
-import {
-  FieldValues,
-  useFieldArray,
-  UseFormReturn,
-  useWatch,
-} from "react-hook-form";
+import { useFieldArray, UseFormReturn, useWatch } from "react-hook-form";
 import {
   DragHandleIcon,
   TriangleDownIcon,
   TriangleUpIcon,
 } from "@chakra-ui/icons";
 import { ProjectItemTopBar } from "./ProjectItemTopBar";
+import { IProject } from ".";
 export interface IProjectItem {
   title: string;
   description: string;
-  imageUrl?: string;
+  mediaUrl?: string;
   alt?: string;
   mediaAsFile?: File;
   order: number;
@@ -38,12 +26,12 @@ export interface IProjectItem {
 
 interface IProjectItemProps {
   onItemSelect: (selectedItemIndex: number) => void;
-  formHook: UseFormReturn<FieldValues, object>;
+  formHook: UseFormReturn<IProject, object>;
 }
 
 export const ProjectItems = observer(
   ({ formHook, onItemSelect }: IProjectItemProps) => {
-    const { register, control, setValue } = formHook;
+    const { register, control } = formHook;
     const { fields, move, remove, insert, swap } = useFieldArray({
       control,
       name: "projectItems",
@@ -63,11 +51,11 @@ export const ProjectItems = observer(
               return (
                 <Box {...provided.droppableProps} ref={provided.innerRef}>
                   {fields.map((field, index) => {
-                    let mediaPreviewUrl: string | null = null;
+                    let mediaPreviewUrl: string | undefined = undefined;
                     if (
                       watchProjectItems &&
                       watchProjectItems[index] &&
-                      watchProjectItems[index].mediaAsFile
+                      watchProjectItems[index].mediaUrl
                     ) {
                       mediaPreviewUrl = URL.createObjectURL(
                         watchProjectItems[index].mediaAsFile
@@ -163,31 +151,14 @@ export const ProjectItems = observer(
                                   >
                                     <Flex>
                                       <Box>
-                                        <FormLabel htmlFor={`media-${index}`}>
-                                          {mediaPreviewUrl ? (
-                                            <Image
-                                              boxSize="50px"
-                                              objectFit="cover"
-                                              src={mediaPreviewUrl}
-                                              alt=""
-                                            />
-                                          ) : (
-                                            <>Upload Image</>
-                                          )}
-                                          <Input
-                                            hidden
-                                            id={`media-${index}`}
-                                            p={0}
-                                            key={"mediaAsFile" + field.id}
-                                            onChange={(e) => {
-                                              setValue(
-                                                `projectItems.${index}.mediaAsFile`,
-                                                e.target.files
-                                              );
-                                            }}
-                                            type="file"
+                                        {mediaPreviewUrl && (
+                                          <Image
+                                            boxSize="50px"
+                                            objectFit="cover"
+                                            src={mediaPreviewUrl}
+                                            alt=""
                                           />
-                                        </FormLabel>
+                                        )}
                                       </Box>
                                     </Flex>
                                   </Flex>
