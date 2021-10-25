@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/icons";
 import { ProjectItemTopBar } from "./ProjectItemTopBar";
 import { IProject } from ".";
+import { useState } from "react";
 export interface IProjectItem {
   title: string;
   description: string;
@@ -31,6 +32,7 @@ interface IProjectItemProps {
 
 export const ProjectItems = observer(
   ({ formHook, onItemSelect }: IProjectItemProps) => {
+    const [selectedItemIndex, setSelectedItemIndex] = useState<number>(0);
     const { register, control } = formHook;
     const { fields, move, remove, insert, swap } = useFieldArray({
       control,
@@ -73,6 +75,7 @@ export const ProjectItems = observer(
                               href="#"
                               onClick={() => {
                                 onItemSelect(index);
+                                setSelectedItemIndex(index);
                               }}
                             >
                               <Flex
@@ -89,7 +92,11 @@ export const ProjectItems = observer(
                                   alignItems="center"
                                   px={3}
                                   borderLeft="4px solid"
-                                  borderColor="primary"
+                                  borderColor={
+                                    selectedItemIndex === index
+                                      ? "primary"
+                                      : "grey.100"
+                                  }
                                   direction="column"
                                 >
                                   <IconButton
