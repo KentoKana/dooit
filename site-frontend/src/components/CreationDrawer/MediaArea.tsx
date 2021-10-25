@@ -1,5 +1,4 @@
 import {
-  Box,
   Flex,
   IconButton,
   Text,
@@ -7,10 +6,8 @@ import {
   Skeleton,
   useDisclosure,
   Link,
-  Button,
 } from "@chakra-ui/react";
-import { useCallback, useEffect, useState } from "react";
-import Cropper from "react-easy-crop";
+import { useCallback, useState } from "react";
 import { UseFormReturn, useWatch } from "react-hook-form";
 import getCroppedImg from "./cropImage";
 import { dataURLtoFile } from "./dataUrlToFile";
@@ -22,7 +19,7 @@ import { Area } from "react-easy-crop/types";
 import { CloseIcon, EditIcon } from "@chakra-ui/icons";
 import { IProject } from ".";
 import { LoadingState } from "../../enums/LoadingState";
-import { ModalTemplate } from "../ModalTemplate";
+import { MediaEditModal } from "./MediaEditModal";
 
 interface IMediaAreaProps {
   selectedItemIndex: number;
@@ -30,8 +27,6 @@ interface IMediaAreaProps {
 }
 
 export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
   const { setValue, control } = formHook;
   const watchProjectItems = useWatch({
     name: `projectItems`,
@@ -170,52 +165,22 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
         </Flex>
       )}
       {watchProjectItems && watchProjectItems[selectedItemIndex] && (
-        <ModalTemplate
+        <MediaEditModal
           isOpen={isOpen}
+          onCropConfirmation={() => {
+            if (croppedAreaPixels) {
+              onCropComplete(croppedAreaPixels);
+              setCroppedAreaPixels(undefined);
+              setShowCropArea(false);
+            }
+            onClose();
+          }}
           onClose={onClose}
-          footer={
-            <Flex justifyContent="space-between" w="100%">
-              <Button
-                width="100%"
-                variant="primary"
-                aria-label="Confirm to crop image"
-                alignSelf="end"
-                onClick={() => {
-                  if (croppedAreaPixels) {
-                    onCropComplete(croppedAreaPixels);
-                    setCroppedAreaPixels(undefined);
-                    setShowCropArea(false);
-                  }
-                  onClose();
-                }}
-              >
-                Crop
-              </Button>
-            </Flex>
-          }
-        >
-          <Box
-            className="crop-container"
-            css={{
-              width: "100%",
-              height: "400px",
-              position: "relative",
-              background: "#333",
-            }}
-          >
-            <Cropper
-              image={watchProjectItems[selectedItemIndex].mediaUrl}
-              crop={crop}
-              zoom={zoom}
-              aspect={1}
-              onCropChange={setCrop}
-              onCropComplete={(_, croppedAreaPixels) => {
-                setCroppedAreaPixels(croppedAreaPixels);
-              }}
-              onZoomChange={setZoom}
-            />
-          </Box>
-        </ModalTemplate>
+          onCropAreaChange={(area) => {
+            setCroppedAreaPixels(area);
+          }}
+          mediaUrl={watchProjectItems[selectedItemIndex].mediaUrl!}
+        />
       )}
     </>
   );
