@@ -226,6 +226,7 @@ export const CreationDrawer = observer(
               as="section"
               justifyContent="center"
               direction="column"
+              alignItems="center"
             >
               <MediaArea
                 formHook={formHook}

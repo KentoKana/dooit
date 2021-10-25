@@ -6,6 +6,7 @@ import {
   Skeleton,
   useDisclosure,
   Link,
+  Button,
 } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
 import { UseFormReturn, useWatch } from "react-hook-form";
@@ -20,6 +21,11 @@ import { CloseIcon, EditIcon } from "@chakra-ui/icons";
 import { IProject } from ".";
 import { LoadingState } from "../../enums/LoadingState";
 import { MediaEditModal } from "./MediaEditModal";
+
+enum EDragState {
+  None,
+  DragEnter,
+}
 
 interface IMediaAreaProps {
   selectedItemIndex: number;
@@ -43,10 +49,41 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
     LoadingState.None
   );
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area>();
+  const [dropzoneDragState, setDropzoneDragState] = useState<EDragState>(
+    EDragState.None
+  );
 
   const { onClose, onOpen, isOpen } = useDisclosure();
 
   const { getRootProps, getInputProps } = useDropzone({
+    onDragEnter: () => {
+      setDropzoneDragState(EDragState.DragEnter);
+    },
+    onDragLeave: () => {
+      setDropzoneDragState(EDragState.None);
+    },
+    onDropAccepted: () => {
+      setDropzoneDragState(EDragState.None);
+    },
+    onDrop: (files) => {
+      onOpen();
+      setMediaLoadingState(LoadingState.Loading);
+      new Compressor(files[0]!, {
+        ...defaultCompressorOptions,
+        success: (compressedImage: File) => {
+          setValue(
+            `projectItems.${selectedItemIndex}.mediaAsFile`,
+            compressedImage
+          );
+          setValue(
+            `projectItems.${selectedItemIndex}.mediaUrl`,
+            URL.createObjectURL(compressedImage)
+          );
+          setShowCropArea(true);
+          setMediaLoadingState(LoadingState.Loaded);
+        },
+      });
+    },
     multiple: false,
   });
 
@@ -77,7 +114,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
       watchProjectItems[selectedItemIndex] &&
       watchProjectItems[selectedItemIndex].mediaUrl ? (
         <>
-          <Flex justifyContent="flex-end">
+          <Flex justifyContent="flex-end" width="100%" maxWidth="400px">
             <IconButton
               background="transparent"
               icon={<CloseIcon />}
@@ -129,40 +166,26 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
           </Flex>
         </>
       ) : (
-        <Flex
+        <Button
+          variant="unstyled"
           {...getRootProps()}
-          border="1px dashed"
+          display="flex"
+          borderWidth="1px"
           borderColor="primary"
+          borderStyle={
+            dropzoneDragState === EDragState.DragEnter ? "solid" : "dashed"
+          }
           w="100%"
           h="100%"
+          maxWidth="400px"
+          maxHeight="400px"
           borderRadius="sm"
           justifyContent="center"
           alignItems="center"
         >
-          <input
-            {...getInputProps()}
-            onChange={(e) => {
-              onOpen();
-              setMediaLoadingState(LoadingState.Loading);
-              new Compressor(e!.target!.files![0]!, {
-                ...defaultCompressorOptions,
-                success: (compressedImage: File) => {
-                  setValue(
-                    `projectItems.${selectedItemIndex}.mediaAsFile`,
-                    compressedImage
-                  );
-                  setValue(
-                    `projectItems.${selectedItemIndex}.mediaUrl`,
-                    URL.createObjectURL(compressedImage)
-                  );
-                  setShowCropArea(true);
-                  setMediaLoadingState(LoadingState.Loaded);
-                },
-              });
-            }}
-          />
+          <input {...getInputProps()} />
           <Text>Drag 'n' drop some files here, or click to select files</Text>
-        </Flex>
+        </Button>
       )}
       {watchProjectItems && watchProjectItems[selectedItemIndex] && (
         <MediaEditModal
