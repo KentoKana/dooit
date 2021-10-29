@@ -1,4 +1,4 @@
-import { Box, Flex, Input, Image, IconButton, Link } from "@chakra-ui/react";
+import { Box, Flex, Input, Image, IconButton, Button } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import {
   DragDropContext,
@@ -41,6 +41,8 @@ export const ProjectItems = observer(
     const handleOnDragEnd = (result: DropResult) => {
       if (!result.destination) return;
       move(result.source.index, result.destination.index);
+      setSelectedItemIndex(result.destination.index);
+      onItemSelect(result.destination.index);
     };
 
     const watchProjectItems = useWatch({ name: "projectItems", control });
@@ -71,107 +73,124 @@ export const ProjectItems = observer(
                       >
                         {(provided) => {
                           return (
-                            <Link
-                              href="#"
-                              onClick={() => {
-                                onItemSelect(index);
-                                setSelectedItemIndex(index);
-                              }}
+                            <Flex
+                              {...provided.dragHandleProps}
+                              {...provided.draggableProps}
+                              ref={provided.innerRef}
+                              minHeight={"100px"}
+                              width={"100%"}
+                              my={3}
+                              direction="column"
                             >
-                              <Flex
-                                {...provided.dragHandleProps}
-                                {...provided.draggableProps}
-                                ref={provided.innerRef}
-                                minHeight={"100px"}
-                                width={"100%"}
-                                my={6}
-                              >
-                                <Flex
-                                  title="Move down"
-                                  justifyContent="space-between"
-                                  alignItems="center"
-                                  px={3}
-                                  borderLeft="4px solid"
-                                  borderColor={
-                                    selectedItemIndex === index
-                                      ? "primary"
-                                      : "grey.100"
+                              <ProjectItemTopBar
+                                itemLength={watchProjectItems.length}
+                                onRemove={() => {
+                                  if (watchProjectItems.length === 1) {
+                                    remove(index);
+                                    insert(index, {
+                                      title: "",
+                                      description: "",
+                                    });
+                                  } else {
+                                    remove(index);
                                   }
-                                  direction="column"
-                                >
-                                  <IconButton
-                                    disabled={index === 0}
-                                    onClick={() => {
-                                      swap(index, index - 1);
-                                    }}
-                                    background="transparent"
-                                    aria-label="Move Up"
-                                    size="xs"
-                                    icon={<TriangleUpIcon />}
-                                  />
-                                  <DragHandleIcon title="Drag item" />
-                                  <IconButton
-                                    title="Move up"
-                                    disabled={
-                                      index === watchProjectItems.length - 1
-                                    }
-                                    onClick={() => {
-                                      swap(index, index + 1);
-                                    }}
-                                    background="transparent"
-                                    aria-label="Move Down"
-                                    size="xs"
-                                    icon={<TriangleDownIcon />}
-                                  />
-                                </Flex>
-                                <Box width="100%">
-                                  <ProjectItemTopBar
-                                    itemLength={watchProjectItems.length}
-                                    onRemove={() => {
-                                      if (watchProjectItems.length === 1) {
-                                        remove(index);
-                                        insert(index, {
-                                          title: "",
-                                          description: "",
-                                        });
-                                      } else {
-                                        remove(index);
-                                      }
-                                    }}
-                                    onAdd={() => {
-                                      insert(index + 1, {
-                                        title: "",
-                                        description: "",
-                                      });
-                                    }}
-                                  />
-                                  <Input
-                                    value={index}
-                                    key={"order" + field.id}
-                                    {...register(`projectItems.${index}.order`)}
-                                    type="hidden"
-                                  />
+                                }}
+                                onAdd={() => {
+                                  insert(index + 1, {
+                                    title: "",
+                                    description: "",
+                                  });
+                                }}
+                              />
+                              <Flex height="110px">
+                                <Box w="10%">
                                   <Flex
-                                    justifyContent="center"
+                                    w="10%"
+                                    height="110px"
+                                    justifyContent="space-between"
                                     alignItems="center"
-                                    height="100%"
+                                    px={3}
+                                    borderLeft="4px solid"
+                                    borderColor={
+                                      selectedItemIndex === index
+                                        ? "primary"
+                                        : "grey.100"
+                                    }
+                                    direction="column"
                                   >
-                                    <Flex>
-                                      <Box>
-                                        {mediaPreviewUrl && (
-                                          <Image
-                                            boxSize="50px"
-                                            objectFit="cover"
-                                            src={mediaPreviewUrl}
-                                            alt=""
-                                          />
-                                        )}
-                                      </Box>
-                                    </Flex>
+                                    <IconButton
+                                      disabled={index === 0}
+                                      onClick={() => {
+                                        swap(index, index - 1);
+                                        setSelectedItemIndex(index - 1);
+                                        onItemSelect(index - 1);
+                                      }}
+                                      background="transparent"
+                                      aria-label="Move Up"
+                                      size="xs"
+                                      icon={<TriangleUpIcon />}
+                                    />
+                                    <DragHandleIcon title="Drag item" />
+                                    <IconButton
+                                      title="Move up"
+                                      disabled={
+                                        index === watchProjectItems.length - 1
+                                      }
+                                      onClick={() => {
+                                        swap(index, index + 1);
+                                        setSelectedItemIndex(index + 1);
+                                        onItemSelect(index + 1);
+                                      }}
+                                      background="transparent"
+                                      aria-label="Move Down"
+                                      size="xs"
+                                      icon={<TriangleDownIcon />}
+                                    />
                                   </Flex>
                                 </Box>
+                                <Box width="90%">
+                                  <Button
+                                    _focus={{ outline: "none" }}
+                                    background="transparent"
+                                    aria-label="Select item"
+                                    height="100%"
+                                    width="100%"
+                                    variant="unstyled"
+                                    onClick={() => {
+                                      onItemSelect(index);
+                                      setSelectedItemIndex(index);
+                                    }}
+                                  >
+                                    <Input
+                                      value={index}
+                                      key={"order" + field.id}
+                                      {...register(
+                                        `projectItems.${index}.order`
+                                      )}
+                                      type="hidden"
+                                    />
+                                    <Flex
+                                      justifyContent="center"
+                                      alignItems="center"
+                                      height="100%"
+                                    >
+                                      <Flex>
+                                        <Box>
+                                          {mediaPreviewUrl && (
+                                            <Image
+                                              boxSize="50px"
+                                              objectFit="cover"
+                                              src={mediaPreviewUrl}
+                                              alt=""
+                                            />
+                                          )}
+                                        </Box>
+                                      </Flex>
+                                    </Flex>
+                                  </Button>
+                                </Box>
                               </Flex>
-                            </Link>
+                            </Flex>
                           );
                         }}
                       </Draggable>
