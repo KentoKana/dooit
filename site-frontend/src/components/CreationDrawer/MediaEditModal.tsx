@@ -4,6 +4,7 @@ import "./styles.css";
 import { ModalTemplate } from "../ModalTemplate";
 import { useState } from "react";
 import { Area } from "react-easy-crop/types";
+import { LoadingState } from "../../enums/LoadingState";
 
 interface IMediaEditModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface IMediaEditModalProps {
   onCropConfirmation: () => void;
   onCropAreaChange: (newCropArea: Area) => void;
   mediaUrl: string;
+  cropperState: LoadingState;
 }
 
 export const MediaEditModal = ({
@@ -19,9 +21,11 @@ export const MediaEditModal = ({
   onCropAreaChange,
   onClose,
   mediaUrl,
+  cropperState,
 }: IMediaEditModalProps) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
+
   return (
     <ModalTemplate
       isOpen={isOpen}
@@ -36,6 +40,7 @@ export const MediaEditModal = ({
             onClick={() => {
               onCropConfirmation();
             }}
+            isLoading={cropperState === LoadingState.Loading}
           >
             Crop
           </Button>

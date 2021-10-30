@@ -9,6 +9,7 @@ import {
 import { useFieldArray, UseFormReturn, useWatch } from "react-hook-form";
 import {
   DragHandleIcon,
+  EditIcon,
   TriangleDownIcon,
   TriangleUpIcon,
 } from "@chakra-ui/icons";
@@ -94,12 +95,16 @@ export const ProjectItems = observer(
                                   } else {
                                     remove(index);
                                   }
+                                  setSelectedItemIndex(0);
+                                  onItemSelect(0);
                                 }}
                                 onAdd={() => {
                                   insert(index + 1, {
                                     title: "",
                                     description: "",
                                   });
+                                  setSelectedItemIndex(index + 1);
+                                  onItemSelect(index + 1);
                                 }}
                               />
                               <Flex height="110px">
@@ -148,11 +153,16 @@ export const ProjectItems = observer(
                                     />
                                   </Flex>
                                 </Box>
-                                <Box width="90%">
+                                <Box width="90%" p={2}>
                                   <Button
-                                    _focus={{ outline: "none" }}
+                                    title="Edit this item"
+                                    _focus={{
+                                      outline: "1px solid",
+                                      outlineColor: "grey.100",
+                                      borderRadius: "sm",
+                                    }}
                                     background="transparent"
-                                    aria-label="Select item"
+                                    aria-label="Edit this item"
                                     height="100%"
                                     width="100%"
                                     variant="unstyled"
@@ -169,24 +179,30 @@ export const ProjectItems = observer(
                                       )}
                                       type="hidden"
                                     />
-                                    <Flex
-                                      justifyContent="center"
-                                      alignItems="center"
-                                      height="100%"
-                                    >
-                                      <Flex>
+                                    {mediaPreviewUrl ? (
+                                      <Flex
+                                        justifyContent="start"
+                                        alignItems="center"
+                                        height="100%"
+                                      >
                                         <Box>
-                                          {mediaPreviewUrl && (
-                                            <Image
-                                              boxSize="50px"
-                                              objectFit="cover"
-                                              src={mediaPreviewUrl}
-                                              alt=""
-                                            />
-                                          )}
+                                          <Image
+                                            boxSize="80px"
+                                            objectFit="cover"
+                                            src={mediaPreviewUrl}
+                                            alt=""
+                                          />
                                         </Box>
                                       </Flex>
-                                    </Flex>
+                                    ) : (
+                                      <Flex
+                                        justifyContent="center"
+                                        alignItems="center"
+                                        height="100%"
+                                      >
+                                        <EditIcon mr={3} /> Edit this item
+                                      </Flex>
+                                    )}
                                   </Button>
                                 </Box>
                               </Flex>

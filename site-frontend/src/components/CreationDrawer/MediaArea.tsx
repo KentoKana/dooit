@@ -38,13 +38,6 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
     name: `projectItems`,
     control,
   });
-  const [showCropArea, setShowCropArea] = useState<boolean>(
-    watchProjectItems &&
-      watchProjectItems[selectedItemIndex] &&
-      watchProjectItems[selectedItemIndex].mediaUrl
-      ? false
-      : true
-  );
   const [mediaLoadingState, setMediaLoadingState] = useState<LoadingState>(
     LoadingState.None
   );
@@ -67,8 +60,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
     },
     onDrop: (files) => {
       onOpen();
-      setMediaLoadingState(LoadingState.Loading);
-      new Compressor(files[0]!, {
+      new Compressor(files[0], {
         ...defaultCompressorOptions,
         success: (compressedImage: File) => {
           setValue(
@@ -79,7 +71,6 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
             `projectItems.${selectedItemIndex}.mediaUrl`,
             URL.createObjectURL(compressedImage)
           );
-          setShowCropArea(true);
           setMediaLoadingState(LoadingState.Loaded);
         },
       });
@@ -89,17 +80,16 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
 
   const onCropComplete = useCallback(
     async (croppedAreaPixels: Area) => {
-      setMediaLoadingState(LoadingState.Loading);
       try {
         if (watchProjectItems && watchProjectItems[selectedItemIndex]) {
           const croppedImage = await getCroppedImg(
             watchProjectItems[selectedItemIndex].mediaUrl ?? "",
             croppedAreaPixels
           );
-          const file = dataURLtoFile(croppedImage.toDataURL(), "");
+          const file = dataURLtoFile(croppedImage.toDataURL("image/jpeg"), "");
           setValue(`projectItems.${selectedItemIndex}.mediaAsFile`, file);
+          setMediaLoadingState(LoadingState.Loaded);
         }
-        setMediaLoadingState(LoadingState.Loaded);
       } catch (e) {
         console.error(e);
         setMediaLoadingState(LoadingState.Error);
@@ -131,18 +121,15 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
                 );
               }}
             />
-            {!showCropArea && (
-              <IconButton
-                background="transparent"
-                icon={<EditIcon />}
-                aria-label="Edit media"
-                alignSelf="end"
-                onClick={() => {
-                  onOpen();
-                  setShowCropArea(true);
-                }}
-              />
-            )}
+            <IconButton
+              background="transparent"
+              icon={<EditIcon />}
+              aria-label="Edit media"
+              alignSelf="end"
+              onClick={() => {
+                onOpen();
+              }}
+            />
           </Flex>
           <Flex justifyContent="center">
             {mediaLoadingState !== LoadingState.Loading ? (
@@ -167,16 +154,19 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
         </>
       ) : (
         <Button
+          autoFocus
           variant="unstyled"
           {...getRootProps()}
           display="flex"
-          borderWidth="1px"
+          borderWidth="2px"
           borderColor="primary"
           borderStyle={
             dropzoneDragState === EDragState.DragEnter ? "solid" : "dashed"
           }
           w="100%"
           h="100%"
+          width="400px"
+          height="400px"
           maxWidth="400px"
           maxHeight="400px"
           borderRadius="sm"
@@ -184,19 +174,22 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
           alignItems="center"
         >
           <input {...getInputProps()} />
-          <Text>Drag 'n' drop some files here, or click to select files</Text>
+          <Text padding={3}>
+            Drop your media file here, or click to select a file
+          </Text>
         </Button>
       )}
       {watchProjectItems && watchProjectItems[selectedItemIndex] && (
         <MediaEditModal
+          cropperState={mediaLoadingState}
           isOpen={isOpen}
           onCropConfirmation={() => {
+            onClose();
+            setMediaLoadingState(LoadingState.Loading);
             if (croppedAreaPixels) {
               onCropComplete(croppedAreaPixels);
               setCroppedAreaPixels(undefined);
-              setShowCropArea(false);
             }
-            onClose();
           }}
           onClose={onClose}
           onCropAreaChange={(area) => {
@@ -210,7 +203,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
 };
 
 const defaultCompressorOptions = {
-  quality: 0.6,
+  quality: 0.8,
   convertSize: 2000000,
   maxHeight: 1920,
   maxWidth: 1920,
