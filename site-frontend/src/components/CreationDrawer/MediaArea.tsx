@@ -7,6 +7,7 @@ import {
   useDisclosure,
   Link,
   Button,
+  Box,
 } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
 import { UseFormReturn, useWatch } from "react-hook-form";
@@ -17,7 +18,7 @@ import { useDropzone } from "react-dropzone";
 
 import "./styles.css";
 import { Area } from "react-easy-crop/types";
-import { CloseIcon, EditIcon } from "@chakra-ui/icons";
+import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import { IProject } from ".";
 import { LoadingState } from "../../enums/LoadingState";
 import { MediaEditModal } from "./MediaEditModal";
@@ -99,16 +100,28 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
   );
 
   return (
-    <>
+    <Box position="relative">
       {watchProjectItems &&
       watchProjectItems[selectedItemIndex] &&
       watchProjectItems[selectedItemIndex].mediaUrl ? (
         <>
-          <Flex justifyContent="flex-end" width="100%" maxWidth="400px">
+          <Flex
+            justifyContent="flex-end"
+            width="100%"
+            maxWidth="400px"
+            position="absolute"
+            opacity={0.4}
+            transition="0.2s ease all"
+            _hover={{ opacity: 0.8 }}
+            background="black"
+          >
             <IconButton
+              _hover={{ color: "primary" }}
+              color="#fff"
               background="transparent"
-              icon={<CloseIcon />}
-              aria-label="Remove image"
+              icon={<DeleteIcon />}
+              title="Remove media"
+              aria-label="Remove media"
               alignSelf="end"
               onClick={() => {
                 setValue(
@@ -122,6 +135,9 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
               }}
             />
             <IconButton
+              color="#fff"
+              title="Edit media"
+              _hover={{ color: "primary" }}
               background="transparent"
               icon={<EditIcon />}
               aria-label="Edit media"
@@ -198,7 +214,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
           mediaUrl={watchProjectItems[selectedItemIndex].mediaUrl!}
         />
       )}
-    </>
+    </Box>
   );
 };
 
