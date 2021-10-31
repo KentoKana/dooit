@@ -110,13 +110,13 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
             width="100%"
             maxWidth="400px"
             position="absolute"
-            opacity={0.4}
+            opacity={0.3}
             transition="0.2s ease all"
             _hover={{ opacity: 0.8 }}
             background="black"
           >
             <IconButton
-              _hover={{ color: "primary" }}
+              _hover={{ color: "blue.200" }}
               color="#fff"
               background="transparent"
               icon={<DeleteIcon />}
@@ -137,7 +137,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
             <IconButton
               color="#fff"
               title="Edit media"
-              _hover={{ color: "primary" }}
+              _hover={{ color: "blue.200" }}
               background="transparent"
               icon={<EditIcon />}
               aria-label="Edit media"
@@ -170,6 +170,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
         </>
       ) : (
         <Button
+          p={3}
           autoFocus
           variant="unstyled"
           {...getRootProps()}
