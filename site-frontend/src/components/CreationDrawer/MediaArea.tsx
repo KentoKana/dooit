@@ -60,6 +60,8 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
       setDropzoneDragState(EDragState.None);
     },
     onDrop: (files) => {
+      setMediaLoadingState(LoadingState.Loading);
+
       onOpen();
       new Compressor(files[0], {
         ...defaultCompressorOptions,

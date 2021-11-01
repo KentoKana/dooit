@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/icons";
 import { ProjectItemTopBar } from "./ProjectItemTopBar";
 import { IProject } from ".";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 export interface IProjectItem {
   title: string;
   description: string;
