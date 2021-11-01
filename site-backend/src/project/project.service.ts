@@ -61,11 +61,9 @@ export class ProjectService {
                 destination: `${generatedFileName}`
             })
         })
-
-        const newItems = dto.projectItems.map((item) => {
-            //@ts-ignore
-            // Must parse item, as the retrieved dto content type is multipart/form-data
-            item = JSON.parse(item)
+        //@ts-ignore
+        // Must parse item, as the retrieved dto content type is multipart/form-data
+        const newItems = JSON.parse(dto.projectItems).map((item) => {
             const fileForProjectItem = fileNames[item.order];
             let newItem = new ProjectItem();
             newItem.heading = item.heading;

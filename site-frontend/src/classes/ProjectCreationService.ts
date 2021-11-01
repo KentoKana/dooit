@@ -49,13 +49,7 @@ export class ProjectCreationService {
         })
 
         data.append("name", projectDto.name);
-        projectDto.projectItems.forEach((item) => {
-            data.append("projectItems", JSON.stringify(item));
-        })
-        //@ts-ignore
-        for (var pair of data.entries()) {
-            console.log(pair[0] + ', ' + pair[1]);
-        }
+        data.append("projectItems", JSON.stringify(projectDto.projectItems));
 
         return await fetch(ProjectRoute.CreateProject, { // Your POST endpoint
             method: 'POST',
