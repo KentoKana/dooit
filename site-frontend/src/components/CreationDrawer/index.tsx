@@ -35,7 +35,6 @@ interface ICreationDrawerProps {
 export const CreationDrawer = observer(
   ({ isOpen, onClose, onProjectCreation }: ICreationDrawerProps) => {
     const { userStore, uiStore } = UseStores();
-
     const toast = useToast();
     const formHook = useForm<IProject>({
       defaultValues: {
@@ -50,12 +49,6 @@ export const CreationDrawer = observer(
       },
     });
     const { handleSubmit, reset } = formHook;
-
-    const [project, setProject] = useState<IProject>({
-      name: "",
-      projectItems: [],
-    });
-    const [progressCounter, setProgressCounter] = useState<number>(0);
     const [selectedItemIndex, setSelectedItemIndex] = useState(0);
 
     //#region Mutation handlers
@@ -98,105 +91,37 @@ export const CreationDrawer = observer(
     const handleUpload = useCallback(
       (projectData: IProject) => {
         onClose();
-        const service = new ProjectCreationService(userStore, uiStore);
-        projectData?.projectItems.flatMap((item) => {
-          if (item.mediaAsFile) {
-            setTimeout(() => {
-              if (item.mediaAsFile) {
-                service.uploadImage(
-                  item.mediaAsFile,
-                  //#region On upload progress
-                  (progress) => {
-                    onProjectCreation(LoadingState.Loading);
-                    setProject((prev) => {
-                      prev.projectItems.forEach((prevItemState) => {
-                        if (prevItemState.order === item.order) {
-                          prevItemState.progress = progress;
-                        }
-                      });
-                      return {
-                        ...prev,
-                      };
-                    });
-
-                    if (!toast.isActive("creating-project")) {
-                      toast({
-                        id: "creating-project",
-                        title: (
-                          <Flex alignItems="center">
-                            Creating your project <Spinner ml="5px" />
-                          </Flex>
-                        ),
-                        status: "info",
-                        isClosable: true,
-                        position: "top",
-                        description: (
-                          <Flex>Frantically generating your project...</Flex>
-                        ),
-                      });
-                    }
-                  },
-                  //#endregion
-                  //#region On upload completion
-                  (url) => {
-                    if (url) {
-                      setProgressCounter((prev) => {
-                        return (prev += 1);
-                      });
-                      item.mediaAsFile = undefined;
-                      item.mediaAsFile = undefined;
-                      item.mediaUrl = url;
-                      item.progress = undefined;
-                    }
-                  },
-                  //#endregion
-                  //#region On upload error
-                  (error) => {
-                    console.log(error);
-                  }
-                  //#endregion
-                );
-              }
-            }, 800);
-          } else {
-            setProgressCounter((prev) => {
-              return (prev += 1);
-            });
-          }
-          setProject(projectData);
-          return null;
+        toast({
+          id: "creating-project",
+          title: (
+            <Flex alignItems="center">
+              Creating your project <Spinner ml="5px" />
+            </Flex>
+          ),
+          status: "info",
+          position: "top",
+          description: <Flex>Frantically generating your project...</Flex>,
         });
-      },
-      [uiStore, userStore, onClose, toast, onProjectCreation]
-    );
-    //#endregion
-
-    // Submit data once all project items have been processed.
-    useEffect(() => {
-      let isMounted = true;
-      if (
-        isMounted &&
-        progressCounter === project.projectItems.length &&
-        project.projectItems.length !== 0
-      ) {
         mutate({
-          name: project.name,
-          projectItems: project.projectItems.map((item) => {
+          name: projectData.name,
+          files: projectData.projectItems.map((x) => {
+            return x.mediaAsFile;
+          }),
+          projectItems: projectData.projectItems.map((item, index) => {
             return {
               heading: "",
               imageUrl: item.mediaUrl,
               imageAlt: "",
               description: item.description,
+              order: index,
             };
           }),
         });
         reset();
-        setProgressCounter(0);
-      }
-      return () => {
-        isMounted = false;
-      };
-    }, [progressCounter, project, mutate, reset]);
+      },
+      [onClose, toast, reset, mutate]
+    );
+    //#endregion
 
     return (
       <DrawerTemplate

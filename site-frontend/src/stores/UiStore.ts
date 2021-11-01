@@ -27,19 +27,20 @@ export class UiStore {
                 return Promise.reject({ status: 401, message: "Not Authorized.", httpCodeStatus: 404 })
             }
         });
-        options = {
-            method: "GET",
-            ...options
-        };
         let headers: Headers = new Headers();
         if (options.bodyData) {
-            headers.set("Accept", "application/json")
+            headers.set("Accept", "*/*")
         }
         headers.set("Content-Type", "application/json")
 
         if (this.userStore.userToken) {
             headers.set("Authorization", `Bearer ${this.userStore.userToken}`)
         }
+        options = {
+            method: "GET",
+            ...options
+        };
+
         return fetch(url, {
             method: options.method,
             headers: headers,

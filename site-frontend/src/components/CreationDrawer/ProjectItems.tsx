@@ -1,4 +1,4 @@
-import { Box, Flex, Input, Image, IconButton, Button } from "@chakra-ui/react";
+import { Box, Flex, Image, IconButton, Button } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import {
   DragDropContext,
@@ -34,7 +34,7 @@ interface IProjectItemProps {
 export const ProjectItems = observer(
   ({ formHook, onItemSelect }: IProjectItemProps) => {
     const [selectedItemIndex, setSelectedItemIndex] = useState<number>(0);
-    const { register, control } = formHook;
+    const { control } = formHook;
     const { fields, move, remove, insert, swap } = useFieldArray({
       control,
       name: "projectItems",
@@ -171,14 +171,6 @@ export const ProjectItems = observer(
                                       setSelectedItemIndex(index);
                                     }}
                                   >
-                                    <Input
-                                      value={index}
-                                      key={"order" + field.id}
-                                      {...register(
-                                        `projectItems.${index}.order`
-                                      )}
-                                      type="hidden"
-                                    />
                                     {mediaPreviewUrl ? (
                                       <Flex
                                         justifyContent="start"

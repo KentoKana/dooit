@@ -4,4 +4,5 @@ export class ProjectItemGetDto {
     imageUrl?: string;
     imageAlt?: string;
     description?: string;
+    order: number;
 }

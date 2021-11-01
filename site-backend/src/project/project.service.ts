@@ -7,6 +7,8 @@ import { HttpError } from 'src/shared/dto/HttpError.dto';
 import { ProjectCreateDto } from './dto/ProjectCreateDto.dto';
 import { ProjectGetDto } from './dto/ProjectGetDto.dto';
 import { ProjectItemGetDto } from './dto/ProjectItemGetDto.dto';
+import * as admin from "firebase-admin"
+import { FILE } from 'dns';
 
 @Injectable()
 export class ProjectService {
@@ -28,7 +30,8 @@ export class ProjectService {
                     heading: item.heading,
                     imageUrl: item.imageUrl,
                     imageAlt: item.imageAlt,
-                    description: item.description
+                    description: item.description,
+                    order: item.order
                 }
             })
             return {
@@ -42,20 +45,42 @@ export class ProjectService {
         return dtoList;
     }
 
-    async createProject(@Body() dto: ProjectCreateDto, userId: string): Promise<ProjectGetDto> {
+    async createProject(@Body() dto: ProjectCreateDto, userId: string, files: Array<Express.Multer.File>): Promise<ProjectGetDto> {
         let user = await this.userRepository.findOne(userId);
         let newProject = new Project();
+        let fileNames: { [order: number]: { fileName: string, mimeType: string } } = {};
+        const bucket = admin.storage().bucket();
+        // Upload files to firebase storage
+        files.forEach((file) => {
+            const generatedFileName = this.generateFileName(file, userId)
+            fileNames[parseInt(file.originalname)] = {
+                fileName: generatedFileName,
+                mimeType: file.mimetype
+            }
+            bucket.upload(file.path, {
+                destination: `${generatedFileName}`
+            })
+        })
 
         const newItems = dto.projectItems.map((item) => {
+            //@ts-ignore
+            // Must parse item, as the retrieved dto content type is multipart/form-data
+            item = JSON.parse(item)
+            const fileForProjectItem = fileNames[item.order];
             let newItem = new ProjectItem();
             newItem.heading = item.heading;
-            newItem.imageUrl = item.imageUrl;
-            newItem.imageAlt = item.imageAlt;
             newItem.description = item.description;
             newItem.dateCreated = new Date()
+            newItem.order = item.order;
+            if (fileForProjectItem) {
+                const fileUrl = "https://firebasestorage.googleapis.com/v0/b/" + bucket.name + "/o/" + encodeURIComponent(fileForProjectItem.fileName) + "?alt=media"
+                newItem.imageUrl = fileUrl;
+                newItem.imageAlt = item.imageAlt;
+            }
             return newItem;
         })
 
+        // Assign data to new project 
         newProject.name = dto.name;
         newProject.projectItems = newItems
         newProject.user = user;
@@ -73,9 +98,14 @@ export class ProjectService {
                     heading: item.heading,
                     imageUrl: item.imageUrl,
                     imageAlt: item.imageAlt,
-                    description: item.description
+                    description: item.description,
+                    order: item.order
                 }
             })
         }
+    }
+
+    private generateFileName = (file: Express.Multer.File, userId: string) => {
+        return `projects/${userId}/${Date.now() + file.originalname.toString() + "." + /[^/]*$/.exec(file.mimetype)[0]}`
     }
 }

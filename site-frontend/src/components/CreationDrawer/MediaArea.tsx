@@ -87,7 +87,10 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
             watchProjectItems[selectedItemIndex].mediaUrl ?? "",
             croppedAreaPixels
           );
-          const file = dataURLtoFile(croppedImage.toDataURL("image/jpeg"), "");
+          const file = dataURLtoFile(
+            croppedImage.toDataURL("image/jpeg"),
+            selectedItemIndex.toString()
+          );
           setValue(`projectItems.${selectedItemIndex}.mediaAsFile`, file);
           setMediaLoadingState(LoadingState.Loaded);
         }

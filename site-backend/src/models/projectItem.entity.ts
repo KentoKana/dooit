@@ -15,6 +15,9 @@ export class ProjectItem {
     @Column()
     imageAlt?: string;
 
+    @Column()
+    order?: number;
+
     @Column({ length: 1000 })
     description?: string
 

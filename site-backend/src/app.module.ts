@@ -14,6 +14,7 @@ import * as admin from 'firebase-admin'
 import * as serviceAccountKey from "./firebase/serviceaccount.json"
 import { ProjectController } from './project/project.controller';
 import { ProjectService } from './project/project.service';
+import { MulterModule } from '@nestjs/platform-express';
 //@ts-ignore
 const serviceAccount: admin.ServiceAccount = serviceAccountKey;
 @Module({
@@ -24,10 +25,17 @@ const serviceAccount: admin.ServiceAccount = serviceAccountKey;
     ProjectModule,
     FirebaseAdminModule.forRootAsync({
       useFactory: () => ({
-        credential: admin.credential.cert(serviceAccount)
+        credential: admin.credential.cert(serviceAccount),
+        storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
       })
     }),
-    ProjectModule,],
+    ProjectModule,
+    MulterModule.registerAsync({
+      useFactory: () => ({
+        dest: './upload',
+      }),
+    })
+  ],
   controllers: [AppController, UserController, ProjectController],
   providers: [AppService, AuthStrategy, UserService, ProjectService],
 })

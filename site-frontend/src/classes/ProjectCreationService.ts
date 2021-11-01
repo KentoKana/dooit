@@ -1,18 +1,17 @@
 import { getStorage, StorageError, uploadBytesResumable } from "@firebase/storage";
 import { getDownloadURL, ref } from "firebase/storage";
 import { ProjectCreateDto } from "../Dtos/ProjectCreateDto.dto";
-import { ProjectGetDto } from "../Dtos/ProjectGetDto.dto";
 import { ProjectRoute } from "../enums/ApiRoutes";
 import { UiStore } from "../stores/UiStore";
 import { UserStore } from "../stores/UserStore";
 
 export class ProjectCreationService {
     constructor(userStore: UserStore, uiStore: UiStore) {
-        this._userSTore = userStore;
+        this._userStore = userStore;
         this._uiStore = uiStore;
     }
     private readonly storage = getStorage();
-    private _userSTore: UserStore;
+    private _userStore: UserStore;
     private _uiStore: UiStore;
 
     /**
@@ -23,8 +22,8 @@ export class ProjectCreationService {
      * @param onError 
      */
     uploadImage = async (image: File, progress?: (progress: number) => void, onSuccess?: (downloadUrl: string) => void, onError?: (error: StorageError) => void) => {
-        if (this._userSTore.user) {
-            const storageRef = ref(this.storage, `projects/${this._userSTore.user.id}/${Date.now() + image.name}`);
+        if (this._userStore.user) {
+            const storageRef = ref(this.storage, `projects/${this._userStore.user.id}/${Date.now() + image.name}`);
             const uploadTask = uploadBytesResumable(storageRef, image);
             return uploadTask.on(
                 "state_changed",
@@ -42,11 +41,61 @@ export class ProjectCreationService {
     }
 
     createProject = async (projectDto: ProjectCreateDto) => {
-        return await this._uiStore.apiRequest<ProjectCreateDto, ProjectGetDto>(ProjectRoute.CreateProject, {
-            method: "POST",
-            bodyData: projectDto
-        }).then((data) => {
-            return data;
+        let data = new FormData();
+        projectDto.files?.forEach((file) => {
+            if (file) {
+                data.append("files", file as Blob, file.name);
+            }
+        })
+
+        data.append("name", projectDto.name);
+        projectDto.projectItems.forEach((item) => {
+            data.append("projectItems", JSON.stringify(item));
+        })
+        //@ts-ignore
+        for (var pair of data.entries()) {
+            console.log(pair[0] + ', ' + pair[1]);
+        }
+
+        return await fetch(ProjectRoute.CreateProject, { // Your POST endpoint
+            method: 'POST',
+            headers: {
+                "Authorization": `Bearer ${this._userStore.userToken}`
+            },
+            body: data // This is your file object
+        }).then(async (res) => {
+            if (!res.ok) {
+                const reader = res.body?.getReader();
+                // Read the data
+                let decoder = new TextDecoder("utf-8"); //Text decoder
+                let chunks: string[] = []; // array of strings that make up the chunks sent
+                while (true) {
+                    const r = await reader?.read();
+                    //If we're done the request, exit the loop
+                    if (r?.done) {
+                        break;
+                    }
+                    //We need this check for typescript
+                    if (r?.value !== undefined) {
+                        //Decode the chunks as we go and save as strings in the chunks array
+                        chunks.push(decoder.decode(r.value, { stream: true }));
+                    }
+                }
+
+                // Concatenate to string and parse for JSON
+                const resultJson = JSON.parse(chunks.join(""));
+                if (res.status === 401) {
+                    this._userStore.isSignedIn = false;
+                    this._userStore.userToken = null;
+                    localStorage.removeItem("user-jwt");
+                    return Promise.reject({ status: resultJson.status, message: resultJson.message, httpCodeStatus: res.status })
+                }
+
+                return Promise.reject(
+                    { status: resultJson.status, message: resultJson.message, httpCodeStatus: res.status }
+                );
+            }
+            return res.json();
         })
     }
 }

@@ -3,4 +3,5 @@ export class ProjectItemCreateDto {
     imageUrl?: string;
     imageAlt?: string;
     description?: string;
+    order: number;
 }
