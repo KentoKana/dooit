@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/icons";
 import { ProjectItemTopBar } from "./ProjectItemTopBar";
 import { IProject } from ".";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 export interface IProjectItem {
   title: string;
   description: string;
@@ -39,14 +39,18 @@ export const ProjectItems = observer(
       control,
       name: "projectItems",
     });
+
+    const watchProjectItems = useWatch({
+      name: `projectItems`,
+      control,
+    });
+
     const handleOnDragEnd = (result: DropResult) => {
       if (!result.destination) return;
       move(result.source.index, result.destination.index);
       setSelectedItemIndex(result.destination.index);
       onItemSelect(result.destination.index);
     };
-
-    const watchProjectItems = useWatch({ name: "projectItems", control });
 
     return (
       <>

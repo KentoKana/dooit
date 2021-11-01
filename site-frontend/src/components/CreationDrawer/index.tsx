@@ -7,7 +7,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "react-query";
 import { ProjectCreationService } from "../../classes/ProjectCreationService";
@@ -36,8 +36,8 @@ export const CreationDrawer = observer(
   ({ isOpen, onClose, onProjectCreation }: ICreationDrawerProps) => {
     const { userStore, uiStore } = UseStores();
     const toast = useToast();
-    const formHook = useForm<IProject>({
-      defaultValues: {
+    const defaultValues = useMemo(() => {
+      return {
         name: "",
         projectItems: [
           {
@@ -46,7 +46,10 @@ export const CreationDrawer = observer(
             order: 0,
           },
         ],
-      },
+      };
+    }, []);
+    const formHook = useForm<IProject>({
+      defaultValues: defaultValues,
     });
     const { handleSubmit, reset } = formHook;
     const [selectedItemIndex, setSelectedItemIndex] = useState(0);
@@ -117,9 +120,10 @@ export const CreationDrawer = observer(
             };
           }),
         });
-        reset();
+        setSelectedItemIndex(0);
+        reset(defaultValues);
       },
-      [onClose, toast, reset, mutate]
+      [onClose, toast, reset, mutate, defaultValues]
     );
     //#endregion
 
