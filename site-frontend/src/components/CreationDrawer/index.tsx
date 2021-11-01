@@ -7,7 +7,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "react-query";
 import { ProjectCreationService } from "../../classes/ProjectCreationService";
@@ -56,6 +56,8 @@ export const CreationDrawer = observer(
 
     //#region Mutation handlers
     const onError = (err: HttpError) => {
+      onProjectCreation(LoadingState.Loaded);
+      toast.close("creating-project");
       toast({
         title: `Uh oh... :(`,
         description: err.message,
@@ -78,7 +80,7 @@ export const CreationDrawer = observer(
       }
     };
 
-    const { mutate } = useMutation(
+    const { mutate, isSuccess } = useMutation(
       async (creationDto: ProjectCreateDto) => {
         const projectService = new ProjectCreationService(userStore, uiStore);
         return await projectService.createProject(creationDto);
@@ -93,7 +95,6 @@ export const CreationDrawer = observer(
     //#region Upload Handler
     const handleUpload = useCallback(
       (projectData: IProject) => {
-        onClose();
         toast({
           id: "creating-project",
           title: (
@@ -121,11 +122,17 @@ export const CreationDrawer = observer(
           }),
         });
         setSelectedItemIndex(0);
-        reset(defaultValues);
+        onClose();
       },
-      [onClose, toast, reset, mutate, defaultValues]
+      [onClose, toast, mutate]
     );
     //#endregion
+
+    useEffect(() => {
+      if (isSuccess) {
+        reset(defaultValues);
+      }
+    }, [isSuccess, reset, defaultValues]);
 
     return (
       <DrawerTemplate

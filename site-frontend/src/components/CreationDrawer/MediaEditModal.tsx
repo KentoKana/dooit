@@ -40,7 +40,7 @@ export const MediaEditModal = ({
             onClick={() => {
               onCropConfirmation();
             }}
-            disable={cropperState === LoadingState.Loading}
+            disabled={cropperState === LoadingState.Loading}
             isLoading={cropperState === LoadingState.Loading}
           >
             Crop
