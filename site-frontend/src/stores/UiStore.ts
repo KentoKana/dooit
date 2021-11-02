@@ -21,7 +21,8 @@ export class UiStore {
             if (retrievedToken) {
                 localStorage.setItem("user-jwt", retrievedToken);
                 this.userStore.userToken = retrievedToken;
-            } else {
+            }
+            else {
                 this.userStore.isSignedIn = false;
                 localStorage.removeItem("user-jwt");
                 return Promise.reject({ status: 401, message: "Not Authorized.", httpCodeStatus: 404 })
@@ -67,6 +68,8 @@ export class UiStore {
                 // Concatenate to string and parse for JSON
                 const resultJson = JSON.parse(chunks.join(""));
                 if (res.status === 401) {
+                    console.log("Flag", this.userStore.userToken);
+
                     this.userStore.isSignedIn = false;
                     this.userStore.userToken = null;
                     localStorage.removeItem("user-jwt");

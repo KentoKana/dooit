@@ -14,7 +14,7 @@ import {
   isNullOrUndefined,
 } from "../../../utils";
 import { Redirect } from "react-router";
-import { HttpError } from "../../../Dtos/HttpError.dto";
+import { FirebaseError } from "@firebase/util";
 interface ISignUpForm {
   firstName: string;
   lastName: string;
@@ -45,6 +45,7 @@ export const SignUpForm = observer(() => {
       const authService = new AuthService(userStore, uiStore);
       authService
         .createUserWithEmailAndPassword({
+          id: "",
           firstName: formData.firstName,
           lastName: formData.lastName,
           password: formData.password,
@@ -60,10 +61,10 @@ export const SignUpForm = observer(() => {
             position: "top",
           });
         })
-        .catch((error: HttpError) => {
+        .catch((error: FirebaseError) => {
           setError("serverError", {
             type: "server",
-            message: generateFirebaseAuthErrorMessage(error.status),
+            message: generateFirebaseAuthErrorMessage(error.code),
           });
           setLoadingState(LoadingState.Error);
           reset();

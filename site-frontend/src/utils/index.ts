@@ -8,6 +8,8 @@ export const generateFirebaseAuthErrorMessage = (errorCode: string) => {
             return "Too many wrong attemps. Please try again later."
         case "auth/email-already-exists":
             return "User with this e-mail already exists.";
+        case "auth/email-already-in-use":
+            return "User with this e-mail already in use.";
         default:
             return "Something went wrong ..."
     }

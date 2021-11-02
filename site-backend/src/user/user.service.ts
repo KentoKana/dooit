@@ -37,47 +37,23 @@ export class UserService {
     }
 
     async create(@Body() userDto: UserCreateDto): Promise<UserGetCreatedDto> {
-        return this.firebaseAuth.createUser({ email: userDto.email, password: userDto.password })
-            .then(async (userCred) => {
-                const uid = userCred.uid;
-                return this.firebaseAuth.createCustomToken(uid).then(async (token) => {
-                    let userToCreate: User = new User();
-                    const { firstName, lastName, email } = userDto;
-                    userToCreate = {
-                        ...userToCreate,
-                        firstName,
-                        lastName,
-                        email,
-                        id: userCred.uid,
-                        isActive: true
-                    }
-                    const created = await this.usersRepository.save(userToCreate);
-                    return {
-                        id: userCred.uid,
-                        firstName: created.firstName,
-                        lastName: created.lastName,
-                        email: created.email,
-                        token: token,
-
-                    }
-                })
-                    .catch((error) => {
-                        this.firebaseAuth.deleteUser(userCred.uid);
-                        const err = new HttpError()
-                        err.status = error.code;
-                        err.message = generateFirebaseAuthErrorMessage(error.code)
-                        throw new HttpException(err, HttpStatus.BAD_REQUEST);
-                    })
-            }).then((createdUser) => {
-                return createdUser;
-            })
-            .catch((error: FirebaseError) => {
-                const err = new HttpError()
-                err.status = error.code;
-                err.message = generateFirebaseAuthErrorMessage(error.code)
-                throw new HttpException(err, HttpStatus.BAD_REQUEST);
-            })
-
+        let userToCreate: User = new User();
+        const { firstName, lastName, email } = userDto;
+        userToCreate = {
+            ...userToCreate,
+            firstName,
+            lastName,
+            email,
+            id: userDto.id,
+            isActive: true
+        }
+        const created = await this.usersRepository.save(userToCreate);
+        return {
+            id: userDto.id,
+            firstName: created.firstName,
+            lastName: created.lastName,
+            email: created.email,
+        }
     }
 
     async loginByEmail(@Req() request: Request): Promise<UserGetLoggedIn> {

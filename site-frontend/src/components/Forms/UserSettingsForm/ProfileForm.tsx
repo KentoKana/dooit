@@ -149,7 +149,7 @@ export const UserProfileForm = observer(
             isInvalid={errors.title}
             formField={
               <Input
-                defaultValue={data.profile.title}
+                defaultValue={data.profile?.title}
                 disabled={loadingState === LoadingState.Loading}
                 id="title"
                 type="text"
@@ -188,7 +188,7 @@ export const UserProfileForm = observer(
             isInvalid={errors.bio}
             formField={
               <Textarea
-                defaultValue={data.profile.bio}
+                defaultValue={data.profile?.bio}
                 disabled={loadingState === LoadingState.Loading}
                 id="bio"
                 placeholder="Bio"

@@ -6,7 +6,7 @@ import { AuthRoute } from "../enums/ApiRoutes";
 import { auth } from "../firebase";
 import { UiStore } from "../stores/UiStore";
 import { UserStore } from "../stores/UserStore";
-import { browserLocalPersistence, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword } from '@firebase/auth';
+import { browserLocalPersistence, createUserWithEmailAndPassword, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword } from '@firebase/auth';
 
 export class AuthService {
     constructor(userStore: UserStore, uiStore: UiStore) {
@@ -70,21 +70,25 @@ class AuthByEmailPassword {
     }
 
     static async createUser(userStore: UserStore, uiStore: UiStore, formData: UserCreateDto) {
-        return uiStore
-            .apiRequest<UserCreateDto, UserGetCreatedDto>(AuthRoute.Create, {
-                method: "POST",
-                bodyData: formData,
-            })
-            .then((data) => {
-                userStore.userToken = data.token;
-                userStore.user = {
-                    id: data.id,
-                    firstName: data.firstName,
-                    lastName: data.firstName,
-                    email: data.firstName,
-                }
-                localStorage.setItem("user-jwt", data.token);
-                return data;
-            })
+        return createUserWithEmailAndPassword(auth, formData.email, formData.password).then(async (userCred) => {
+            const token = await userCred.user.getIdToken();
+            userStore.userToken = token;
+            localStorage.setItem("user-jwt", token);
+            formData.id = userCred.user.uid;
+            return uiStore
+                .apiRequest<UserCreateDto, UserGetCreatedDto>(AuthRoute.Create, {
+                    method: "POST",
+                    bodyData: formData,
+                })
+                .then((data) => {
+                    userStore.user = {
+                        id: data.id,
+                        firstName: data.firstName,
+                        lastName: data.firstName,
+                        email: data.firstName,
+                    }
+                    return data;
+                })
+        })
     }
 }
