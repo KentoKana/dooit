@@ -1,4 +1,4 @@
-import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "@firebase/auth";
+import { EmailAuthProvider, reauthenticateWithCredential, updateEmail, updatePassword } from "@firebase/auth";
 import { UserEditDto } from "../Dtos/UserEditDto.dto";
 import { UserRoute } from "../enums/ApiRoutes";
 import { auth } from "../firebase";
@@ -15,29 +15,29 @@ export class UserService {
     private _userStore: UserStore;
 
     updateUserProfile = async (userEditDto: UserEditDto) => {
-        return await this._uiStore.apiRequest<UserEditDto>(UserRoute.UpdateUserProfile, {
-            method: "PATCH",
-            bodyData: userEditDto
-        }).then(() => {
-            const { firstName, lastName, email } = userEditDto;
-            this._userStore.user = {
-                ...this._userStore.user,
-                id: this._userStore.user?.id!,
-                firstName,
-                lastName,
-                email
-            }
-            return userEditDto;
-        }).then((data) => {
+        return updateEmail(auth.currentUser!, userEditDto.email).then(async () => {
             auth.onAuthStateChanged(async (user) => {
-                user?.getIdToken().then((token) => {
+                user?.getIdToken().then(async (token) => {
                     if (token) {
                         localStorage.setItem("user-jwt", token);
-                        this._userStore.userToken = token;
+                        return await this._uiStore.apiRequest<UserEditDto>(UserRoute.UpdateUserProfile, {
+                            method: "PATCH",
+                            bodyData: userEditDto
+                        }).then((data) => {
+                            const { firstName, lastName, email } = userEditDto;
+                            this._userStore.user = {
+                                ...this._userStore.user,
+                                id: this._userStore.user?.id!,
+                                firstName,
+                                lastName,
+                                email
+                            }
+                            return data;
+                        })
                     }
                 })
             })
-            return data
+            return userEditDto;
         })
     }
 

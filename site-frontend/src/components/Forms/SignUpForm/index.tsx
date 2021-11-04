@@ -74,7 +74,7 @@ export const SignUpForm = observer(() => {
   );
 
   if (
-    (!isNullOrUndefined(userStore.userToken) && creationSuccessful) ||
+    (!isNullOrUndefined(localStorage.getItem("user-jwt")) && creationSuccessful) ||
     userStore.isSignedIn
   ) {
     userStore.isSignedIn = true;

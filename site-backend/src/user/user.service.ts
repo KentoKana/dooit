@@ -102,49 +102,36 @@ export class UserService {
                 error: 'User Not Found',
             }, HttpStatus.NOT_FOUND);
         }
-
-        // Update Firebase user instance
-        return this.firebaseAuth.updateUser(request.user.user_id, {
-            email:
-                userEditDto.email
-        }).then(async () => {
-            const err = new HttpError();
-            err.status = "server-side-error";
-            err.message = "Something went wrong when attempting to update this user.";
-            if (!userToUpdate) {
-                throw new HttpException(err, HttpStatus.BAD_GATEWAY);
-            }
-
-            //#region Build User to Update and Save.
-            // Build user to save.
-            const profile = new Profile();
-            profile.bio = userEditDto.profile.bio;
-            profile.title = userEditDto.profile.title;
-            let user = userToUpdate;
-            user.firstName = userEditDto.firstName;
-            user.lastName = userEditDto.lastName;
-            user.email = userEditDto.email;
-            user.profile = {
-                ...user.profile,
-                ...profile
-            };
-            //#endregion
-
-            // Save User
-            const savedUser = await this.usersRepository.manager.save(user)
-            if (!savedUser) {
-                throw new HttpException(err, HttpStatus.BAD_GATEWAY);
-            }
-            return {
-                status: 200,
-                message: "Successfully updated user!"
-            }
-        }).catch((error: FirebaseError) => {
-            const err = new HttpError();
-            err.status = error.code;
-            err.message = error.message;
+        const err = new HttpError();
+        err.status = "server-side-error";
+        err.message = "Something went wrong when attempting to update this user.";
+        if (!userToUpdate) {
             throw new HttpException(err, HttpStatus.BAD_GATEWAY);
-        })
+        }
 
+        //#region Build User to Update and Save.
+        // Build user to save.
+        const profile = new Profile();
+        profile.bio = userEditDto.profile.bio;
+        profile.title = userEditDto.profile.title;
+        let user = userToUpdate;
+        user.firstName = userEditDto.firstName;
+        user.lastName = userEditDto.lastName;
+        user.email = userEditDto.email;
+        user.profile = {
+            ...user.profile,
+            ...profile
+        };
+        //#endregion
+
+        // Save User
+        const savedUser = await this.usersRepository.manager.save(user)
+        if (!savedUser) {
+            throw new HttpException(err, HttpStatus.BAD_GATEWAY);
+        }
+        return {
+            status: 200,
+            message: "Successfully updated user!"
+        }
     }
 }

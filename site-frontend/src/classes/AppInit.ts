@@ -19,7 +19,6 @@ export class AppInit {
     private getPersistedUser() {
         const token = localStorage.getItem("user-jwt")
         if (token) {
-            this._userStore.userToken = token?.replace(/['"]+/g, '') ?? null;
             this._userStore.isSignedIn = true;
             return this._uiStore
                 .apiRequest<UserGetDto>(AuthRoute.GetUser, {

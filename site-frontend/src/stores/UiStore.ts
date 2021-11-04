@@ -1,5 +1,4 @@
 import { makeAutoObservable } from "mobx";
-import { auth } from "../firebase";
 import { UserStore } from "./UserStore"
 
 export interface IApiRequestOptions<TData> {
@@ -16,26 +15,13 @@ export class UiStore {
     readonly userStore: UserStore;
 
     async apiRequest<TData, TResult = TData>(url: string, options: IApiRequestOptions<TData> = {}): Promise<TResult> {
-        auth.onAuthStateChanged(async (user) => {
-            const retrievedToken = await user?.getIdToken();
-            if (retrievedToken) {
-                localStorage.setItem("user-jwt", retrievedToken);
-                this.userStore.userToken = retrievedToken;
-            }
-            else {
-                this.userStore.isSignedIn = false;
-                localStorage.removeItem("user-jwt");
-                return Promise.reject({ status: 401, message: "Not Authorized.", httpCodeStatus: 404 })
-            }
-        });
         let headers: Headers = new Headers();
         if (options.bodyData) {
             headers.set("Accept", "*/*")
         }
         headers.set("Content-Type", "application/json")
-
-        if (this.userStore.userToken) {
-            headers.set("Authorization", `Bearer ${this.userStore.userToken}`)
+        if (localStorage.getItem("user-jwt")) {
+            headers.set("Authorization", `Bearer ${localStorage.getItem("user-jwt")}`)
         }
         options = {
             method: "GET",
@@ -68,10 +54,9 @@ export class UiStore {
                 // Concatenate to string and parse for JSON
                 const resultJson = JSON.parse(chunks.join(""));
                 if (res.status === 401) {
-                    console.log("Flag", this.userStore.userToken);
+                    console.log("fobidden");
 
                     this.userStore.isSignedIn = false;
-                    this.userStore.userToken = null;
                     localStorage.removeItem("user-jwt");
                     return Promise.reject({ status: resultJson.status, message: resultJson.message, httpCodeStatus: res.status })
                 }

@@ -13,6 +13,17 @@ import { NavBar } from "./components/Layouts/NavBar";
 import { BasePage } from "./components/Layouts/BasePage";
 import { LocalRoutes } from "./enums/LocalRoutes";
 import { mainRoutes } from "./routes";
+import { auth } from "./firebase";
+
+auth.onAuthStateChanged(async (user) => {
+  const retrievedToken = await user?.getIdToken();
+  if (retrievedToken) {
+    localStorage.setItem("user-jwt", retrievedToken);
+    console.log("token reset");
+  } else {
+    console.log("NOPE");
+  }
+});
 
 export const App = observer(() => {
   const { userStore, uiStore } = UseStores();

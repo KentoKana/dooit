@@ -30,7 +30,7 @@ interface IProfileEditForm {
 }
 interface IUserProfileFormProp {
   data: UserProfileViewDto;
-  onFormSave: (userEditDto: UserEditDto) => void;
+  onFormSave: () => void;
 }
 export const UserProfileForm = observer(
   ({ data, onFormSave }: IUserProfileFormProp) => {
@@ -72,11 +72,11 @@ export const UserProfileForm = observer(
         isClosable: true,
         position: "top",
       });
-      onFormSave(dto);
+      onFormSave();
     };
     const { mutate } = useMutation(
       async (userEditDto: UserEditDto) => {
-        return await userService.updateUserProfile(userEditDto);
+        return userService.updateUserProfile(userEditDto);
       },
       {
         onError: onError,

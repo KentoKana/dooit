@@ -3,12 +3,12 @@ import { AuthRoute } from "../enums/ApiRoutes";
 import { UseStores } from "../stores/StoreContexts";
 
 export const useDashboard = () => {
-    const { uiStore, userStore } = UseStores();
+    const { uiStore } = UseStores();
 
     return useQuery("dashboard", async () => {
         return uiStore.apiRequest<any, any>(AuthRoute.GetUser)
             .then((data) => {
                 return data
             })
-    }, { enabled: !!userStore.userToken });
+    }, { enabled: !!localStorage.getItem("user-jwt") });
 }

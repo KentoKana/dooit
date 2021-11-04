@@ -5,24 +5,13 @@ export class UserStore {
     constructor() {
         makeAutoObservable(this)
     }
-    private _userToken: string | null = null;
     private _isSignedIn: boolean = false;
     private _user: UserGetDto | null = null;
 
     public reset() {
         runInAction(() => {
-            this.userToken = null;
             this._isSignedIn = false;
             this._user = null;
-        })
-    }
-
-    get userToken() {
-        return this._userToken;
-    }
-    set userToken(newUserToken: string | null) {
-        runInAction(() => {
-            this._userToken = newUserToken;
         })
     }
 

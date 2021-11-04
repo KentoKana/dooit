@@ -5,12 +5,12 @@ import { UseStores } from "../stores/StoreContexts";
 import { isNullOrUndefined } from "../utils";
 
 export const useUserSettingsData = () => {
-    const { uiStore, userStore } = UseStores();
+    const { uiStore } = UseStores();
 
     return useQuery("userSettings", async () => {
         return await uiStore.apiRequest<UserProfileViewDto>(UserRoute.GetUserProfile)
             .then((data) => {
                 return data
             })
-    }, { enabled: !isNullOrUndefined(userStore.userToken) });
+    }, { enabled: !isNullOrUndefined(localStorage.getItem("user-jwt")) });
 }

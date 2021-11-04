@@ -54,7 +54,7 @@ export class ProjectCreationService {
         return await fetch(ProjectRoute.CreateProject, { // Your POST endpoint
             method: 'POST',
             headers: {
-                "Authorization": `Bearer ${this._userStore.userToken}`
+                "Authorization": `Bearer ${localStorage.getItem("user-jwt")}`
             },
             body: data // This is your file object
         }).then(async (res) => {
@@ -80,7 +80,6 @@ export class ProjectCreationService {
                 const resultJson = JSON.parse(chunks.join(""));
                 if (res.status === 401) {
                     this._userStore.isSignedIn = false;
-                    this._userStore.userToken = null;
                     localStorage.removeItem("user-jwt");
                     return Promise.reject({ status: resultJson.status, message: resultJson.message, httpCodeStatus: res.status })
                 }

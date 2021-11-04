@@ -53,7 +53,6 @@ class AuthByEmailPassword {
             })
         }).then(async (token) => {
             localStorage.setItem("user-jwt", token);
-            userStore.userToken = token;
             return uiStore
                 .apiRequest<UserLoginByEmailDto, UserGetLoggedIn>(AuthRoute.Login, {
                     method: "GET",
@@ -72,7 +71,6 @@ class AuthByEmailPassword {
     static async createUser(userStore: UserStore, uiStore: UiStore, formData: UserCreateDto) {
         return createUserWithEmailAndPassword(auth, formData.email, formData.password).then(async (userCred) => {
             const token = await userCred.user.getIdToken();
-            userStore.userToken = token;
             localStorage.setItem("user-jwt", token);
             formData.id = userCred.user.uid;
             return uiStore
