@@ -4,6 +4,7 @@ import { AnyFilesInterceptor, FilesInterceptor } from '@nestjs/platform-express'
 import { Request } from 'express';
 import { ProjectCreateDto } from './dto/ProjectCreateDto.dto';
 import { ProjectService } from './project.service';
+import * as fs from "fs";
 
 @Controller('project')
 export class ProjectController {

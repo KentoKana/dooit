@@ -8,7 +8,7 @@ import { ProjectCreateDto } from './dto/ProjectCreateDto.dto';
 import { ProjectGetDto } from './dto/ProjectGetDto.dto';
 import { ProjectItemGetDto } from './dto/ProjectItemGetDto.dto';
 import * as admin from "firebase-admin"
-import { FILE } from 'dns';
+import * as fs from "fs-extra"
 
 @Injectable()
 export class ProjectService {
@@ -63,7 +63,7 @@ export class ProjectService {
         })
         //@ts-ignore
         // Must parse item, as the retrieved dto content type is multipart/form-data
-        const newItems = JSON.parse(dto.projectItems).map((item) => {
+        const newProjectItems = JSON.parse(dto.projectItems).map((item) => {
             const fileForProjectItem = fileNames[item.order];
             let newItem = new ProjectItem();
             newItem.heading = item.heading;
@@ -80,10 +80,15 @@ export class ProjectService {
 
         // Assign data to new project 
         newProject.name = dto.name;
-        newProject.projectItems = newItems
+        newProject.projectItems = newProjectItems
         newProject.user = user;
 
         const created = await this.projectRepository.manager.save(newProject);
+
+        // Remove uploaded files from local upload folder.
+        files.forEach((file) => {
+            fs.unlink(`upload/${file.filename}`);
+        })
 
         return {
             id: created.id,
