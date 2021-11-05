@@ -30,6 +30,16 @@ export const App = observer(() => {
   const [appInitialized, setAppInitialized] = useState<boolean>(false);
 
   useEffect(() => {
+    auth.onAuthStateChanged(async (user) => {
+      const retrievedToken = await user?.getIdToken();
+      if (retrievedToken) {
+        localStorage.setItem("user-jwt", retrievedToken);
+        console.log("token reset");
+      } else {
+        console.log("NOPE");
+      }
+    });
+
     const app = new AppInit(userStore, uiStore);
     app
       .init((loaded) => setAppInitialized(loaded))

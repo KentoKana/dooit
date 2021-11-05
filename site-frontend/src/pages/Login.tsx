@@ -1,10 +1,23 @@
 import { Box, Flex, Heading, Text } from "@chakra-ui/layout";
 import { observer } from "mobx-react-lite";
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, Redirect } from "react-router-dom";
 import { LoginForm } from "../components/Forms/LoginForm";
 import { LocalRoutes } from "../enums/LocalRoutes";
+import { auth } from "../firebase";
 
 export const Login = observer(() => {
+  useEffect(() => {
+    auth.onAuthStateChanged(async (user) => {
+      const retrievedToken = await user?.getIdToken();
+      if (retrievedToken) {
+        localStorage.setItem("user-jwt", retrievedToken);
+      }
+    });
+  }, []);
+  if (localStorage.getItem("user-jwt")) {
+    return <Redirect to="/dashboard" />;
+  }
   return (
     <Flex
       justifyContent="center"

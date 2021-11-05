@@ -23,6 +23,7 @@ import { Sidebar } from "./Sidebar";
 
 export interface IProject {
   name: string;
+  flair: string;
   projectItems: IProjectItem[];
 }
 
