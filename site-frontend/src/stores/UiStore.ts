@@ -15,6 +15,7 @@ export class UiStore {
     readonly userStore: UserStore;
 
     async apiRequest<TData, TResult = TData>(url: string, options: IApiRequestOptions<TData> = {}): Promise<TResult> {
+
         let headers: Headers = new Headers();
         if (options.bodyData) {
             headers.set("Accept", "*/*")
@@ -53,13 +54,13 @@ export class UiStore {
 
                 // Concatenate to string and parse for JSON
                 const resultJson = JSON.parse(chunks.join(""));
-                if (res.status === 401) {
-                    console.log("fobidden");
+                // if (res.status === 401) {
+                //     console.log("fobidden");
 
-                    this.userStore.isSignedIn = false;
-                    localStorage.removeItem("user-jwt");
-                    return Promise.reject({ status: resultJson.status, message: resultJson.message, httpCodeStatus: res.status })
-                }
+                //     this.userStore.isSignedIn = false;
+                //     localStorage.removeItem("user-jwt");
+                //     return Promise.reject({ status: resultJson.status, message: resultJson.message, httpCodeStatus: res.status })
+                // }
 
                 return Promise.reject(
                     { status: resultJson.status, message: resultJson.message, httpCodeStatus: res.status }

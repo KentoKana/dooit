@@ -5,17 +5,11 @@ import { Link, Redirect } from "react-router-dom";
 import { LoginForm } from "../components/Forms/LoginForm";
 import { LocalRoutes } from "../enums/LocalRoutes";
 import { auth } from "../firebase";
+import { UseStores } from "../stores/StoreContexts";
 
 export const Login = observer(() => {
-  useEffect(() => {
-    auth.onAuthStateChanged(async (user) => {
-      const retrievedToken = await user?.getIdToken();
-      if (retrievedToken) {
-        localStorage.setItem("user-jwt", retrievedToken);
-      }
-    });
-  }, []);
-  if (localStorage.getItem("user-jwt")) {
+  const { userStore } = UseStores();
+  if (userStore.isSignedIn) {
     return <Redirect to="/dashboard" />;
   }
   return (

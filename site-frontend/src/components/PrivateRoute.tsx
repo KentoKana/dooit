@@ -10,7 +10,7 @@ export const PrivateRoute = observer(
   ({ authenticationPath, ...routeProps }: ProtectedRouteProps) => {
     const { userStore } = UseStores();
 
-    if (localStorage.getItem("user-jwt") && userStore.isSignedIn) {
+    if (userStore.isSignedIn) {
       return <Route {...routeProps} />;
     } else {
       return <Redirect to={{ pathname: authenticationPath }} />;

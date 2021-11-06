@@ -1,8 +1,4 @@
-import {
-  ChevronDownIcon,
-  ChevronRightIcon,
-  SmallAddIcon,
-} from "@chakra-ui/icons";
+import { SmallAddIcon } from "@chakra-ui/icons";
 import { Input } from "@chakra-ui/input";
 import { Box, Stack } from "@chakra-ui/layout";
 import {
@@ -10,7 +6,6 @@ import {
   Collapse,
   Radio,
   RadioGroup,
-  Select,
   Tag,
   useDisclosure,
 } from "@chakra-ui/react";

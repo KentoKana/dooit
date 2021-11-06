@@ -9,19 +9,19 @@ import { AuthService } from "../../../classes/AuthService";
 import { UseStores } from "../../../stores/StoreContexts";
 import { useForm } from "react-hook-form";
 import { observer } from "mobx-react-lite";
-import {
-  generateFirebaseAuthErrorMessage,
-  isNullOrUndefined,
-} from "../../../utils";
-import { Redirect } from "react-router";
+import { generateFirebaseAuthErrorMessage } from "../../../utils";
 import { FirebaseError } from "@firebase/util";
+
 interface ISignUpForm {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
 }
-export const SignUpForm = observer(() => {
+interface ISignUpFormProps {
+  onCreate: () => void;
+}
+export const SignUpForm = observer(({ onCreate }: ISignUpFormProps) => {
   const { uiStore, userStore } = UseStores();
   const toast = useToast();
   const reset = useReset();
@@ -37,7 +37,6 @@ export const SignUpForm = observer(() => {
   const [loadingState, setLoadingState] = useState<LoadingState>(
     LoadingState.None
   );
-  const [creationSuccessful, setCreationSuccessful] = useState(false);
   //#endregion
   const onSubmit = useCallback(
     async (formData: ISignUpForm) => {
@@ -53,7 +52,6 @@ export const SignUpForm = observer(() => {
         })
         .then(() => {
           setLoadingState(LoadingState.Loaded);
-          setCreationSuccessful(true);
           toast({
             title: `Congratulations, You've created your account!`,
             status: "success",
@@ -72,14 +70,6 @@ export const SignUpForm = observer(() => {
     },
     [uiStore, userStore, reset, setError, toast]
   );
-
-  if (
-    (!isNullOrUndefined(localStorage.getItem("user-jwt")) && creationSuccessful) ||
-    userStore.isSignedIn
-  ) {
-    userStore.isSignedIn = true;
-    return <Redirect to="/" />;
-  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

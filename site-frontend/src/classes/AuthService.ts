@@ -73,6 +73,7 @@ class AuthByEmailPassword {
             const token = await userCred.user.getIdToken();
             localStorage.setItem("user-jwt", token);
             formData.id = userCred.user.uid;
+            userStore.isSignedIn = true;
             return uiStore
                 .apiRequest<UserCreateDto, UserGetCreatedDto>(AuthRoute.Create, {
                     method: "POST",
