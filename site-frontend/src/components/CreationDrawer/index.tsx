@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  DrawerFooter,
-  Flex,
-  Spinner,
-  useToast,
-} from "@chakra-ui/react";
+import { Button, Flex, Spinner, useToast } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -17,13 +10,14 @@ import { ProjectGetDto } from "../../Dtos/ProjectGetDto.dto";
 import { LoadingState } from "../../enums/LoadingState";
 import { UseStores } from "../../stores/StoreContexts";
 import { DrawerTemplate } from "../DrawerTemplate";
+import { DrawerLayout } from "./DrawerLayout";
 import { MediaArea } from "./MediaArea";
 import { IProjectItem } from "./ProjectItems";
 import { Sidebar } from "./Sidebar";
 
 export interface IProject {
   name: string;
-  flair: string;
+  flair?: string;
   projectItems: IProjectItem[];
 }
 
@@ -144,48 +138,39 @@ export const CreationDrawer = observer(
         drawerHeader="Create Project"
       >
         <form onSubmit={handleSubmit(handleUpload)}>
-          <Flex
-            justifyContent="between"
-            width="100%"
-            maxWidth="1200px"
-            margin="auto"
-          >
-            <Box width="25%" mr={["40px"]} as="section">
+          <DrawerLayout
+            sidebar={
               <Sidebar
                 onItemSelect={(selectedItemIndex) => {
                   setSelectedItemIndex(selectedItemIndex);
                 }}
                 formHook={formHook}
               />
-            </Box>
-            <Flex
-              width="75%"
-              as="section"
-              justifyContent="center"
-              direction="column"
-              alignItems="center"
-            >
+            }
+            contentArea={
               <MediaArea
                 formHook={formHook}
                 selectedItemIndex={selectedItemIndex}
               />
-            </Flex>
-          </Flex>
-          <DrawerFooter>
-            <Button
-              variant="outline"
-              mr={3}
-              onClick={() => {
-                reset();
-                onClose();
-              }}
-            >
-              Cancel
-            </Button>
-            <Button colorScheme="blue" type="submit">
-              Save
-            </Button>
-          </DrawerFooter>
+            }
+            footer={
+              <>
+                <Button
+                  variant="outline"
+                  mr={3}
+                  onClick={() => {
+                    reset();
+                    onClose();
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button colorScheme="blue" type="submit">
+                  Save
+                </Button>
+              </>
+            }
+          />
         </form>
       </DrawerTemplate>
     );
