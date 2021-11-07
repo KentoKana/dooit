@@ -50,6 +50,9 @@ export class ProjectCreationService {
 
         data.append("name", projectDto.name);
         data.append("projectItems", JSON.stringify(projectDto.projectItems));
+        if (projectDto.flairId) {
+            data.append("flairId", projectDto.flairId.toString());
+        }
 
         return await fetch(ProjectRoute.CreateProject, { // Your POST endpoint
             method: 'POST',

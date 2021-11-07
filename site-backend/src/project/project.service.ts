@@ -9,10 +9,29 @@ import { ProjectGetDto } from './dto/ProjectGetDto.dto';
 import { ProjectItemGetDto } from './dto/ProjectItemGetDto.dto';
 import * as admin from "firebase-admin"
 import * as fs from "fs-extra"
+import { FlairRepository } from 'src/repository/flairRepository.repository';
+import { ProjectCreateOptionsDto } from './dto/ProjectCreateOptionsDto.dto';
 
 @Injectable()
 export class ProjectService {
-    constructor(private readonly projectRepository: ProjectRepository, private readonly userRepository: UserRepository) {
+    constructor(
+        private readonly projectRepository: ProjectRepository,
+        private readonly flairRepository: FlairRepository,
+        private readonly userRepository: UserRepository
+    ) {
+    }
+    async getProjectCreateOptions(): Promise<ProjectCreateOptionsDto> {
+        const flairs = await this.flairRepository.getAllFlairs();
+        const dto = new ProjectCreateOptionsDto();
+        dto.flairs = flairs.map((flair) => {
+            return {
+                id: flair.id,
+                backgroundColor: flair.backgroundColor,
+                flairLabel: flair.flairLabel,
+                isDarkText: flair.isDarkText
+            }
+        });
+        return dto;
     }
 
     async getAllForLoggedInUser(userId: string): Promise<ProjectGetDto[]> {
@@ -80,8 +99,9 @@ export class ProjectService {
 
         // Assign data to new project 
         newProject.name = dto.name;
-        newProject.projectItems = newProjectItems
+        newProject.projectItems = newProjectItems;
         newProject.user = user;
+        newProject.flairId = dto.flairId;
 
         const created = await this.projectRepository.manager.save(newProject);
 

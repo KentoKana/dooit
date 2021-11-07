@@ -18,27 +18,14 @@ import {
 import { observer } from "mobx-react-lite";
 import { UseFormReturn, useWatch } from "react-hook-form";
 import { IProject } from "..";
+import { ProjectFlairsDto } from "../../../Dtos/ProjectFlairsDto.dto";
 
 interface IFlairRadioProps {
   formHook: UseFormReturn<IProject, object>;
+  flairs: ProjectFlairsDto[];
 }
 
-const flairs = [
-  {
-    label: "None",
-    value: "-1",
-    background: "grey.700",
-  },
-  { label: "Project Complete", value: "0", background: "primary" },
-  { label: "Project In Progress", value: "1", background: "yellow.500" },
-  {
-    label: "I Need Help",
-    value: "2",
-    background: "red.500",
-  },
-];
-
-export const FlairRadio = observer(({ formHook }: IFlairRadioProps) => {
+export const FlairRadio = observer(({ formHook, flairs }: IFlairRadioProps) => {
   const flairWatch = useWatch({
     name: "flair",
     control: formHook.control,
@@ -48,9 +35,9 @@ export const FlairRadio = observer(({ formHook }: IFlairRadioProps) => {
   });
 
   const selectedFlair = flairs.find((flair) => {
-    return flair.value === flairWatch;
+    return flair.id.toString() === flairWatch;
   });
-  console.log(flairWatch);
+  console.log(selectedFlair);
 
   return (
     <>
@@ -75,10 +62,10 @@ export const FlairRadio = observer(({ formHook }: IFlairRadioProps) => {
               </Box> */}
               <Tag
                 variant="solid"
-                background={selectedFlair?.background}
+                background={selectedFlair?.backgroundColor}
                 cursor="pointer"
               >
-                {selectedFlair?.label}
+                {selectedFlair?.flairLabel}
               </Tag>
             </Flex>
           ) : (
@@ -104,15 +91,27 @@ export const FlairRadio = observer(({ formHook }: IFlairRadioProps) => {
           }}
         >
           <Stack direction="column" p={3}>
-            {flairs.map((option) => {
+            {[
+              {
+                flairLabel: "None",
+                id: -1,
+                backgroundColor: "grey.700",
+                isDarkText: false,
+              },
+              ...flairs,
+            ].map((option) => {
               return (
-                <Radio key={option.value} value={option.value} cursor="pointer">
+                <Radio
+                  key={option.id}
+                  value={option.id.toString()}
+                  cursor="pointer"
+                >
                   <Tag
                     variant="solid"
-                    background={option.background}
+                    background={option.backgroundColor}
                     cursor="pointer"
                   >
-                    {option.label}
+                    {option.flairLabel}
                   </Tag>
                 </Radio>
               );

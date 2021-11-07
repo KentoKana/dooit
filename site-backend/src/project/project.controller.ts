@@ -10,6 +10,11 @@ import * as fs from "fs";
 export class ProjectController {
     constructor(private readonly projectService: ProjectService) {
     }
+    @Get("get-project-create-options")
+    @UseGuards(AuthGuard('firebase-jwt'))
+    async getProjectCreateOptions(@Req() request: Request) {
+        return this.projectService.getProjectCreateOptions();
+    }
 
     @Get("get-all-for-logged-in-user")
     @UseGuards(AuthGuard('firebase-jwt'))

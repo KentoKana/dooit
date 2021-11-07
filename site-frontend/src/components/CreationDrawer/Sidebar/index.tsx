@@ -2,15 +2,21 @@ import { Input } from "@chakra-ui/input";
 import { Box } from "@chakra-ui/layout";
 import { UseFormReturn } from "react-hook-form";
 import { IProject } from "..";
+import { ProjectCreateOptionsDto } from "../../../Dtos/ProjectCreateOptionsDto.dto";
 import { FormElement } from "../../Forms/FormElement";
 import { ProjectItems } from "../ProjectItems";
 import { FlairRadio } from "./FlairRadio";
 interface ISidebarProps {
   onItemSelect: (itemIndex: number) => void;
   formHook: UseFormReturn<IProject, object>;
+  projectCreationOptions: ProjectCreateOptionsDto;
 }
 
-export const Sidebar = ({ formHook, onItemSelect }: ISidebarProps) => {
+export const Sidebar = ({
+  formHook,
+  onItemSelect,
+  projectCreationOptions,
+}: ISidebarProps) => {
   const {
     register,
     formState: { errors },
@@ -37,7 +43,10 @@ export const Sidebar = ({ formHook, onItemSelect }: ISidebarProps) => {
             }
             errorMessage={errors.name && errors.name.message}
           />
-          <FlairRadio formHook={formHook} />
+          <FlairRadio
+            flairs={projectCreationOptions.flairs}
+            formHook={formHook}
+          />
         </Box>
         <Box>
           <Box

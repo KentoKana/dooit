@@ -1,4 +1,5 @@
-import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn, ManyToOne, OneToMany, OneToOne, JoinColumn } from 'typeorm';
+import { Flair } from './flair.entity';
 import { ProjectItem } from './projectItem.entity';
 import { User } from './user.entity';
 
@@ -9,6 +10,9 @@ export class Project {
 
     @Column({ length: 500 })
     name: string;
+
+    @Column()
+    flairId: number;
 
     @ManyToOne(() => User, user => user.project, { onDelete: "CASCADE" })
     user: User;

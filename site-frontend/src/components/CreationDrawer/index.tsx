@@ -8,6 +8,7 @@ import { HttpError } from "../../Dtos/HttpError.dto";
 import { ProjectCreateDto } from "../../Dtos/ProjectCreateDto.dto";
 import { ProjectGetDto } from "../../Dtos/ProjectGetDto.dto";
 import { LoadingState } from "../../enums/LoadingState";
+import { useGetProjectCreationOptions } from "../../hooks/useGetProjectCreationOptions";
 import { UseStores } from "../../stores/StoreContexts";
 import { DrawerTemplate } from "../DrawerTemplate";
 import { DrawerLayout } from "./DrawerLayout";
@@ -48,6 +49,7 @@ export const CreationDrawer = observer(
     });
     const { handleSubmit, reset } = formHook;
     const [selectedItemIndex, setSelectedItemIndex] = useState(0);
+    const useProjectCreationOptions = useGetProjectCreationOptions();
 
     //#region Mutation handlers
     const onError = (err: HttpError) => {
@@ -101,8 +103,13 @@ export const CreationDrawer = observer(
           position: "top",
           description: <Flex>Frantically generating your project...</Flex>,
         });
+
         mutate({
           name: projectData.name,
+          flairId:
+            projectData.flair !== "-1" /**i.e. not "None" */
+              ? parseInt(projectData.flair!)
+              : undefined,
           files: projectData.projectItems.map((x) => {
             return x.mediaAsFile;
           }),
@@ -137,41 +144,46 @@ export const CreationDrawer = observer(
         placement="right"
         drawerHeader="Create Project"
       >
-        <form onSubmit={handleSubmit(handleUpload)}>
-          <DrawerLayout
-            sidebar={
-              <Sidebar
-                onItemSelect={(selectedItemIndex) => {
-                  setSelectedItemIndex(selectedItemIndex);
-                }}
-                formHook={formHook}
-              />
-            }
-            contentArea={
-              <MediaArea
-                formHook={formHook}
-                selectedItemIndex={selectedItemIndex}
-              />
-            }
-            footer={
-              <>
-                <Button
-                  variant="outline"
-                  mr={3}
-                  onClick={() => {
-                    reset();
-                    onClose();
+        {useProjectCreationOptions.data ? (
+          <form onSubmit={handleSubmit(handleUpload)}>
+            <DrawerLayout
+              sidebar={
+                <Sidebar
+                  projectCreationOptions={useProjectCreationOptions.data}
+                  onItemSelect={(selectedItemIndex) => {
+                    setSelectedItemIndex(selectedItemIndex);
                   }}
-                >
-                  Cancel
-                </Button>
-                <Button colorScheme="blue" type="submit">
-                  Save
-                </Button>
-              </>
-            }
-          />
-        </form>
+                  formHook={formHook}
+                />
+              }
+              contentArea={
+                <MediaArea
+                  formHook={formHook}
+                  selectedItemIndex={selectedItemIndex}
+                />
+              }
+              footer={
+                <>
+                  <Button
+                    variant="outline"
+                    mr={3}
+                    onClick={() => {
+                      reset();
+                      onClose();
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button colorScheme="blue" type="submit">
+                    Save
+                  </Button>
+                </>
+              }
+            />
+          </form>
+        ) : (
+          <></>
+        )}
       </DrawerTemplate>
     );
   }
