@@ -111,7 +111,15 @@ export const ProjectItems = observer(
                                   onItemSelect(index + 1);
                                 }}
                               />
-                              <Flex height="110px">
+                              <Flex
+                                height="110px"
+                                transition="0.2s ease all"
+                                backgroundColor={
+                                  selectedItemIndex === index
+                                    ? "cyan.50"
+                                    : "grey.50"
+                                }
+                              >
                                 <Box w="10%">
                                   <Flex
                                     w="10%"
@@ -157,13 +165,11 @@ export const ProjectItems = observer(
                                     />
                                   </Flex>
                                 </Box>
-                                <Box width="90%" p={2}>
+                                <Box width="90%" pl={2}>
                                   <Button
                                     title="Edit this item"
                                     _focus={{
-                                      outline: "1px solid",
-                                      outlineColor: "grey.100",
-                                      borderRadius: "sm",
+                                      outline: "none",
                                     }}
                                     background="transparent"
                                     aria-label="Edit this item"

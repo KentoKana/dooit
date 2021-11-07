@@ -42,6 +42,9 @@ export const FlairRadio = observer(({ formHook, flairs }: IFlairRadioProps) => {
   return (
     <>
       <Button
+        borderRadius="sm"
+        p={2}
+        background="grey.50"
         fontWeight="normal"
         textAlign="left"
         onClick={flairDisclosure.onToggle}
@@ -61,6 +64,7 @@ export const FlairRadio = observer(({ formHook, flairs }: IFlairRadioProps) => {
                 Flair:{" "}
               </Box> */}
               <Tag
+                color={selectedFlair?.isDarkText ? "grey.700" : "#fff"}
                 variant="solid"
                 background={selectedFlair?.backgroundColor}
                 cursor="pointer"
@@ -107,6 +111,7 @@ export const FlairRadio = observer(({ formHook, flairs }: IFlairRadioProps) => {
                   cursor="pointer"
                 >
                   <Tag
+                    color={option.isDarkText ? "grey.700" : "#fff"}
                     variant="solid"
                     background={option.backgroundColor}
                     cursor="pointer"
