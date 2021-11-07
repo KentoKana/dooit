@@ -1,4 +1,9 @@
-import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
+import {
+  SmallAddIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  EditIcon,
+} from "@chakra-ui/icons";
 import {
   Button,
   Collapse,
@@ -9,7 +14,6 @@ import {
   useDisclosure,
   Text,
   Flex,
-  Box,
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { UseFormReturn, useWatch } from "react-hook-form";
@@ -23,36 +27,40 @@ const flairs = [
   {
     label: "None",
     value: "-1",
-    background: "#000",
+    background: "grey.700",
   },
-  { label: "Complete", value: "1", background: "primary" },
-  { label: "In Progress", value: "0", background: "yellow.500" },
+  { label: "Project Complete", value: "0", background: "primary" },
+  { label: "Project In Progress", value: "1", background: "yellow.500" },
   {
     label: "I Need Help",
     value: "2",
-    background: "purple.600",
+    background: "red.500",
   },
 ];
 
 export const FlairRadio = observer(({ formHook }: IFlairRadioProps) => {
-  const flairDisclosure = useDisclosure();
   const flairWatch = useWatch({
     name: "flair",
-    defaultValue: "-1",
     control: formHook.control,
+  });
+  const flairDisclosure = useDisclosure({
+    defaultIsOpen: flairWatch === "-1",
   });
 
   const selectedFlair = flairs.find((flair) => {
-    return flair.value === flairWatch?.toString();
+    return flair.value === flairWatch;
   });
+  console.log(flairWatch);
 
   return (
     <>
       <Button
+        fontWeight="normal"
         textAlign="left"
         onClick={flairDisclosure.onToggle}
         variant="unstyled"
         w="100%"
+        h="100%"
       >
         <Text
           as="span"
@@ -60,9 +68,11 @@ export const FlairRadio = observer(({ formHook }: IFlairRadioProps) => {
           alignItems="center"
           justifyContent="space-between"
         >
-          {formHook.watch("flair") && formHook.watch("flair") !== "-1" ? (
-            <Flex width="100%">
-              <Box mr={2}>Current Flair: </Box>
+          {flairWatch && flairWatch !== "-1" ? (
+            <Flex>
+              {/* <Box as="span" mr={2}>
+                Flair:{" "}
+              </Box> */}
               <Tag
                 variant="solid"
                 background={selectedFlair?.background}
@@ -72,15 +82,22 @@ export const FlairRadio = observer(({ formHook }: IFlairRadioProps) => {
               </Tag>
             </Flex>
           ) : (
-            <>Add Flair 🔥</>
+            <Flex alignItems="center">
+              <SmallAddIcon mr={1} /> Add Flair 🔥
+            </Flex>
           )}
-          {flairDisclosure.isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}{" "}
+          {flairWatch && flairWatch !== "-1" ? (
+            <EditIcon />
+          ) : flairDisclosure.isOpen ? (
+            <ChevronUpIcon />
+          ) : (
+            <ChevronDownIcon />
+          )}{" "}
         </Text>
       </Button>
       <Collapse in={flairDisclosure.isOpen} animateOpacity>
         <RadioGroup
-          defaultValue={selectedFlair?.value}
-          value={formHook.watch("flair")}
+          value={flairWatch}
           onChange={(value) => {
             formHook.setValue("flair", value);
             flairDisclosure.onToggle();
