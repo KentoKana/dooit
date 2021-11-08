@@ -21,6 +21,7 @@ import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import { IProject } from ".";
 import { LoadingState } from "../../enums/LoadingState";
 import { MediaEditModal } from "./MediaEditModal";
+import { ItemTextEditor } from "./ItemTextEditor";
 
 enum EDragState {
   None,
@@ -196,6 +197,12 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
           </Text>
         </Button>
       )}
+      <Box my={5}>
+        <ItemTextEditor
+          formHook={formHook}
+          selectedItemIndex={selectedItemIndex}
+        />
+      </Box>
       {watchProjectItems && watchProjectItems[selectedItemIndex] && (
         <MediaEditModal
           cropperState={mediaLoadingState}
