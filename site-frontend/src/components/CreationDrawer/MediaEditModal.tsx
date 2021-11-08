@@ -61,7 +61,7 @@ export const MediaEditModal = ({
           image={mediaUrl}
           crop={crop}
           zoom={zoom}
-          aspect={1}
+          aspect={4 / 3}
           onCropChange={setCrop}
           onCropComplete={(_, croppedAreaPixels) => {
             onCropAreaChange(croppedAreaPixels);

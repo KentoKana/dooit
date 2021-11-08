@@ -5,7 +5,6 @@ import {
   Image,
   Skeleton,
   useDisclosure,
-  Link,
   Button,
   Box,
 } from "@chakra-ui/react";
@@ -105,15 +104,15 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
   );
 
   return (
-    <Box position="relative">
+    <Box position="relative" width="100%">
       {watchProjectItems &&
       watchProjectItems[selectedItemIndex] &&
       watchProjectItems[selectedItemIndex].mediaUrl ? (
         <>
           <Flex
+            zIndex={1}
             justifyContent="flex-end"
             width="100%"
-            maxWidth="400px"
             position="absolute"
             opacity={0.3}
             transition="0.2s ease all"
@@ -154,21 +153,21 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
           </Flex>
           <Flex justifyContent="center">
             {mediaLoadingState !== LoadingState.Loading ? (
-              <Link href="#" onClick={onOpen}>
+              <Button variant="unstyled" onClick={onOpen} w="100%" h="100%">
                 <Image
-                  boxSize="400px"
+                  width="100%"
                   src={URL.createObjectURL(
                     watchProjectItems[selectedItemIndex].mediaAsFile
                   )}
                 />
-              </Link>
+              </Button>
             ) : (
               <Skeleton
                 mt="4"
                 noOfLines={4}
                 spacing="4"
                 height="400px"
-                width="400px"
+                width="100%"
               />
             )}
           </Flex>
@@ -185,12 +184,8 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
           borderStyle={
             dropzoneDragState === EDragState.DragEnter ? "solid" : "dashed"
           }
-          w="100%"
-          h="100%"
-          width="400px"
-          height="400px"
-          maxWidth="400px"
-          maxHeight="400px"
+          width="100%"
+          height="300px"
           borderRadius="sm"
           justifyContent="center"
           alignItems="center"
@@ -206,8 +201,8 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
           cropperState={mediaLoadingState}
           isOpen={isOpen}
           onCropConfirmation={() => {
-            onClose();
             setMediaLoadingState(LoadingState.Loading);
+            onClose();
             if (croppedAreaPixels) {
               onCropComplete(croppedAreaPixels);
               setCroppedAreaPixels(undefined);

@@ -1,9 +1,21 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { UserGetDto } from "../Dtos/UserGetDto.dto";
+import { auth } from "../firebase";
 
 export class UserStore {
     constructor() {
         makeAutoObservable(this)
+        auth.onAuthStateChanged(async (user) => {
+            const retrievedToken = await user?.getIdToken();
+            if (retrievedToken) {
+                localStorage.setItem("user-jwt", retrievedToken);
+                this.isSignedIn = true
+                console.log("token reset from rootstore");
+            } else {
+                this.isSignedIn = false;
+                localStorage.removeItem("user-jwt");
+            }
+        });
     }
     private _isSignedIn: boolean = false;
     private _user: UserGetDto | null = null;
