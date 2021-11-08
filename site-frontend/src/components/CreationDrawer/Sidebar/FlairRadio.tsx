@@ -37,7 +37,6 @@ export const FlairRadio = observer(({ formHook, flairs }: IFlairRadioProps) => {
   const selectedFlair = flairs.find((flair) => {
     return flair.id.toString() === flairWatch;
   });
-  console.log(selectedFlair);
 
   return (
     <>

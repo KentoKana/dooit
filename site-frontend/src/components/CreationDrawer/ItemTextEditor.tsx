@@ -28,9 +28,6 @@ export const ItemTextEditor = ({
       `projectItems.${selectedItemIndex}.description`,
       draftToHtml(convertToRaw(debouncedEditorState.getCurrentContent()))
     );
-    console.log(
-      draftToHtml(convertToRaw(debouncedEditorState.getCurrentContent()))
-    );
   }, [debouncedEditorState, formHook, selectedItemIndex]);
   return (
     <Editor
