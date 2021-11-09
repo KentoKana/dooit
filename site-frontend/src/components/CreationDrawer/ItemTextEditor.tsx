@@ -1,11 +1,16 @@
 import { Editor } from "react-draft-wysiwyg";
-import { EditorState, ContentState, convertToRaw } from "draft-js";
+import {
+  EditorState,
+  ContentState,
+  convertToRaw,
+  convertFromHTML,
+} from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import draftToHtml from "draftjs-to-html";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./style.css";
-import { UseFormReturn } from "react-hook-form";
+import { UseFormReturn, useWatch } from "react-hook-form";
 import { IProject } from ".";
 import { useDebounce } from "../../hooks/useDebounce";
 
@@ -18,10 +23,27 @@ export const ItemTextEditor = ({
   selectedItemIndex,
   formHook,
 }: IItemTextEditor) => {
-  const [editorState, setEditorState] = useState(
-    EditorState.createWithContent(ContentState.createFromText(""))
+  const watchProjectItems = useWatch({
+    name: `projectItems`,
+    control: formHook.control,
+  });
+  const blocksFromHTML = convertFromHTML(
+    watchProjectItems[selectedItemIndex]?.description ?? ""
+  );
+  const state = ContentState.createFromBlockArray(
+    blocksFromHTML.contentBlocks,
+    blocksFromHTML.entityMap
+  );
+  const [editorState, setEditorState] = useState<EditorState>(
+    EditorState.createWithContent(
+      watchProjectItems[selectedItemIndex]?.description
+        ? state
+        : ContentState.createFromText("")
+    )
   );
   const debouncedEditorState = useDebounce(editorState);
+
+  const selectedItemIndexRef = useRef(selectedItemIndex);
 
   useEffect(() => {
     formHook.setValue(
@@ -29,6 +51,21 @@ export const ItemTextEditor = ({
       draftToHtml(convertToRaw(debouncedEditorState.getCurrentContent()))
     );
   }, [debouncedEditorState, formHook, selectedItemIndex]);
+
+  // Rerender Wysiwyg editor content when selected item index changes.
+  useEffect(() => {
+    if (selectedItemIndexRef.current !== selectedItemIndex) {
+      setEditorState(
+        EditorState.createWithContent(
+          watchProjectItems[selectedItemIndex]?.description
+            ? state
+            : ContentState.createFromText("")
+        )
+      );
+      selectedItemIndexRef.current = selectedItemIndex;
+    }
+  }, [selectedItemIndexRef, watchProjectItems, selectedItemIndex, state]);
+
   return (
     <Editor
       editorState={editorState}
