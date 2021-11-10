@@ -1,4 +1,4 @@
-import { Box, Flex, Image, IconButton, Button } from "@chakra-ui/react";
+import { Box, Flex, Image, IconButton, Button, Text } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import {
   DragDropContext,
@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/icons";
 import { ProjectItemTopBar } from "./ProjectItemTopBar";
 import { IProject } from ".";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 export interface IProjectItem {
   title: string;
   description: string;
@@ -41,16 +41,19 @@ export const ProjectItems = observer(
     });
 
     const watchProjectItems = useWatch({
-      name: `projectItems`,
+      name: "projectItems",
       control,
     });
 
-    const handleOnDragEnd = (result: DropResult) => {
-      if (!result.destination) return;
-      move(result.source.index, result.destination.index);
-      setSelectedItemIndex(result.destination.index);
-      onItemSelect(result.destination.index);
-    };
+    const handleOnDragEnd = useCallback(
+      (result: DropResult) => {
+        if (!result.destination) return;
+        setSelectedItemIndex(result.destination.index);
+        onItemSelect(result.destination.index);
+        move(result.source.index, result.destination.index);
+      },
+      [onItemSelect, move]
+    );
 
     return (
       <>
@@ -70,6 +73,7 @@ export const ProjectItems = observer(
                         watchProjectItems[index].mediaAsFile
                       );
                     }
+
                     return (
                       <Draggable
                         key={`projectItem-${field.id}`}
@@ -181,19 +185,32 @@ export const ProjectItems = observer(
                                       setSelectedItemIndex(index);
                                     }}
                                   >
-                                    {mediaPreviewUrl ? (
+                                    {mediaPreviewUrl ||
+                                    (watchProjectItems[index] &&
+                                      watchProjectItems[index].description) ? (
                                       <Flex
-                                        justifyContent="start"
+                                        justifyContent="between"
                                         alignItems="center"
                                         height="100%"
+                                        width="100%"
                                       >
+                                        <Box mr={3}>
+                                          {mediaPreviewUrl && (
+                                            <Image
+                                              boxSize="80px"
+                                              objectFit="cover"
+                                              src={mediaPreviewUrl}
+                                              alt=""
+                                            />
+                                          )}
+                                        </Box>
                                         <Box>
-                                          <Image
-                                            boxSize="80px"
-                                            objectFit="cover"
-                                            src={mediaPreviewUrl}
-                                            alt=""
-                                          />
+                                          <Text fontWeight="normal">
+                                            {(watchProjectItems[index] &&
+                                              watchProjectItems[index]
+                                                .description) ??
+                                              ""}
+                                          </Text>
                                         </Box>
                                       </Flex>
                                     ) : (
