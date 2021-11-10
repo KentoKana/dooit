@@ -16,6 +16,7 @@ import {
 import { ProjectItemTopBar } from "./ProjectItemTopBar";
 import { IProject } from ".";
 import { useCallback, useState } from "react";
+import { truncateText } from "../../utils";
 export interface IProjectItem {
   title: string;
   description: string;
@@ -193,6 +194,8 @@ export const ProjectItems = observer(
                                         alignItems="center"
                                         height="100%"
                                         width="100%"
+                                        maxHeight="100px"
+                                        overflowY="auto"
                                       >
                                         <Box mr={3}>
                                           {mediaPreviewUrl && (
@@ -205,11 +208,22 @@ export const ProjectItems = observer(
                                           )}
                                         </Box>
                                         <Box>
-                                          <Text fontWeight="normal">
-                                            {(watchProjectItems[index] &&
-                                              watchProjectItems[index]
-                                                .description) ??
-                                              ""}
+                                          <Text
+                                            maxWidth="100px"
+                                            textAlign="left"
+                                            fontWeight="normal"
+                                            whiteSpace="break-spaces"
+                                            overflowX="hidden"
+                                            overflowY="auto"
+                                          >
+                                            {watchProjectItems[index] &&
+                                            watchProjectItems[index].description
+                                              ? truncateText(
+                                                  watchProjectItems[index]
+                                                    .description,
+                                                  40
+                                                )
+                                              : ""}
                                           </Text>
                                         </Box>
                                       </Flex>

@@ -21,3 +21,10 @@ export const isNullOrUndefined = (value: any) => {
     }
     return true;
 }
+
+export const truncateText = (textContent: string, maxCharacters: number = 50) => {
+    if (textContent.length > maxCharacters) {
+        return textContent.substring(0, maxCharacters) + "...";
+    }
+    return textContent;
+}

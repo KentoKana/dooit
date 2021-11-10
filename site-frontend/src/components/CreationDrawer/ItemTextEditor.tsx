@@ -20,6 +20,9 @@ export const ItemTextEditor = ({
   return (
     <>
       <DebouncedTextInput
+        placeholder="Tell us something interesting about this item..."
+        resize="none"
+        minHeight="190px"
         className="css-j9fgrv"
         element="textarea"
         debounceTimeout={300}
