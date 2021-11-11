@@ -21,7 +21,9 @@ export const DrawerLayout = ({
           {contentArea}
         </Flex>
       </Flex>
-      <DrawerFooter>{footer}</DrawerFooter>
+      <DrawerFooter maxWidth="900px" margin="auto" px={0}>
+        {footer}
+      </DrawerFooter>
     </>
   );
 };

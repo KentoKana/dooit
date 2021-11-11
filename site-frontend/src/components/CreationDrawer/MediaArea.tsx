@@ -65,25 +65,27 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
       setDropzoneDragState(EDragState.None);
     },
     onDropAccepted: (files) => {
+      onOpen();
       setDropzoneDragState(EDragState.None);
       setMediaLoadingState(LoadingState.Loading);
-      onOpen();
       setValue(`projectItems.${selectedItemIndex}.mediaAsFile`, files[0]);
       setValue(
         `projectItems.${selectedItemIndex}.mediaUrl`,
         URL.createObjectURL(files[0])
       );
-      new Compressor(files[0], {
-        ...defaultCompressorOptions,
-        success: (compressedImage: File) => {
-          setValue(`projectItems.${selectedItemIndex}.mediaAsFile`, files[0]);
-          setValue(
-            `projectItems.${selectedItemIndex}.mediaUrl`,
-            URL.createObjectURL(compressedImage)
-          );
-          setMediaLoadingState(LoadingState.Loaded);
-        },
-      });
+      setTimeout(() => {
+        new Compressor(files[0], {
+          ...defaultCompressorOptions,
+          success: (compressedImage: File) => {
+            setValue(`projectItems.${selectedItemIndex}.mediaAsFile`, files[0]);
+            setValue(
+              `projectItems.${selectedItemIndex}.mediaUrl`,
+              URL.createObjectURL(compressedImage)
+            );
+            setMediaLoadingState(LoadingState.Loaded);
+          },
+        });
+      }, 400);
     },
     onDropRejected: (rejected) => {
       setDropzoneDragState(EDragState.Rejected);

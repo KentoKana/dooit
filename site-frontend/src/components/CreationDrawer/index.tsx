@@ -1,4 +1,4 @@
-import { Button, Flex, Spinner, useToast } from "@chakra-ui/react";
+import { Button, Flex, Spinner, useToast, Box } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -143,7 +143,11 @@ export const CreationDrawer = observer(
         onClose={onClose}
         size="full"
         placement="right"
-        drawerHeader="Create Project"
+        drawerHeader={
+          <Box display="flex" justifyContent="center">
+            Add New Project
+          </Box>
+        }
       >
         {useProjectCreationOptions.data ? (
           <form onSubmit={handleSubmit(handleUpload)}>
