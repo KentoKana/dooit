@@ -6,7 +6,6 @@ import {
 } from "@chakra-ui/icons";
 import {
   Button,
-  Collapse,
   Radio,
   RadioGroup,
   Stack,

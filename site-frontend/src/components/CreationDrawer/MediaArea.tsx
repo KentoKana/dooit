@@ -6,6 +6,7 @@ import {
   useDisclosure,
   Button,
   Box,
+  useToast,
 } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
 import { UseFormReturn, useWatch } from "react-hook-form";
@@ -25,6 +26,7 @@ import { AiFillPlusCircle } from "react-icons/ai";
 enum EDragState {
   None,
   DragEnter,
+  Rejected,
 }
 
 interface IMediaAreaProps {
@@ -41,39 +43,39 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
   const [mediaLoadingState, setMediaLoadingState] = useState<LoadingState>(
     LoadingState.None
   );
+  const [cropCompletionState, setCropCompletionState] = useState<LoadingState>(
+    LoadingState.None
+  );
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area>();
   const [dropzoneDragState, setDropzoneDragState] = useState<EDragState>(
     EDragState.None
   );
 
   const { onClose, onOpen, isOpen } = useDisclosure();
+  const toast = useToast();
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: "image/*",
     maxSize: 2000000,
-    onDropRejected: () => {
-      console.log("nope");
-    },
     onDragEnter: () => {
       setDropzoneDragState(EDragState.DragEnter);
     },
     onDragLeave: () => {
       setDropzoneDragState(EDragState.None);
     },
-    onDropAccepted: () => {
+    onDropAccepted: (files) => {
       setDropzoneDragState(EDragState.None);
-    },
-    onDrop: (files) => {
       setMediaLoadingState(LoadingState.Loading);
-
       onOpen();
+      setValue(`projectItems.${selectedItemIndex}.mediaAsFile`, files[0]);
+      setValue(
+        `projectItems.${selectedItemIndex}.mediaUrl`,
+        URL.createObjectURL(files[0])
+      );
       new Compressor(files[0], {
         ...defaultCompressorOptions,
         success: (compressedImage: File) => {
-          setValue(
-            `projectItems.${selectedItemIndex}.mediaAsFile`,
-            compressedImage
-          );
+          setValue(`projectItems.${selectedItemIndex}.mediaAsFile`, files[0]);
           setValue(
             `projectItems.${selectedItemIndex}.mediaUrl`,
             URL.createObjectURL(compressedImage)
@@ -82,11 +84,25 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
         },
       });
     },
+    onDropRejected: (rejected) => {
+      setDropzoneDragState(EDragState.Rejected);
+      if (rejected[0].errors[0].code === "file-too-large") {
+        toast({
+          title: `Uh oh... :(`,
+          description: "Your file is too large. The max size is 2MB",
+          status: "error",
+          isClosable: true,
+          position: "top",
+        });
+      }
+    },
+
     multiple: false,
   });
 
   const onCropComplete = useCallback(
     async (croppedAreaPixels: Area) => {
+      setCropCompletionState(LoadingState.Loading);
       try {
         if (watchProjectItems && watchProjectItems[selectedItemIndex]) {
           const croppedImage = await getCroppedImg(
@@ -98,12 +114,12 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
             selectedItemIndex.toString()
           );
           setValue(`projectItems.${selectedItemIndex}.mediaAsFile`, file);
-          setMediaLoadingState(LoadingState.Loaded);
+          setCropCompletionState(LoadingState.Loaded);
         }
         onClose();
       } catch (e) {
         console.error(e);
-        setMediaLoadingState(LoadingState.Error);
+        setCropCompletionState(LoadingState.Error);
         onClose();
       }
     },
@@ -159,7 +175,8 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
             />
           </Flex>
           <Flex justifyContent="center">
-            {mediaLoadingState !== LoadingState.Loading ? (
+            {mediaLoadingState !== LoadingState.Loading &&
+            cropCompletionState !== LoadingState.Loading ? (
               <Button variant="unstyled" onClick={onOpen} w="100%" h="100%">
                 <Image
                   borderRadius="sm"
@@ -229,10 +246,10 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
       </Box>
       {watchProjectItems && watchProjectItems[selectedItemIndex] && (
         <MediaEditModal
-          cropperState={mediaLoadingState}
+          cropCompletionState={cropCompletionState}
+          mediaLoadingState={mediaLoadingState}
           isOpen={isOpen}
           onCropConfirmation={() => {
-            setMediaLoadingState(LoadingState.Loading);
             if (croppedAreaPixels) {
               onCropComplete(croppedAreaPixels);
               setCroppedAreaPixels(undefined);

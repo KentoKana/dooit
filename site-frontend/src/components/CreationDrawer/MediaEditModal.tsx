@@ -12,7 +12,8 @@ interface IMediaEditModalProps {
   onCropConfirmation: () => void;
   onCropAreaChange: (newCropArea: Area) => void;
   mediaUrl: string;
-  cropperState: LoadingState;
+  mediaLoadingState: LoadingState;
+  cropCompletionState: LoadingState;
 }
 
 export const MediaEditModal = ({
@@ -21,7 +22,8 @@ export const MediaEditModal = ({
   onCropAreaChange,
   onClose,
   mediaUrl,
-  cropperState,
+  mediaLoadingState,
+  cropCompletionState,
 }: IMediaEditModalProps) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -40,8 +42,14 @@ export const MediaEditModal = ({
             onClick={() => {
               onCropConfirmation();
             }}
-            disabled={cropperState === LoadingState.Loading}
-            isLoading={cropperState === LoadingState.Loading}
+            disabled={
+              mediaLoadingState === LoadingState.Loading ||
+              cropCompletionState === LoadingState.Loading
+            }
+            isLoading={
+              mediaLoadingState === LoadingState.Loading ||
+              cropCompletionState === LoadingState.Loading
+            }
           >
             Crop
           </Button>
@@ -49,6 +57,11 @@ export const MediaEditModal = ({
       }
     >
       <Box
+        style={
+          mediaLoadingState === LoadingState.Loading
+            ? { filter: "blur(2px)" }
+            : undefined
+        }
         className="crop-container"
         css={{
           width: "100%",
