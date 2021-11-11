@@ -14,6 +14,7 @@ interface IMediaEditModalProps {
   mediaUrl: string;
   mediaLoadingState: LoadingState;
   cropCompletionState: LoadingState;
+  onCropCancel: () => void;
 }
 
 export const MediaEditModal = ({
@@ -24,6 +25,7 @@ export const MediaEditModal = ({
   mediaUrl,
   mediaLoadingState,
   cropCompletionState,
+  onCropCancel,
 }: IMediaEditModalProps) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -33,9 +35,23 @@ export const MediaEditModal = ({
       isOpen={isOpen}
       onClose={onClose}
       footer={
-        <Flex justifyContent="space-between" w="100%">
+        <Flex justifyContent="flex-end" w="100%" flexWrap="wrap">
           <Button
-            width="100%"
+            borderRadius="sm"
+            width="100px"
+            onClick={() => {
+              onCropCancel();
+            }}
+            mr="3"
+            disabled={
+              mediaLoadingState === LoadingState.Loading ||
+              cropCompletionState === LoadingState.Loading
+            }
+          >
+            Cancel
+          </Button>
+          <Button
+            width="100px"
             variant="primary"
             aria-label="Confirm to crop image"
             alignSelf="end"

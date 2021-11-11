@@ -50,6 +50,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
   const [dropzoneDragState, setDropzoneDragState] = useState<EDragState>(
     EDragState.None
   );
+  const [filePreviouslyBlank, setFilePreviouslyBlank] = useState(true);
 
   const { onClose, onOpen, isOpen } = useDisclosure();
   const toast = useToast();
@@ -159,6 +160,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
                   `projectItems.${selectedItemIndex}.mediaUrl`,
                   undefined
                 );
+                setFilePreviouslyBlank(true);
               }}
             />
             <IconButton
@@ -177,7 +179,15 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
           <Flex justifyContent="center">
             {mediaLoadingState !== LoadingState.Loading &&
             cropCompletionState !== LoadingState.Loading ? (
-              <Button variant="unstyled" onClick={onOpen} w="100%" h="100%">
+              <Button
+                variant="unstyled"
+                onClick={() => {
+                  setFilePreviouslyBlank(false);
+                  onOpen();
+                }}
+                w="100%"
+                h="100%"
+              >
                 <Image
                   borderRadius="sm"
                   width="100%"
@@ -205,7 +215,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
           {...getRootProps()}
           display="flex"
           background={
-            dropzoneDragState === EDragState.DragEnter ? "blue.600" : "cyan.50"
+            dropzoneDragState === EDragState.DragEnter ? "blue.600" : "cyan.100"
           }
           width="100%"
           height="300px"
@@ -254,6 +264,16 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
               onCropComplete(croppedAreaPixels);
               setCroppedAreaPixels(undefined);
             }
+          }}
+          onCropCancel={() => {
+            if (filePreviouslyBlank) {
+              setValue(
+                `projectItems.${selectedItemIndex}.mediaAsFile`,
+                undefined
+              );
+              setValue(`projectItems.${selectedItemIndex}.mediaUrl`, undefined);
+            }
+            onClose();
           }}
           onClose={onClose}
           onCropAreaChange={(area) => {
