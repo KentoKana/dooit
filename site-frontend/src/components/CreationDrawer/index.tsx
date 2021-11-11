@@ -138,6 +138,7 @@ export const CreationDrawer = observer(
 
     return (
       <DrawerTemplate
+        closeOnEsc={false}
         isOpen={isOpen}
         onClose={onClose}
         size="full"

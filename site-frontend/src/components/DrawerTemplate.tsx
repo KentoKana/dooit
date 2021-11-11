@@ -18,6 +18,7 @@ interface IDrawerTemplateProps {
   onClose: () => void;
   placement: "right" | "top" | "bottom" | "left";
   size: "xs" | "sm" | "md" | "lg" | "xl" | "full";
+  closeOnEsc?: boolean;
 }
 
 export const DrawerTemplate = observer(
@@ -29,9 +30,11 @@ export const DrawerTemplate = observer(
     drawerHeader,
     isOpen,
     onClose,
+    closeOnEsc,
   }: IDrawerTemplateProps) => {
     return (
       <Drawer
+        closeOnEsc={closeOnEsc}
         isOpen={isOpen}
         placement={placement}
         onClose={onClose}

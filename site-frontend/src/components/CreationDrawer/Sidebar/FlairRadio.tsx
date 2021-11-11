@@ -14,6 +14,10 @@ import {
   useDisclosure,
   Text,
   Flex,
+  MenuList,
+  MenuItem,
+  Menu,
+  MenuButton,
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { UseFormReturn, useWatch } from "react-hook-form";
@@ -40,89 +44,91 @@ export const FlairRadio = observer(({ formHook, flairs }: IFlairRadioProps) => {
 
   return (
     <>
-      <Button
-        borderRadius="sm"
-        p={2}
-        background="grey.50"
-        fontWeight="normal"
-        textAlign="left"
-        onClick={flairDisclosure.onToggle}
-        variant="unstyled"
-        w="100%"
-        h="100%"
-      >
-        <Text
-          as="span"
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
+      <Menu>
+        <MenuButton
+          as={Button}
+          color={!selectedFlair || selectedFlair?.isDarkText ? "#000" : "#fff"}
+          borderRadius="sm"
+          p={2}
+          background={selectedFlair?.backgroundColor ?? "grey.50"}
+          textAlign="left"
+          onClick={flairDisclosure.onToggle}
+          variant="unstyled"
+          w="100%"
+          h="100%"
         >
-          {flairWatch && flairWatch !== "-1" ? (
-            <Flex>
-              {/* <Box as="span" mr={2}>
+          <Text
+            as="span"
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            {flairWatch && flairWatch !== "-1" ? (
+              <Flex>
+                {/* <Box as="span" mr={2}>
                 Flair:{" "}
               </Box> */}
-              <Tag
-                color={selectedFlair?.isDarkText ? "grey.700" : "#fff"}
-                variant="solid"
-                background={selectedFlair?.backgroundColor}
-                cursor="pointer"
-              >
-                {selectedFlair?.flairLabel}
-              </Tag>
-            </Flex>
-          ) : (
-            <Flex alignItems="center">
-              <SmallAddIcon mr={1} /> Add Flair 🔥
-            </Flex>
-          )}
-          {flairWatch && flairWatch !== "-1" ? (
-            <EditIcon />
-          ) : flairDisclosure.isOpen ? (
-            <ChevronUpIcon />
-          ) : (
-            <ChevronDownIcon />
-          )}{" "}
-        </Text>
-      </Button>
-      <Collapse in={flairDisclosure.isOpen} animateOpacity>
-        <RadioGroup
-          value={flairWatch}
-          onChange={(value) => {
-            formHook.setValue("flair", value);
-            flairDisclosure.onToggle();
-          }}
-        >
-          <Stack direction="column" p={3}>
-            {[
-              {
-                flairLabel: "None",
-                id: -1,
-                backgroundColor: "grey.700",
-                isDarkText: false,
-              },
-              ...flairs,
-            ].map((option) => {
-              return (
-                <Radio
-                  key={option.id}
-                  value={option.id.toString()}
+                <Tag
+                  fontWeight="600"
+                  color={selectedFlair?.isDarkText ? "grey.700" : "#fff"}
+                  variant="solid"
+                  background={selectedFlair?.backgroundColor}
                   cursor="pointer"
                 >
-                  <Tag
-                    color={option.isDarkText ? "grey.700" : "#fff"}
-                    variant="solid"
-                    background={option.backgroundColor}
-                    cursor="pointer"
-                  >
-                    {option.flairLabel}
-                  </Tag>
-                </Radio>
-              );
-            })}
-          </Stack>
-        </RadioGroup>
-      </Collapse>
+                  {selectedFlair?.flairLabel}
+                </Tag>
+              </Flex>
+            ) : (
+              <Flex alignItems="center" fontWeight="600">
+                <SmallAddIcon mr={1} /> Add Flair 🔥
+              </Flex>
+            )}
+            {flairWatch && flairWatch !== "-1" ? (
+              <EditIcon />
+            ) : flairDisclosure.isOpen ? (
+              <ChevronUpIcon />
+            ) : (
+              <ChevronDownIcon />
+            )}{" "}
+          </Text>
+        </MenuButton>
+        <MenuList w="100%">
+          <RadioGroup
+            value={flairWatch}
+            onChange={(value) => {
+              formHook.setValue("flair", value);
+              flairDisclosure.onToggle();
+            }}
+          >
+            <Stack direction="column" p={3}>
+              {[
+                {
+                  flairLabel: "None",
+                  id: -1,
+                  backgroundColor: "grey.700",
+                  isDarkText: false,
+                },
+                ...flairs,
+              ].map((option) => {
+                return (
+                  <MenuItem key={option.id}>
+                    <Radio value={option.id.toString()} cursor="pointer">
+                      <Tag
+                        color={option.isDarkText ? "grey.700" : "#fff"}
+                        variant="solid"
+                        background={option.backgroundColor}
+                        cursor="pointer"
+                      >
+                        {option.flairLabel}
+                      </Tag>
+                    </Radio>
+                  </MenuItem>
+                );
+              })}
+            </Stack>
+          </RadioGroup>
+        </MenuList>
+      </Menu>
     </>
   );
 });

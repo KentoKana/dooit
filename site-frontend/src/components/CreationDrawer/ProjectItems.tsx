@@ -119,6 +119,7 @@ export const ProjectItems = observer(
                               <Flex
                                 height="110px"
                                 transition="0.2s ease all"
+                                borderRadius="md"
                                 backgroundColor={
                                   selectedItemIndex === index
                                     ? "cyan.50"
@@ -200,6 +201,7 @@ export const ProjectItems = observer(
                                         <Box mr={3}>
                                           {mediaPreviewUrl && (
                                             <Image
+                                              borderRadius="sm"
                                               boxSize="80px"
                                               objectFit="cover"
                                               src={mediaPreviewUrl}
@@ -209,7 +211,10 @@ export const ProjectItems = observer(
                                         </Box>
                                         <Box>
                                           <Text
-                                            maxWidth="100px"
+                                            fontSize="sm"
+                                            maxWidth={
+                                              mediaPreviewUrl ? "150px" : "100%"
+                                            }
                                             textAlign="left"
                                             fontWeight="normal"
                                             whiteSpace="break-spaces"
@@ -221,7 +226,7 @@ export const ProjectItems = observer(
                                               ? truncateText(
                                                   watchProjectItems[index]
                                                     .description,
-                                                  40
+                                                  mediaPreviewUrl ? 60 : 100
                                                 )
                                               : ""}
                                           </Text>

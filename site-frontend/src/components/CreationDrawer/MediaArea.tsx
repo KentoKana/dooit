@@ -1,7 +1,6 @@
 import {
   Flex,
   IconButton,
-  Text,
   Image,
   Skeleton,
   useDisclosure,
@@ -22,7 +21,7 @@ import { IProject } from ".";
 import { LoadingState } from "../../enums/LoadingState";
 import { MediaEditModal } from "./MediaEditModal";
 import { ItemTextEditor } from "./ItemTextEditor";
-
+import { AiFillPlusCircle } from "react-icons/ai";
 enum EDragState {
   None,
   DragEnter,
@@ -50,6 +49,11 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
   const { onClose, onOpen, isOpen } = useDisclosure();
 
   const { getRootProps, getInputProps } = useDropzone({
+    accept: "image/*",
+    maxSize: 2000000,
+    onDropRejected: () => {
+      console.log("nope");
+    },
     onDragEnter: () => {
       setDropzoneDragState(EDragState.DragEnter);
     },
@@ -96,16 +100,18 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
           setValue(`projectItems.${selectedItemIndex}.mediaAsFile`, file);
           setMediaLoadingState(LoadingState.Loaded);
         }
+        onClose();
       } catch (e) {
         console.error(e);
         setMediaLoadingState(LoadingState.Error);
+        onClose();
       }
     },
-    [setValue, selectedItemIndex, watchProjectItems]
+    [setValue, selectedItemIndex, watchProjectItems, onClose]
   );
 
   return (
-    <Box position="relative" width="100%">
+    <Box position="relative" width="100%" mt="30px">
       {watchProjectItems &&
       watchProjectItems[selectedItemIndex] &&
       watchProjectItems[selectedItemIndex].mediaUrl ? (
@@ -156,6 +162,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
             {mediaLoadingState !== LoadingState.Loading ? (
               <Button variant="unstyled" onClick={onOpen} w="100%" h="100%">
                 <Image
+                  borderRadius="sm"
                   width="100%"
                   src={URL.createObjectURL(
                     watchProjectItems[selectedItemIndex].mediaAsFile
@@ -180,10 +187,8 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
           variant="unstyled"
           {...getRootProps()}
           display="flex"
-          borderWidth="2px"
-          borderColor="primary"
-          borderStyle={
-            dropzoneDragState === EDragState.DragEnter ? "solid" : "dashed"
+          background={
+            dropzoneDragState === EDragState.DragEnter ? "blue.600" : "cyan.50"
           }
           width="100%"
           height="300px"
@@ -192,9 +197,28 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
           alignItems="center"
         >
           <input {...getInputProps()} />
-          <Text padding={3}>
-            Drop your media file here, or click to select a file
-          </Text>
+          <Box padding={3}>
+            {dropzoneDragState !== EDragState.DragEnter ? (
+              <Flex
+                fontSize="xl"
+                justifyContent="center"
+                alignItems="center"
+                flexDirection="column"
+              >
+                <Box fontSize="30px" mb={4} color="blue.600">
+                  <AiFillPlusCircle />
+                </Box>
+                <Box>👊 Drop your media file here</Box>
+                <Box color="blue.600" textDecoration="underline">
+                  or click to select a file 🖱️
+                </Box>
+              </Flex>
+            ) : (
+              <Box fontSize="30px" color="#fff">
+                You can let go now! 🖐{" "}
+              </Box>
+            )}
+          </Box>
         </Button>
       )}
       <Box my={5}>
@@ -209,7 +233,6 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
           isOpen={isOpen}
           onCropConfirmation={() => {
             setMediaLoadingState(LoadingState.Loading);
-            onClose();
             if (croppedAreaPixels) {
               onCropComplete(croppedAreaPixels);
               setCroppedAreaPixels(undefined);
