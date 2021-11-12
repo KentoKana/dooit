@@ -2,7 +2,6 @@ import {
   Drawer,
   DrawerContent,
   DrawerOverlay,
-  DrawerCloseButton,
   DrawerBody,
   DrawerFooter,
   DrawerHeader,
@@ -42,9 +41,17 @@ export const DrawerTemplate = observer(
       >
         <DrawerOverlay />
         <DrawerContent>
-          <DrawerCloseButton />
-          {drawerHeader && <DrawerHeader>{drawerHeader}</DrawerHeader>}
-          {children && <DrawerBody>{children}</DrawerBody>}
+          {/* <DrawerCloseButton /> */}
+          {drawerHeader && (
+            <DrawerHeader
+              borderBottom="1px solid"
+              borderColor="grey.100"
+              height="80px"
+            >
+              {drawerHeader}
+            </DrawerHeader>
+          )}
+          {children && <DrawerBody p="0">{children}</DrawerBody>}
           {drawerFooter && <DrawerFooter>{drawerFooter}</DrawerFooter>}
         </DrawerContent>
       </Drawer>

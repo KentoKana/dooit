@@ -22,7 +22,7 @@ export const ItemTextEditor = ({
       <DebouncedTextInput
         borderColor="grey.600"
         placeholder="✍️ Tell us something interesting about this item..."
-        className="chakra-textarea css-12xekbi"
+        className="chakra-textarea css-jiob5b"
         element="textarea"
         debounceTimeout={300}
         value={
@@ -38,10 +38,10 @@ export const ItemTextEditor = ({
         }}
       />
       <Textarea
+        background="#fff"
         hidden
         border="1px solid"
         borderColor="grey.100"
-        // backgroundColor="blackAlpha.50"
         borderRadius="sm"
         minHeight="180px"
         maxHeight="250px"

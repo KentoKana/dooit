@@ -117,12 +117,13 @@ export const ProjectItems = observer(
                                 }}
                               />
                               <Flex
+                                color="grey.700"
                                 height="110px"
                                 transition="0.2s ease all"
-                                borderRadius="md"
+                                borderRadius="sm"
                                 backgroundColor={
                                   selectedItemIndex === index
-                                    ? "cyan.50"
+                                    ? "cyan.100"
                                     : "grey.50"
                                 }
                               >

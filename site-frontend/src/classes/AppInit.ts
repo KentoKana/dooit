@@ -3,6 +3,7 @@ import { AuthRoute } from "../enums/ApiRoutes";
 import { UiStore } from "../stores/UiStore";
 import { UserStore } from "../stores/UserStore";
 
+
 export class AppInit {
     constructor(userStore: UserStore, uiStore: UiStore) {
         this._userStore = userStore;

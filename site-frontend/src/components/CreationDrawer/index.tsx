@@ -144,13 +144,32 @@ export const CreationDrawer = observer(
         size="full"
         placement="right"
         drawerHeader={
-          <Box display="flex" justifyContent="center">
-            Add New Project
+          <Box display="flex" justifyContent="space-between">
+            <Box>Add New Project</Box>
+            <Box>
+              <Button
+                variant="outline"
+                mr={3}
+                onClick={() => {
+                  reset();
+                  onClose();
+                }}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" form="project-form" variant="primary">
+                Create Project
+              </Button>
+            </Box>
           </Box>
         }
       >
         {useProjectCreationOptions.data ? (
-          <form onSubmit={handleSubmit(handleUpload)}>
+          <form
+            id="project-form"
+            onSubmit={handleSubmit(handleUpload)}
+            style={{ height: "100%" }}
+          >
             <DrawerLayout
               sidebar={
                 <Sidebar
@@ -166,23 +185,6 @@ export const CreationDrawer = observer(
                   formHook={formHook}
                   selectedItemIndex={selectedItemIndex}
                 />
-              }
-              footer={
-                <>
-                  <Button
-                    variant="outline"
-                    mr={3}
-                    onClick={() => {
-                      reset();
-                      onClose();
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button colorScheme="blue" type="submit">
-                    Save
-                  </Button>
-                </>
               }
             />
           </form>

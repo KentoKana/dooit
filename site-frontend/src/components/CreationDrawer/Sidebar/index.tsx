@@ -32,6 +32,7 @@ export const Sidebar = ({
             isInvalid={errors.name ? true : false}
             formField={
               <Input
+                background="#fff"
                 borderRadius="sm"
                 id="name"
                 type="text"
@@ -50,7 +51,8 @@ export const Sidebar = ({
         </Box>
         <Box>
           <Box
-            maxHeight="450px"
+            mt="10"
+            maxHeight="500px"
             overflow="auto"
             css={{
               scrollbarWidth: "thin",

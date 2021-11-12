@@ -64,9 +64,6 @@ export const FlairRadio = observer(({ formHook, flairs }: IFlairRadioProps) => {
           >
             {flairWatch && flairWatch !== "-1" ? (
               <Flex>
-                {/* <Box as="span" mr={2}>
-                Flair:{" "}
-              </Box> */}
                 <Tag
                   fontWeight="600"
                   color={selectedFlair?.isDarkText ? "grey.700" : "#fff"}
@@ -110,8 +107,13 @@ export const FlairRadio = observer(({ formHook, flairs }: IFlairRadioProps) => {
                 ...flairs,
               ].map((option) => {
                 return (
-                  <MenuItem key={option.id}>
-                    <Radio value={option.id.toString()} cursor="pointer">
+                  <MenuItem key={option.id} p="0">
+                    <Radio
+                      p="5px"
+                      value={option.id.toString()}
+                      cursor="pointer"
+                      width="100%"
+                    >
                       <Tag
                         color={option.isDarkText ? "grey.700" : "#fff"}
                         variant="solid"

@@ -7,6 +7,7 @@ import {
   Button,
   Box,
   useToast,
+  Text,
 } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
 import { UseFormReturn, useWatch } from "react-hook-form";
@@ -56,7 +57,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
   const toast = useToast();
 
   const { getRootProps, getInputProps } = useDropzone({
-    accept: "image/*",
+    accept: "image/jpeg, image/png",
     maxSize: 2000000,
     onDragEnter: () => {
       setDropzoneDragState(EDragState.DragEnter);
@@ -130,7 +131,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
   );
 
   return (
-    <Box position="relative" width="100%" mt="30px">
+    <Box position="relative" width="100%" m="20px" maxWidth="600px">
       {watchProjectItems &&
       watchProjectItems[selectedItemIndex] &&
       watchProjectItems[selectedItemIndex].mediaUrl ? (
@@ -240,6 +241,10 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
                 <Box>👊 Drop your media file here</Box>
                 <Box color="blue.600" textDecoration="underline">
                   or click to select a file 🖱️
+                </Box>
+                <Box color="grey.500" fontSize="sm">
+                  <Text>Max File Size: 2MB</Text>
+                  <Text>JPEG, PNG</Text>
                 </Box>
               </Flex>
             ) : (
