@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/icons";
 import { ProjectItemTopBar } from "./ProjectItemTopBar";
 import { IProject } from ".";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { truncateText } from "../../utils";
 export interface IProjectItem {
   title: string;
@@ -35,6 +35,7 @@ interface IProjectItemProps {
 export const ProjectItems = observer(
   ({ formHook, onItemSelect }: IProjectItemProps) => {
     const [selectedItemIndex, setSelectedItemIndex] = useState<number>(0);
+    const [itemSelected, setItemSelected] = useState(false);
     const { control } = formHook;
     const { fields, move, remove, insert, swap } = useFieldArray({
       control,
@@ -55,6 +56,21 @@ export const ProjectItems = observer(
       },
       [onItemSelect, move]
     );
+
+    const handleItemSelect = (index: number) => {
+      setSelectedItemIndex(index);
+      onItemSelect(index);
+      setItemSelected(true);
+    };
+
+    useEffect(() => {
+      if (itemSelected) {
+        setTimeout(() => {
+          document.getElementById("mediabox")?.focus();
+          setItemSelected(false);
+        }, 500);
+      }
+    }, [itemSelected]);
 
     return (
       <>
@@ -104,16 +120,14 @@ export const ProjectItems = observer(
                                   } else {
                                     remove(index);
                                   }
-                                  setSelectedItemIndex(0);
-                                  onItemSelect(0);
+                                  handleItemSelect(0);
                                 }}
                                 onAdd={() => {
                                   insert(index + 1, {
                                     title: "",
                                     description: "",
                                   });
-                                  setSelectedItemIndex(index + 1);
-                                  onItemSelect(index + 1);
+                                  handleItemSelect(index + 1);
                                 }}
                               />
                               <Flex
@@ -146,8 +160,7 @@ export const ProjectItems = observer(
                                       disabled={index === 0}
                                       onClick={() => {
                                         swap(index, index - 1);
-                                        setSelectedItemIndex(index - 1);
-                                        onItemSelect(index - 1);
+                                        handleItemSelect(index - 1);
                                       }}
                                       background="transparent"
                                       aria-label="Move Up"
@@ -162,8 +175,7 @@ export const ProjectItems = observer(
                                       }
                                       onClick={() => {
                                         swap(index, index + 1);
-                                        setSelectedItemIndex(index + 1);
-                                        onItemSelect(index + 1);
+                                        handleItemSelect(index + 1);
                                       }}
                                       background="transparent"
                                       aria-label="Move Down"
@@ -184,8 +196,7 @@ export const ProjectItems = observer(
                                     width="100%"
                                     variant="unstyled"
                                     onClick={() => {
-                                      onItemSelect(index);
-                                      setSelectedItemIndex(index);
+                                      handleItemSelect(index);
                                     }}
                                   >
                                     {mediaPreviewUrl ||

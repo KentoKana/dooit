@@ -33,19 +33,17 @@ export class UiStore {
         const promise = new Promise((res, rej) => {
             auth.onAuthStateChanged(async (user) => {
                 const retrievedToken = await user?.getIdToken();
-                if (retrievedToken) {
-                    res(() => {
+                res(() => {
+                    if (retrievedToken) {
                         localStorage.setItem("user-jwt", retrievedToken);
                         this.userStore.isSignedIn = true;
                         console.log("token reset from ui store");
-                    })
-                } else {
-                    rej(() => {
+                    } else {
                         localStorage.removeItem("user-jwt");
                         this.userStore.isSignedIn = false;
-                    })
-                }
-            });
+                    }
+                });
+            })
         });
 
         return promise.then(() => fetch(url, {

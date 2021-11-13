@@ -13,38 +13,24 @@ import { NavBar } from "./components/Layouts/NavBar";
 import { BasePage } from "./components/Layouts/BasePage";
 import { LocalRoutes } from "./enums/LocalRoutes";
 import { mainRoutes } from "./routes";
-import { auth } from "./firebase";
+import { Box, Flex } from "@chakra-ui/layout";
+import { Spinner } from "@chakra-ui/spinner";
 
 export const App = observer(() => {
   const { userStore, uiStore } = UseStores();
   const [appInitialized, setAppInitialized] = useState<boolean>(false);
   useEffect(() => {
     const app = new AppInit(userStore, uiStore);
-    const unlisten = auth.onAuthStateChanged(async (user) => {
-      const retrievedToken = await user?.getIdToken();
-      if (retrievedToken) {
-        localStorage.setItem("user-jwt", retrievedToken);
-        userStore.isSignedIn = true;
-        console.log("token reset from app component");
-      } else {
-        localStorage.removeItem("user-jwt");
-        userStore.isSignedIn = false;
-      }
-    });
-
     app
       .init((loaded) => setAppInitialized(loaded))
       .catch((error) => {
         return <Redirect to={LocalRoutes.Login} />;
       });
-    return () => {
-      unlisten();
-    };
   }, [userStore, uiStore]);
 
   return (
     <>
-      {appInitialized && (
+      {appInitialized ? (
         <Router>
           <NavBar />
           <BasePage>
@@ -72,6 +58,19 @@ export const App = observer(() => {
             </Switch>
           </BasePage>
         </Router>
+      ) : (
+        <Flex
+          h="100vh"
+          w="100vw"
+          justifyContent="center"
+          alignItems="center"
+          flexDirection="column"
+        >
+          <Box>
+            <Spinner />
+          </Box>
+          <Box>Hold on tight! We're initializing DooIt :P</Box>
+        </Flex>
       )}
     </>
   );

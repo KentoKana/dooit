@@ -183,6 +183,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
             {mediaLoadingState !== LoadingState.Loading &&
             cropCompletionState !== LoadingState.Loading ? (
               <Button
+                id="mediabox"
                 variant="unstyled"
                 onClick={() => {
                   setFilePreviouslyBlank(false);
@@ -212,6 +213,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
         </>
       ) : (
         <Button
+          id="mediabox"
           p={3}
           autoFocus
           variant="unstyled"
