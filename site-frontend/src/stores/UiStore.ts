@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx";
+import { auth } from "../firebase";
 import { UserStore } from "./UserStore"
 
 export interface IApiRequestOptions<TData> {
@@ -29,7 +30,25 @@ export class UiStore {
             ...options
         };
 
-        return fetch(url, {
+        const promise = new Promise((res, rej) => {
+            auth.onAuthStateChanged(async (user) => {
+                const retrievedToken = await user?.getIdToken();
+                if (retrievedToken) {
+                    res(() => {
+                        localStorage.setItem("user-jwt", retrievedToken);
+                        this.userStore.isSignedIn = true;
+                        console.log("token reset from ui store");
+                    })
+                } else {
+                    rej(() => {
+                        localStorage.removeItem("user-jwt");
+                        this.userStore.isSignedIn = false;
+                    })
+                }
+            });
+        });
+
+        return promise.then(() => fetch(url, {
             method: options.method,
             headers: headers,
             body: (options.bodyData ? JSON.stringify(options.bodyData) : undefined)
@@ -54,20 +73,17 @@ export class UiStore {
 
                 // Concatenate to string and parse for JSON
                 const resultJson = JSON.parse(chunks.join(""));
-                // if (res.status === 401) {
-                //     console.log("fobidden");
-
-                //     this.userStore.isSignedIn = false;
-                //     localStorage.removeItem("user-jwt");
-                //     return Promise.reject({ status: resultJson.status, message: resultJson.message, httpCodeStatus: res.status })
-                // }
+                if (res.status === 401) {
+                    console.log("fobidden");
+                    return Promise.reject({ status: resultJson.status, message: resultJson.message, httpCodeStatus: res.status })
+                }
 
                 return Promise.reject(
                     { status: resultJson.status, message: resultJson.message, httpCodeStatus: res.status }
                 );
             }
             return res.json();
-        })
+        }));
 
     }
 }

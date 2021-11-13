@@ -18,30 +18,28 @@ import { auth } from "./firebase";
 export const App = observer(() => {
   const { userStore, uiStore } = UseStores();
   const [appInitialized, setAppInitialized] = useState<boolean>(false);
-
   useEffect(() => {
-    if (userStore.isSignedIn) {
-      setInterval(() => {
-        auth.onAuthStateChanged(async (user) => {
-          const retrievedToken = await user?.getIdToken(true);
-          if (retrievedToken) {
-            localStorage.setItem("user-jwt", retrievedToken);
-            userStore.isSignedIn = true;
-            console.log("token reset from app component");
-          } else {
-            localStorage.removeItem("user-jwt");
-            userStore.isSignedIn = false;
-          }
-        });
-      }, 600000);
-    }
-
     const app = new AppInit(userStore, uiStore);
+    const unlisten = auth.onAuthStateChanged(async (user) => {
+      const retrievedToken = await user?.getIdToken();
+      if (retrievedToken) {
+        localStorage.setItem("user-jwt", retrievedToken);
+        userStore.isSignedIn = true;
+        console.log("token reset from app component");
+      } else {
+        localStorage.removeItem("user-jwt");
+        userStore.isSignedIn = false;
+      }
+    });
+
     app
       .init((loaded) => setAppInitialized(loaded))
       .catch((error) => {
         return <Redirect to={LocalRoutes.Login} />;
       });
+    return () => {
+      unlisten();
+    };
   }, [userStore, uiStore]);
 
   return (

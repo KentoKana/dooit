@@ -58,7 +58,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: "image/jpeg, image/png",
-    maxSize: 2000000,
+    maxSize: 5000000,
     onDragEnter: () => {
       setDropzoneDragState(EDragState.DragEnter);
     },
@@ -74,6 +74,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
         `projectItems.${selectedItemIndex}.mediaUrl`,
         URL.createObjectURL(files[0])
       );
+
       setTimeout(() => {
         new Compressor(files[0], {
           ...defaultCompressorOptions,
@@ -93,14 +94,13 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
       if (rejected[0].errors[0].code === "file-too-large") {
         toast({
           title: `Uh oh... :(`,
-          description: "Your file is too large. The max size is 2MB",
+          description: "Your file is too large. The max size is 5MB",
           status: "error",
           isClosable: true,
           position: "top",
         });
       }
     },
-
     multiple: false,
   });
 

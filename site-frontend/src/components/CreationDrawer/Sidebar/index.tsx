@@ -32,6 +32,7 @@ export const Sidebar = ({
             isInvalid={errors.name ? true : false}
             formField={
               <Input
+                color="grey.700"
                 background="#fff"
                 borderRadius="sm"
                 id="name"
