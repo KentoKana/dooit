@@ -50,6 +50,7 @@ export const DrawerLayout = ({
         </Box>
         <Box width={["100%", "100%", "35%"]}></Box>
         <Flex
+          display={["none", "none", "inherit"]}
           width={["0%", "0%", "65%"]}
           as="section"
           direction="column"
@@ -58,7 +59,7 @@ export const DrawerLayout = ({
           justifyContent="center"
           background="grey.50"
         >
-          <Flex width="100%" justifyContent="center">
+          <Flex width="100%" justifyContent="center" maxHeight="100%">
             {contentArea}
           </Flex>
         </Flex>

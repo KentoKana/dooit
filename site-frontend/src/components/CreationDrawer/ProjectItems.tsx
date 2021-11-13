@@ -1,4 +1,13 @@
-import { Box, Flex, Image, IconButton, Button, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Image,
+  IconButton,
+  Button,
+  Text,
+  useDisclosure,
+  useMediaQuery,
+} from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import {
   DragDropContext,
@@ -17,6 +26,8 @@ import { ProjectItemTopBar } from "./ProjectItemTopBar";
 import { IProject } from ".";
 import { useCallback, useEffect, useState } from "react";
 import { truncateText } from "../../utils";
+import { MobileMediaAreaDrawer } from "./MobileMediaAreaDrawer";
+import { BreakPoints } from "../../enums/BreakPoints";
 export interface IProjectItem {
   title: string;
   description: string;
@@ -41,12 +52,12 @@ export const ProjectItems = observer(
       control,
       name: "projectItems",
     });
-
+    const mobileMediaAreaDisclosure = useDisclosure();
+    const [displayMobileMediaAreaDrawer] = useMediaQuery(BreakPoints.Mobile);
     const watchProjectItems = useWatch({
       name: "projectItems",
       control,
     });
-
     const handleOnDragEnd = useCallback(
       (result: DropResult) => {
         if (!result.destination) return;
@@ -56,7 +67,6 @@ export const ProjectItems = observer(
       },
       [onItemSelect, move]
     );
-
     const handleItemSelect = (index: number) => {
       setSelectedItemIndex(index);
       onItemSelect(index);
@@ -196,6 +206,9 @@ export const ProjectItems = observer(
                                     width="100%"
                                     variant="unstyled"
                                     onClick={() => {
+                                      if (displayMobileMediaAreaDrawer) {
+                                        mobileMediaAreaDisclosure.onOpen();
+                                      }
                                       handleItemSelect(index);
                                     }}
                                   >
@@ -263,6 +276,14 @@ export const ProjectItems = observer(
                     );
                   })}
                   {provided.placeholder}
+                  <MobileMediaAreaDrawer
+                    onClose={() => {
+                      mobileMediaAreaDisclosure.onClose();
+                    }}
+                    isOpen={mobileMediaAreaDisclosure.isOpen}
+                    formHook={formHook}
+                    selectedItemIndex={selectedItemIndex}
+                  />
                 </Box>
               );
             }}

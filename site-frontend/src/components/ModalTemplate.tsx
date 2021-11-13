@@ -38,7 +38,7 @@ export const ModalTemplate = ({
       <ModalContent borderRadius="sm">
         {heading && <ModalHeader>{heading}</ModalHeader>}
         {displayCloseButton && <ModalCloseButton />}
-        {children && <ModalBody>{children}</ModalBody>}
+        {children && <ModalBody p={0}>{children}</ModalBody>}
         {footer && <ModalFooter>{footer}</ModalFooter>}
       </ModalContent>
     </Modal>

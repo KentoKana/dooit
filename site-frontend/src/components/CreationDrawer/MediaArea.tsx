@@ -30,7 +30,7 @@ enum EDragState {
   Rejected,
 }
 
-interface IMediaAreaProps {
+export interface IMediaAreaProps {
   selectedItemIndex: number;
   formHook: UseFormReturn<IProject, object>;
 }
@@ -131,29 +131,32 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
   );
 
   return (
-    <Box position="relative" width="100%" m="20px" maxWidth="600px">
+    <Box
+      position="relative"
+      width="100%"
+      m={["0px", "0px", "20px"]}
+      maxWidth={["100%", "100%", "600px"]}
+    >
       {watchProjectItems &&
       watchProjectItems[selectedItemIndex] &&
       watchProjectItems[selectedItemIndex].mediaUrl ? (
         <>
           <Flex
             zIndex={1}
-            justifyContent="flex-end"
+            justifyContent="space-between"
             width="100%"
-            position="absolute"
-            opacity={0.3}
             transition="0.2s ease all"
-            _hover={{ opacity: 0.8 }}
-            background="black"
+            background="grey.700"
           >
             <IconButton
+              w="50%"
               _hover={{ color: "blue.200" }}
               color="#fff"
-              background="transparent"
+              background="red.600"
+              borderRadius={0}
               icon={<DeleteIcon />}
               title="Remove media"
               aria-label="Remove media"
-              alignSelf="end"
               onClick={() => {
                 setValue(
                   `projectItems.${selectedItemIndex}.mediaAsFile`,
@@ -167,13 +170,14 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
               }}
             />
             <IconButton
+              borderRadius={0}
+              w="50%"
               color="#fff"
               title="Edit media"
               _hover={{ color: "blue.200" }}
               background="transparent"
               icon={<EditIcon />}
               aria-label="Edit media"
-              alignSelf="end"
               onClick={() => {
                 onOpen();
               }}
@@ -245,7 +249,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
                   or click to select a file 🖱️
                 </Box>
                 <Box color="grey.500" fontSize="sm">
-                  <Text>Max File Size: 2MB</Text>
+                  <Text>Max File Size: 5MB</Text>
                   <Text>JPEG, PNG</Text>
                 </Box>
               </Flex>
@@ -257,7 +261,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
           </Box>
         </Button>
       )}
-      <Box my={5}>
+      <Box my={[0, 0, 5]}>
         <ItemTextEditor
           formHook={formHook}
           selectedItemIndex={selectedItemIndex}
