@@ -87,8 +87,10 @@ export const MediaEditModal = ({
         }}
       >
         <Cropper
+          objectFit="horizontal-cover"
           image={mediaUrl}
           crop={crop}
+          zoomSpeed={1.4}
           zoom={zoom}
           aspect={4 / 3}
           onCropChange={setCrop}

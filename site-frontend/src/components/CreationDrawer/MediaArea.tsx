@@ -1,6 +1,5 @@
 import {
   Flex,
-  IconButton,
   Image,
   Skeleton,
   useDisclosure,
@@ -18,12 +17,12 @@ import { useDropzone } from "react-dropzone";
 
 import "./styles.css";
 import { Area } from "react-easy-crop/types";
-import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import { IProject } from ".";
 import { LoadingState } from "../../enums/LoadingState";
 import { MediaEditModal } from "./MediaEditModal";
 import { ItemTextEditor } from "./ItemTextEditor";
 import { AiFillPlusCircle } from "react-icons/ai";
+import { EditButtonPopover } from "./EditButtonPopover";
 enum EDragState {
   None,
   DragEnter,
@@ -53,7 +52,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
   );
   const [filePreviouslyBlank, setFilePreviouslyBlank] = useState(true);
 
-  const { onClose, onOpen, isOpen } = useDisclosure();
+  const cropModalDisclosure = useDisclosure();
   const toast = useToast();
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -66,7 +65,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
       setDropzoneDragState(EDragState.None);
     },
     onDropAccepted: (files) => {
-      onOpen();
+      cropModalDisclosure.onOpen();
       setDropzoneDragState(EDragState.None);
       setMediaLoadingState(LoadingState.Loading);
       setValue(`projectItems.${selectedItemIndex}.mediaAsFile`, files[0]);
@@ -120,14 +119,13 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
           setValue(`projectItems.${selectedItemIndex}.mediaAsFile`, file);
           setCropCompletionState(LoadingState.Loaded);
         }
-        onClose();
+        cropModalDisclosure.onClose();
       } catch (e) {
-        console.error(e);
         setCropCompletionState(LoadingState.Error);
-        onClose();
+        cropModalDisclosure.onClose();
       }
     },
-    [setValue, selectedItemIndex, watchProjectItems, onClose]
+    [setValue, selectedItemIndex, watchProjectItems, cropModalDisclosure]
   );
 
   return (
@@ -140,24 +138,26 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
       {watchProjectItems &&
       watchProjectItems[selectedItemIndex] &&
       watchProjectItems[selectedItemIndex].mediaUrl ? (
-        <>
+        <Box position="relative">
           <Flex
             zIndex={1}
-            justifyContent="space-between"
+            justifyContent="flex-end"
             width="100%"
+            opacity={[0.6, 0.6, 0.8]}
             transition="0.2s ease all"
-            background="grey.700"
+            _hover={{ opacity: 1 }}
+            position="absolute"
+            top={["initial", "initial", "-35px"]}
+            right={[0, 0, "-35px"]}
+            bottom={[0, 0, "initial"]}
+            m="5px"
           >
-            <IconButton
-              w="50%"
-              _hover={{ color: "blue.200" }}
-              color="#fff"
-              background="red.600"
-              borderRadius={0}
-              icon={<DeleteIcon />}
-              title="Remove media"
-              aria-label="Remove media"
-              onClick={() => {
+            <EditButtonPopover
+              onCropOptionClick={() => {
+                setFilePreviouslyBlank(false);
+                cropModalDisclosure.onOpen();
+              }}
+              onRemoveImageClick={() => {
                 setValue(
                   `projectItems.${selectedItemIndex}.mediaAsFile`,
                   undefined
@@ -168,34 +168,15 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
                 );
                 setFilePreviouslyBlank(true);
               }}
-            />
-            <IconButton
-              borderRadius={0}
-              w="50%"
-              color="#fff"
-              title="Edit media"
-              _hover={{ color: "blue.200" }}
-              background="transparent"
-              icon={<EditIcon />}
-              aria-label="Edit media"
-              onClick={() => {
-                onOpen();
+              onTriggerClick={() => {
+                setFilePreviouslyBlank(false);
               }}
             />
           </Flex>
           <Flex justifyContent="center">
             {mediaLoadingState !== LoadingState.Loading &&
             cropCompletionState !== LoadingState.Loading ? (
-              <Button
-                id="mediabox"
-                variant="unstyled"
-                onClick={() => {
-                  setFilePreviouslyBlank(false);
-                  onOpen();
-                }}
-                w="100%"
-                h="100%"
-              >
+              <Box w="100%" h="100%">
                 <Image
                   borderRadius="sm"
                   width="100%"
@@ -203,7 +184,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
                     watchProjectItems[selectedItemIndex].mediaAsFile
                   )}
                 />
-              </Button>
+              </Box>
             ) : (
               <Skeleton
                 mt="4"
@@ -214,7 +195,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
               />
             )}
           </Flex>
-        </>
+        </Box>
       ) : (
         <Button
           id="mediabox"
@@ -271,7 +252,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
         <MediaEditModal
           cropCompletionState={cropCompletionState}
           mediaLoadingState={mediaLoadingState}
-          isOpen={isOpen}
+          isOpen={cropModalDisclosure.isOpen}
           onCropConfirmation={() => {
             if (croppedAreaPixels) {
               onCropComplete(croppedAreaPixels);
@@ -286,9 +267,9 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
               );
               setValue(`projectItems.${selectedItemIndex}.mediaUrl`, undefined);
             }
-            onClose();
+            cropModalDisclosure.onClose();
           }}
-          onClose={onClose}
+          onClose={cropModalDisclosure.onClose}
           onCropAreaChange={(area) => {
             setCroppedAreaPixels(area);
           }}
