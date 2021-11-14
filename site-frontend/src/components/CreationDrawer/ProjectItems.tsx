@@ -28,6 +28,7 @@ import { useCallback, useEffect, useState } from "react";
 import { truncateText } from "../../utils";
 import { MobileMediaAreaDrawer } from "./MobileMediaAreaDrawer";
 import { BreakPoints } from "../../enums/BreakPoints";
+import { ModalTemplate } from "../ModalTemplate";
 export interface IProjectItem {
   title: string;
   description: string;
@@ -53,6 +54,7 @@ export const ProjectItems = observer(
       name: "projectItems",
     });
     const mobileMediaAreaDisclosure = useDisclosure();
+    const deleteConfirmationDisclosure = useDisclosure();
     const [displayMobileMediaAreaDrawer] = useMediaQuery(BreakPoints.Mobile);
     const watchProjectItems = useWatch({
       name: "projectItems",
@@ -121,14 +123,23 @@ export const ProjectItems = observer(
                               <ProjectItemTopBar
                                 itemLength={watchProjectItems.length}
                                 onRemove={() => {
-                                  if (watchProjectItems.length === 1) {
-                                    remove(index);
-                                    insert(index, {
-                                      title: "",
-                                      description: "",
-                                    });
+                                  if (
+                                    !watchProjectItems[index].mediaAsFile &&
+                                    !watchProjectItems[index].mediaUrl &&
+                                    !watchProjectItems[index].description
+                                  ) {
+                                    if (watchProjectItems.length === 1) {
+                                      remove(index);
+                                      insert(index, {
+                                        title: "",
+                                        description: "",
+                                      });
+                                    } else {
+                                      remove(index);
+                                    }
                                   } else {
-                                    remove(index);
+                                    handleItemSelect(index);
+                                    deleteConfirmationDisclosure.onOpen();
                                   }
                                   handleItemSelect(0);
                                 }}
@@ -138,6 +149,9 @@ export const ProjectItems = observer(
                                     description: "",
                                   });
                                   handleItemSelect(index + 1);
+                                  if (displayMobileMediaAreaDrawer) {
+                                    mobileMediaAreaDisclosure.onOpen();
+                                  }
                                 }}
                               />
                               <Flex
@@ -284,6 +298,42 @@ export const ProjectItems = observer(
                     formHook={formHook}
                     selectedItemIndex={selectedItemIndex}
                   />
+                  <ModalTemplate
+                    size="md"
+                    heading="Are you sure you want to delete this item?"
+                    isOpen={deleteConfirmationDisclosure.isOpen}
+                    footer={
+                      <Flex justifyContent="space-between" w="100%">
+                        <Button
+                          variant="outline"
+                          borderRadius="sm"
+                          mr="2"
+                          onClick={deleteConfirmationDisclosure.onClose}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          colorScheme="red"
+                          borderRadius="sm"
+                          onClick={() => {
+                            if (watchProjectItems.length === 1) {
+                              remove(selectedItemIndex);
+                              insert(selectedItemIndex, {
+                                title: "",
+                                description: "",
+                              });
+                            } else {
+                              remove(selectedItemIndex);
+                            }
+                            handleItemSelect(0);
+                            deleteConfirmationDisclosure.onClose();
+                          }}
+                        >
+                          Yes, Remove it
+                        </Button>
+                      </Flex>
+                    }
+                  ></ModalTemplate>
                 </Box>
               );
             }}

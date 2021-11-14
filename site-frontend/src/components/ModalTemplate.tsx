@@ -16,7 +16,7 @@ interface IModalTemplateProps {
   footer?: ReactNode;
   isOpen: boolean;
   size?: "xs" | "sm" | "md" | "lg" | "xl" | "full";
-  onClose: () => void;
+  onClose?: () => void;
 }
 export const ModalTemplate = ({
   displayCloseButton,
@@ -29,7 +29,9 @@ export const ModalTemplate = ({
 }: IModalTemplateProps) => {
   return (
     <Modal
-      onClose={onClose}
+      onClose={() => {
+        onClose && onClose();
+      }}
       size={size}
       isOpen={isOpen}
       closeOnOverlayClick={false}

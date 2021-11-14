@@ -75,17 +75,24 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
       );
 
       setTimeout(() => {
-        new Compressor(files[0], {
-          ...defaultCompressorOptions,
-          success: (compressedImage: File) => {
-            setValue(`projectItems.${selectedItemIndex}.mediaAsFile`, files[0]);
-            setValue(
-              `projectItems.${selectedItemIndex}.mediaUrl`,
-              URL.createObjectURL(compressedImage)
-            );
-            setMediaLoadingState(LoadingState.Loaded);
-          },
-        });
+        if (files[0].size > 1000000) {
+          new Compressor(files[0], {
+            ...defaultCompressorOptions,
+            success: (compressedImage: File) => {
+              setValue(
+                `projectItems.${selectedItemIndex}.mediaAsFile`,
+                files[0]
+              );
+              setValue(
+                `projectItems.${selectedItemIndex}.mediaUrl`,
+                URL.createObjectURL(compressedImage)
+              );
+              setMediaLoadingState(LoadingState.Loaded);
+            },
+          });
+        } else {
+          setMediaLoadingState(LoadingState.Loaded);
+        }
       }, 400);
     },
     onDropRejected: (rejected) => {
