@@ -15,7 +15,7 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { useFieldArray, UseFormReturn, useWatch } from "react-hook-form";
-import { DragHandleIcon } from "@chakra-ui/icons";
+import { AddIcon, DragHandleIcon } from "@chakra-ui/icons";
 import { ProjectItemTopBar } from "./ProjectItemTopBar";
 import { IProject } from ".";
 import { useCallback, useEffect, useState } from "react";
@@ -89,7 +89,9 @@ export const ProjectItems = observer(
                   ref={provided.innerRef}
                   display="flex"
                   justifyContent="flex-start"
+                  alignItems="center"
                   flexDirection={"row"}
+                  flexShrink={0}
                 >
                   {fields.map((field, index) => {
                     let mediaPreviewUrl: string | undefined = undefined;
@@ -112,6 +114,7 @@ export const ProjectItems = observer(
                         {(provided) => {
                           return (
                             <Flex
+                              zIndex={1}
                               {...provided.dragHandleProps}
                               {...provided.draggableProps}
                               ref={provided.innerRef}
@@ -280,6 +283,31 @@ export const ProjectItems = observer(
                       </Draggable>
                     );
                   })}
+                  {displayMobileMediaAreaDrawer && (
+                    <Button
+                      w="150px"
+                      h="150px"
+                      marginTop="26px"
+                      variant="unstyled"
+                      display="flex"
+                      alignItems="center"
+                      flexDirection="column"
+                      justifyContent="center"
+                      flexShrink="inherit"
+                      onClick={() => {
+                        insert(watchProjectItems.length, {
+                          title: "",
+                          description: "",
+                        });
+                        handleItemSelect(watchProjectItems.length);
+                        if (displayMobileMediaAreaDrawer) {
+                          mobileMediaAreaDisclosure.onOpen();
+                        }
+                      }}
+                    >
+                      <AddIcon /> Add Item
+                    </Button>
+                  )}
                   {provided.placeholder}
                   <MobileMediaAreaDrawer
                     onClose={() => {

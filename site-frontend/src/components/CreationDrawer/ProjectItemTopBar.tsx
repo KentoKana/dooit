@@ -66,6 +66,7 @@ export const ProjectItemTopBar = ({
         />
 
         <IconButton
+          display={["none", "none", "initial"]}
           title="Add item"
           size="xs"
           background="transparent"
