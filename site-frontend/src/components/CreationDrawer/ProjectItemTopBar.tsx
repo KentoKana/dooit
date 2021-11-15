@@ -1,40 +1,80 @@
-import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
+import {
+  AddIcon,
+  DeleteIcon,
+  TriangleDownIcon,
+  TriangleUpIcon,
+} from "@chakra-ui/icons";
 import { Flex } from "@chakra-ui/layout";
-import { IconButton } from "@chakra-ui/react";
+import { Box, IconButton } from "@chakra-ui/react";
 
 export interface IProjectItemTopBarProps {
   itemLength: number;
   onRemove: () => void;
   onAdd: () => void;
+  disableMoveLeft: boolean;
+  disableMoveRight: boolean;
+  onMoveItemLeft: () => void;
+  onMoveItemRight: () => void;
 }
 export const ProjectItemTopBar = ({
   itemLength,
   onRemove,
   onAdd,
+  onMoveItemLeft,
+  onMoveItemRight,
+  disableMoveLeft,
+  disableMoveRight,
 }: IProjectItemTopBarProps) => {
   return (
-    <Flex justifyContent="flex-end">
-      <IconButton
-        title="Remove item"
-        // disabled={itemLength === 1}
-        mr={1}
-        size="xs"
-        background="transparent"
-        backgroundColor="transparent"
-        onClick={onRemove}
-        aria-label="Remove Item"
-        icon={<DeleteIcon />}
-      />
+    <Flex
+      justifyContent="space-between"
+      // display={["none", "none", "inherit"]}
+      maxWidth="150px"
+    >
+      <Box>
+        <IconButton
+          disabled={disableMoveLeft}
+          onClick={() => {
+            onMoveItemLeft();
+          }}
+          background="transparent"
+          aria-label="Move Left"
+          size="xs"
+          icon={<TriangleUpIcon transform="rotate(-90deg)" />}
+        />
+        <IconButton
+          disabled={disableMoveRight}
+          onClick={() => {
+            onMoveItemRight();
+          }}
+          background="transparent"
+          aria-label="Move Right"
+          size="xs"
+          icon={<TriangleDownIcon transform="rotate(-90deg)" />}
+        />
+      </Box>
+      <Box>
+        <IconButton
+          title="Remove item"
+          mr={1}
+          size="xs"
+          background="transparent"
+          backgroundColor="transparent"
+          onClick={onRemove}
+          aria-label="Remove Item"
+          icon={<DeleteIcon />}
+        />
 
-      <IconButton
-        title="Add item"
-        size="xs"
-        background="transparent"
-        backgroundColor="transparent"
-        onClick={onAdd}
-        aria-label="Add Item"
-        icon={<AddIcon />}
-      />
+        <IconButton
+          title="Add item"
+          size="xs"
+          background="transparent"
+          backgroundColor="transparent"
+          onClick={onAdd}
+          aria-label="Add Item"
+          icon={<AddIcon />}
+        />
+      </Box>
     </Flex>
   );
 };

@@ -52,7 +52,7 @@ export const DrawerTemplate = observer(
             </DrawerHeader>
           )}
           {children && <DrawerBody p="0">{children}</DrawerBody>}
-          {drawerFooter && <DrawerFooter>{drawerFooter}</DrawerFooter>}
+          {drawerFooter && <DrawerFooter p="0">{drawerFooter}</DrawerFooter>}
         </DrawerContent>
       </Drawer>
     );

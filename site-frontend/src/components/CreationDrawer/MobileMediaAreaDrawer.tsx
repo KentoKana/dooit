@@ -1,4 +1,5 @@
-import { Button, Flex } from "@chakra-ui/react";
+import { Flex, IconButton } from "@chakra-ui/react";
+import { CheckIcon } from "@chakra-ui/icons";
 import { observer } from "mobx-react-lite";
 import { DrawerTemplate } from "../DrawerTemplate";
 import { IMediaAreaProps, MediaArea } from "./MediaArea";
@@ -21,17 +22,24 @@ export const MobileMediaAreaDrawer = observer(
         size="full"
         placement="left"
         onClose={onClose}
-        drawerHeader={
-          <Flex justifyContent="flex-end">
-            <Button
+        drawerFooter={
+          <Flex position="absolute" bottom={0} m={1}>
+            <IconButton
+              ml={1}
+              _hover={{ opacity: 1 }}
+              opacity={1}
+              className="mediabox"
+              width="60px"
+              height="60px"
+              borderRadius="50%"
+              title="Save Item"
               variant="primary"
-              borderRadius="sm"
+              icon={<CheckIcon />}
+              aria-label="Save Item"
               onClick={() => {
                 onClose();
               }}
-            >
-              Save Item
-            </Button>
+            />
           </Flex>
         }
       >

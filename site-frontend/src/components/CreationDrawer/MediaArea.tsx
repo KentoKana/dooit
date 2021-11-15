@@ -150,13 +150,11 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
             zIndex={1}
             justifyContent="flex-end"
             width="100%"
-            opacity={[0.6, 0.6, 0.8]}
             transition="0.2s ease all"
-            _hover={{ opacity: 1 }}
             position="absolute"
-            top={["initial", "initial", "-35px"]}
-            right={[0, 0, "-35px"]}
-            bottom={[0, 0, "initial"]}
+            top={0}
+            right={0}
+            // bottom={[0, 0, "initial"]}
             m="5px"
           >
             <EditButtonPopover

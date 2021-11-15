@@ -53,7 +53,7 @@ export const Sidebar = ({
         <Box>
           <Box
             mt="10"
-            maxHeight="500px"
+            maxHeight="320px"
             overflow="auto"
             css={{
               scrollbarWidth: "thin",

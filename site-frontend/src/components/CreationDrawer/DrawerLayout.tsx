@@ -23,7 +23,7 @@ export const DrawerLayout = ({
       >
         <Box
           color="#fff"
-          width={["100%", "100%", "35%"]}
+          width={["100%", "100%", "45%"]}
           mr={["40px"]}
           as="section"
           position="absolute"
@@ -48,15 +48,15 @@ export const DrawerLayout = ({
         >
           {sidebar}
         </Box>
-        <Box width={["100%", "100%", "35%"]}></Box>
+        <Box width={["100%", "100%", "45%"]}></Box>
         <Flex
           display={["none", "none", "inherit"]}
-          width={["0%", "0%", "65%"]}
+          width={["0%", "0%", "55%"]}
           as="section"
           direction="column"
           alignItems="center"
           overflow="auto"
-          justifyContent="center"
+          justifyContent="flex-start"
           background="grey.50"
         >
           <Flex width="100%" justifyContent="center" maxHeight="100%">

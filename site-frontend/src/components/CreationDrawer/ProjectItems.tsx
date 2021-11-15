@@ -2,7 +2,6 @@ import {
   Box,
   Flex,
   Image,
-  IconButton,
   Button,
   Text,
   useDisclosure,
@@ -16,12 +15,7 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { useFieldArray, UseFormReturn, useWatch } from "react-hook-form";
-import {
-  DragHandleIcon,
-  EditIcon,
-  TriangleDownIcon,
-  TriangleUpIcon,
-} from "@chakra-ui/icons";
+import { DragHandleIcon } from "@chakra-ui/icons";
 import { ProjectItemTopBar } from "./ProjectItemTopBar";
 import { IProject } from ".";
 import { useCallback, useEffect, useState } from "react";
@@ -87,10 +81,16 @@ export const ProjectItems = observer(
     return (
       <>
         <DragDropContext onDragEnd={handleOnDragEnd}>
-          <Droppable droppableId="projects">
+          <Droppable droppableId="projects" direction={"horizontal"}>
             {(provided) => {
               return (
-                <Box {...provided.droppableProps} ref={provided.innerRef}>
+                <Box
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                  display="flex"
+                  justifyContent="flex-start"
+                  flexDirection={"row"}
+                >
                   {fields.map((field, index) => {
                     let mediaPreviewUrl: string | undefined = undefined;
                     if (
@@ -116,11 +116,24 @@ export const ProjectItems = observer(
                               {...provided.draggableProps}
                               ref={provided.innerRef}
                               minHeight={"100px"}
-                              width={"100%"}
+                              maxWidth={"150px"}
                               my={3}
                               direction="column"
+                              mx={2}
                             >
                               <ProjectItemTopBar
+                                disableMoveLeft={index === 0}
+                                disableMoveRight={
+                                  index === watchProjectItems.length - 1
+                                }
+                                onMoveItemLeft={() => {
+                                  swap(index, index - 1);
+                                  handleItemSelect(index - 1);
+                                }}
+                                onMoveItemRight={() => {
+                                  swap(index, index + 1);
+                                  handleItemSelect(index + 1);
+                                }}
                                 itemLength={watchProjectItems.length}
                                 onRemove={() => {
                                   if (
@@ -137,11 +150,11 @@ export const ProjectItems = observer(
                                     } else {
                                       remove(index);
                                     }
+                                    handleItemSelect(0);
                                   } else {
                                     handleItemSelect(index);
                                     deleteConfirmationDisclosure.onOpen();
                                   }
-                                  handleItemSelect(0);
                                 }}
                                 onAdd={() => {
                                   insert(index + 1, {
@@ -156,7 +169,8 @@ export const ProjectItems = observer(
                               />
                               <Flex
                                 color="grey.700"
-                                height="110px"
+                                width={"150px"}
+                                height={"150px"}
                                 transition="0.2s ease all"
                                 borderRadius="sm"
                                 backgroundColor={
@@ -168,8 +182,8 @@ export const ProjectItems = observer(
                                 <Box w="10%">
                                   <Flex
                                     w="10%"
-                                    height="110px"
-                                    justifyContent="space-between"
+                                    height="100%"
+                                    justifyContent="center"
                                     alignItems="center"
                                     px={3}
                                     borderLeft="4px solid"
@@ -180,42 +194,15 @@ export const ProjectItems = observer(
                                     }
                                     direction="column"
                                   >
-                                    <IconButton
-                                      disabled={index === 0}
-                                      onClick={() => {
-                                        swap(index, index - 1);
-                                        handleItemSelect(index - 1);
-                                      }}
-                                      background="transparent"
-                                      aria-label="Move Up"
-                                      size="xs"
-                                      icon={<TriangleUpIcon />}
-                                    />
                                     <DragHandleIcon title="Drag item" />
-                                    <IconButton
-                                      title="Move up"
-                                      disabled={
-                                        index === watchProjectItems.length - 1
-                                      }
-                                      onClick={() => {
-                                        swap(index, index + 1);
-                                        handleItemSelect(index + 1);
-                                      }}
-                                      background="transparent"
-                                      aria-label="Move Down"
-                                      size="xs"
-                                      icon={<TriangleDownIcon />}
-                                    />
                                   </Flex>
                                 </Box>
-                                <Box width="90%" pl={2}>
-                                  <Button
-                                    title="Edit this item"
+                                <Box width="90%">
+                                  <Box
                                     _focus={{
                                       outline: "none",
                                     }}
                                     background="transparent"
-                                    aria-label="Edit this item"
                                     height="100%"
                                     width="100%"
                                     variant="unstyled"
@@ -230,46 +217,50 @@ export const ProjectItems = observer(
                                     (watchProjectItems[index] &&
                                       watchProjectItems[index].description) ? (
                                       <Flex
-                                        justifyContent="between"
+                                        py="10px"
+                                        justifyContent="center"
                                         alignItems="center"
                                         height="100%"
                                         width="100%"
-                                        maxHeight="100px"
                                         overflowY="auto"
+                                        direction="column"
                                       >
-                                        <Box mr={3}>
+                                        <Box>
                                           {mediaPreviewUrl && (
                                             <Image
                                               borderRadius="sm"
-                                              boxSize="80px"
+                                              boxSize="100px"
                                               objectFit="cover"
                                               src={mediaPreviewUrl}
                                               alt=""
                                             />
                                           )}
+                                          {watchProjectItems[index] &&
+                                            watchProjectItems[index]
+                                              .description &&
+                                            !mediaPreviewUrl && (
+                                              <Text
+                                                fontSize="sm"
+                                                maxWidth={"100px"}
+                                                textAlign="left"
+                                                fontWeight="normal"
+                                                whiteSpace="break-spaces"
+                                                overflowX="hidden"
+                                                overflowY="auto"
+                                              >
+                                                {watchProjectItems[index] &&
+                                                watchProjectItems[index]
+                                                  .description
+                                                  ? truncateText(
+                                                      watchProjectItems[index]
+                                                        .description,
+                                                      mediaPreviewUrl ? 60 : 100
+                                                    )
+                                                  : ""}
+                                              </Text>
+                                            )}
                                         </Box>
-                                        <Box>
-                                          <Text
-                                            fontSize="sm"
-                                            maxWidth={
-                                              mediaPreviewUrl ? "150px" : "100%"
-                                            }
-                                            textAlign="left"
-                                            fontWeight="normal"
-                                            whiteSpace="break-spaces"
-                                            overflowX="hidden"
-                                            overflowY="auto"
-                                          >
-                                            {watchProjectItems[index] &&
-                                            watchProjectItems[index].description
-                                              ? truncateText(
-                                                  watchProjectItems[index]
-                                                    .description,
-                                                  mediaPreviewUrl ? 60 : 100
-                                                )
-                                              : ""}
-                                          </Text>
-                                        </Box>
+                                        {/* <Box></Box> */}
                                       </Flex>
                                     ) : (
                                       <Flex
@@ -277,10 +268,10 @@ export const ProjectItems = observer(
                                         alignItems="center"
                                         height="100%"
                                       >
-                                        <EditIcon mr={3} /> Edit this item
+                                        Empty
                                       </Flex>
                                     )}
-                                  </Button>
+                                  </Box>
                                 </Box>
                               </Flex>
                             </Flex>

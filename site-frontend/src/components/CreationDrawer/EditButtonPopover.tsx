@@ -39,13 +39,14 @@ export const EditButtonPopover = ({
     >
       <PopoverTrigger>
         <IconButton
-          id="mediabox"
-          width="70px"
-          height="70px"
+          _hover={{ opacity: 1 }}
+          opacity={isOpen ? 1 : 0.8}
+          className="mediabox"
+          width="60px"
+          height="60px"
           borderRadius="50%"
-          color="#fff"
           title="Edit media"
-          variant="primary"
+          colorScheme="yellow"
           icon={<EditIcon />}
           aria-label="Edit media"
           onClick={() => {
@@ -55,8 +56,14 @@ export const EditButtonPopover = ({
       </PopoverTrigger>
       <PopoverContent maxWidth="200px">
         <PopoverArrow />
-        <PopoverBody display="flex" flexDirection="column">
+        <PopoverBody
+          display="flex"
+          flexDirection="column"
+          opacity={isOpen ? 1 : 0.8}
+          _hover={{ opacity: 1 }}
+        >
           <Button
+            borderRadius="sm"
             mb={2}
             colorScheme="primary"
             onClick={onCropOptionClick}
@@ -66,15 +73,16 @@ export const EditButtonPopover = ({
             <Box mr={1}>
               <FiCrop />
             </Box>
-            Crop
+            Crop Image
           </Button>
           <Button
+            borderRadius="sm"
             colorScheme="red"
             display="flex"
             alignItems="center"
             onClick={onRemoveImageClick}
           >
-            <DeleteIcon mr={1} /> Remove
+            <DeleteIcon mr={1} /> Remove Image
           </Button>
         </PopoverBody>
       </PopoverContent>
