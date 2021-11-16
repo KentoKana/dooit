@@ -97,8 +97,8 @@ export const ProjectItems = observer(
                               {...provided.dragHandleProps}
                               {...provided.draggableProps}
                               ref={provided.innerRef}
-                              minHeight={"100px"}
-                              maxWidth={"150px"}
+                              minHeight={["150px", "150px", "180px"]}
+                              maxWidth={["150px", "150px", "180px"]}
                               my={3}
                               direction="column"
                               mx={2}

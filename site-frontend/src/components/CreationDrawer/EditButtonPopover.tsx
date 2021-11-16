@@ -46,7 +46,7 @@ export const EditButtonPopover = ({
           height="60px"
           borderRadius="50%"
           title="Edit media"
-          colorScheme="yellow"
+          colorScheme="primary"
           icon={<EditIcon />}
           aria-label="Edit media"
           onClick={() => {

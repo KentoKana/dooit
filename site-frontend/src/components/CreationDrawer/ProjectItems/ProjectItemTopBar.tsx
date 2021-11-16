@@ -26,7 +26,7 @@ export const ProjectItemTopBar = ({
   disableMoveRight,
 }: IProjectItemTopBarProps) => {
   return (
-    <Flex justifyContent="space-between" maxWidth="150px">
+    <Flex justifyContent="space-between" maxWidth={["150px", "150px", "180px"]}>
       <Box>
         <IconButton
           disabled={disableMoveLeft}

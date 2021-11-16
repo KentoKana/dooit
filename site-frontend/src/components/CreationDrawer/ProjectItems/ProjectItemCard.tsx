@@ -56,8 +56,8 @@ export const ProjectItemCard = ({
       />
       <Flex
         color="grey.700"
-        width={"150px"}
-        height={"150px"}
+        width={["150px", "150px", "180px"]}
+        height={["150px", "150px", "180px"]}
         transition="0.2s ease all"
         borderRadius="sm"
         backgroundColor={
