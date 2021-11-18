@@ -1,4 +1,5 @@
 import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
+import { ImageTag } from './imageTag.entity';
 import { Project } from './project.entity';
 
 @Entity({ name: "project_items" })
@@ -23,6 +24,9 @@ export class ProjectItem {
 
     @ManyToOne(() => Project, project => project.projectItems, { onDelete: "CASCADE" })
     project: Project;
+
+    @OneToMany(() => ImageTag, tag => tag.projectItem, { onDelete: "CASCADE" })
+    imageTags: ImageTag[]
 
     @CreateDateColumn()
     dateCreated: Date;
