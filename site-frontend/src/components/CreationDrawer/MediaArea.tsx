@@ -19,10 +19,11 @@ import "./styles.css";
 import { Area } from "react-easy-crop/types";
 import { IProject } from ".";
 import { LoadingState } from "../../enums/LoadingState";
-import { MediaEditModal } from "./MediaEditModal";
+import { MediaCropModal } from "./MediaCropModal";
 import { ItemTextEditor } from "./ItemTextEditor";
 import { AiFillPlusCircle } from "react-icons/ai";
 import { EditButtonPopover } from "./EditButtonPopover";
+import { MediaTagModal } from "./MediaTagModal";
 enum EDragState {
   None,
   DragEnter,
@@ -53,6 +54,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
   const [filePreviouslyBlank, setFilePreviouslyBlank] = useState(true);
 
   const cropModalDisclosure = useDisclosure();
+  const tagModalDisclosure = useDisclosure();
   const toast = useToast();
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -158,6 +160,9 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
             m="5px"
           >
             <EditButtonPopover
+              onTagOptionClick={() => {
+                tagModalDisclosure.onOpen();
+              }}
               onCropOptionClick={() => {
                 setFilePreviouslyBlank(false);
                 cropModalDisclosure.onOpen();
@@ -254,7 +259,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
         />
       </Box>
       {watchProjectItems && watchProjectItems[selectedItemIndex] && (
-        <MediaEditModal
+        <MediaCropModal
           cropCompletionState={cropCompletionState}
           mediaLoadingState={mediaLoadingState}
           isOpen={cropModalDisclosure.isOpen}
@@ -281,6 +286,22 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
           mediaUrl={watchProjectItems[selectedItemIndex].mediaUrl!}
         />
       )}
+      {watchProjectItems &&
+        watchProjectItems[selectedItemIndex] &&
+        watchProjectItems[selectedItemIndex].mediaUrl && (
+          <MediaTagModal
+            isOpen={tagModalDisclosure.isOpen}
+            onClose={() => {
+              tagModalDisclosure.onClose();
+            }}
+            onCancel={() => {
+              tagModalDisclosure.onClose();
+            }}
+            mediaUrl={URL.createObjectURL(
+              watchProjectItems[selectedItemIndex].mediaAsFile
+            )}
+          />
+        )}
     </Box>
   );
 };

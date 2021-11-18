@@ -31,20 +31,26 @@ export class UiStore {
         };
 
         const promise = new Promise((res, rej) => {
+            console.log('promising');
+
             auth.onAuthStateChanged(async (user) => {
                 const retrievedToken = await user?.getIdToken();
-                res(() => {
-                    if (retrievedToken) {
+                if (retrievedToken) {
+                    res(() => {
                         localStorage.setItem("user-jwt", retrievedToken);
                         this.userStore.isSignedIn = true;
                         console.log("token reset from ui store");
-                    } else {
+                    });
+                } else {
+                    rej(() => {
                         localStorage.removeItem("user-jwt");
                         this.userStore.isSignedIn = false;
-                    }
-                });
+                        console.log("rejected from ui store");
+                    })
+                }
             })
         });
+
 
         return promise.then(() => fetch(url, {
             method: options.method,
@@ -73,6 +79,7 @@ export class UiStore {
                 const resultJson = JSON.parse(chunks.join(""));
                 if (res.status === 401) {
                     console.log("fobidden");
+                    this.userStore.isSignedIn = false;
                     return Promise.reject({ status: resultJson.status, message: resultJson.message, httpCodeStatus: res.status })
                 }
 

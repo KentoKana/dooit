@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Area } from "react-easy-crop/types";
 import { LoadingState } from "../../enums/LoadingState";
 
-interface IMediaEditModalProps {
+interface IMediaCropModalProps {
   isOpen: boolean;
   onClose: () => void;
   onCropConfirmation: () => void;
@@ -17,7 +17,7 @@ interface IMediaEditModalProps {
   onCropCancel: () => void;
 }
 
-export const MediaEditModal = ({
+export const MediaCropModal = ({
   isOpen,
   onCropConfirmation,
   onCropAreaChange,
@@ -26,7 +26,7 @@ export const MediaEditModal = ({
   mediaLoadingState,
   cropCompletionState,
   onCropCancel,
-}: IMediaEditModalProps) => {
+}: IMediaCropModalProps) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
 

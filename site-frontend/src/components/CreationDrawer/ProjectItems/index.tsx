@@ -38,6 +38,7 @@ export const ProjectItems = observer(
       control,
       name: "projectItems",
     });
+    const [isDragging, setIsDragging] = useState(false);
     const mobileMediaAreaDisclosure = useDisclosure();
     const deleteConfirmationDisclosure = useDisclosure();
     const [displayMobileMediaAreaDrawer] = useMediaQuery(BreakPoints.Mobile);
@@ -51,6 +52,7 @@ export const ProjectItems = observer(
         setSelectedItemIndex(result.destination.index);
         onItemSelect(result.destination.index);
         move(result.source.index, result.destination.index);
+        setIsDragging(false);
       },
       [onItemSelect, move]
     );
@@ -71,7 +73,12 @@ export const ProjectItems = observer(
 
     return (
       <>
-        <DragDropContext onDragEnd={handleOnDragEnd}>
+        <DragDropContext
+          onDragEnd={handleOnDragEnd}
+          onDragStart={() => {
+            setIsDragging(true);
+          }}
+        >
           <Droppable droppableId="projects" direction={"horizontal"}>
             {(provided) => {
               return (
@@ -161,7 +168,7 @@ export const ProjectItems = observer(
                       </Draggable>
                     );
                   })}
-                  {displayMobileMediaAreaDrawer && (
+                  {!isDragging && (
                     <AddItemButton
                       onClick={() => {
                         insert(watchProjectItems.length, {

@@ -12,17 +12,20 @@ import {
 } from "@chakra-ui/react";
 import { useRef } from "react";
 import { FiCrop } from "react-icons/fi";
+import { AiFillTag } from "react-icons/ai";
 
 interface IEditButtonPopoverProps {
   onTriggerClick: () => void;
   onCropOptionClick: () => void;
   onRemoveImageClick: () => void;
+  onTagOptionClick: () => void;
 }
 
 export const EditButtonPopover = ({
   onTriggerClick,
   onCropOptionClick,
   onRemoveImageClick,
+  onTagOptionClick,
 }: IEditButtonPopoverProps) => {
   const { onOpen, onClose, isOpen } = useDisclosure();
   const initialFocusRef = useRef<any>();
@@ -62,6 +65,19 @@ export const EditButtonPopover = ({
           opacity={isOpen ? 1 : 0.8}
           _hover={{ opacity: 1 }}
         >
+          <Button
+            borderRadius="sm"
+            mb={2}
+            colorScheme="primary"
+            onClick={onTagOptionClick}
+            display="flex"
+            alignItems="center"
+          >
+            <Box mr={1}>
+              <AiFillTag />{" "}
+            </Box>
+            Add Tags
+          </Button>
           <Button
             borderRadius="sm"
             mb={2}
