@@ -18,6 +18,7 @@ import {
 import "./styles.css";
 import { useState } from "react";
 import { FormElement } from "../Forms/FormElement";
+import { AiFillTag } from "react-icons/ai";
 
 interface IMediaAreaImageContainerProps {
   mediaUrl: string;
@@ -93,10 +94,10 @@ export const MediaAreaImageContainer = ({
           borderRadius="sm"
           width="100%"
           src={mediaUrl}
-          cursor={isTagMode ? "crosshair" : "default"}
           position="relative"
         />
         <Box
+          cursor={isTagMode ? "crosshair" : "default"}
           display="flex"
           justifyContent="center"
           alignItems="center"
@@ -218,11 +219,21 @@ export const MediaAreaImageContainer = ({
         </Box>
         <Button
           size="sm"
+          colorScheme={isTagMode ? "primary" : "yellow"}
           onClick={() => {
             setIsTagMode(!isTagMode);
           }}
         >
-          {isTagMode ? "Done" : "Tag Image"}
+          {isTagMode ? (
+            "Done Tagging"
+          ) : (
+            <Text as="span" display="flex" alignItems="center">
+              <Box as="span" mr={1} mt={1}>
+                <AiFillTag />
+              </Box>{" "}
+              Tag Image
+            </Text>
+          )}
         </Button>
       </Flex>
     </>
