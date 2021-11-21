@@ -29,6 +29,7 @@ export const ModalTemplate = ({
 }: IModalTemplateProps) => {
   return (
     <Modal
+      isCentered
       onClose={() => {
         onClose && onClose();
       }}

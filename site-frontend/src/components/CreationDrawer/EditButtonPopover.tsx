@@ -11,19 +11,16 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { useRef } from "react";
-import { FiCrop } from "react-icons/fi";
 import { AiFillTag } from "react-icons/ai";
 
 interface IEditButtonPopoverProps {
   onTriggerClick: () => void;
-  onCropOptionClick: () => void;
   onRemoveImageClick: () => void;
   onTagOptionClick: () => void;
 }
 
 export const EditButtonPopover = ({
   onTriggerClick,
-  onCropOptionClick,
   onRemoveImageClick,
   onTagOptionClick,
 }: IEditButtonPopoverProps) => {
@@ -77,19 +74,6 @@ export const EditButtonPopover = ({
               <AiFillTag />{" "}
             </Box>
             Add Tags
-          </Button>
-          <Button
-            borderRadius="sm"
-            mb={2}
-            colorScheme="primary"
-            onClick={onCropOptionClick}
-            display="flex"
-            alignItems="center"
-          >
-            <Box mr={1}>
-              <FiCrop />
-            </Box>
-            Crop Image
           </Button>
           <Button
             borderRadius="sm"

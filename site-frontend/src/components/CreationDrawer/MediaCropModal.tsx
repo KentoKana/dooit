@@ -92,7 +92,7 @@ export const MediaCropModal = ({
           crop={crop}
           zoomSpeed={1.4}
           zoom={zoom}
-          aspect={4 / 3}
+          aspect={1}
           onCropChange={setCrop}
           onCropComplete={(_, croppedAreaPixels) => {
             onCropAreaChange(croppedAreaPixels);

@@ -1,7 +1,23 @@
-import { Box, Flex, Button, Image as ImageTag } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Button,
+  Image,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverBody,
+  PopoverFooter,
+  PopoverArrow,
+  PopoverCloseButton,
+  ButtonGroup,
+  useOutsideClick,
+  Input,
+} from "@chakra-ui/react";
 import "./styles.css";
 import { ModalTemplate } from "../ModalTemplate";
 import { useRef, useState } from "react";
+import { FormElement } from "../Forms/FormElement";
 
 interface IMediaTagModalProps {
   isOpen: boolean;
@@ -23,42 +39,29 @@ export const MediaTagModal = ({
   onCancel,
 }: IMediaTagModalProps) => {
   const imageRef = useRef<HTMLImageElement>(null);
-  const imageRef2 = useRef<HTMLImageElement>(null);
-  const [tags, setTags] = useState<ITag>();
+  const [tag, setTag] = useState<ITag>();
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  useOutsideClick({
+    ref: imageRef,
+    handler: () => {
+      if (!popoverOpen) {
+        setTag(undefined);
+      }
+    },
+  });
   const handleClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
-    const scaleFactor =
-      imageRef!.current!.offsetWidth! / imageRef2!.current!.offsetWidth;
-
+    setPopoverOpen(true);
+    // const scaleFactor =
+    //   imageRef!.current!.offsetWidth! / imageRef!.current!.offsetWidth;
     const rect = imageRef.current?.getBoundingClientRect();
-
-    const x = (e.clientX - rect!.left - 10) * scaleFactor;
-    const y = (e.clientY - rect!.top - 10) * scaleFactor;
-
-    console.log(scaleFactor, e.clientY, rect!.top);
-
-    setTags({
+    const x = e.clientX - rect!.left - 10;
+    const y = e.clientY - rect!.top - 10;
+    setTag({
       xCoord: x,
       yCoord: y,
       title: "test",
     });
-    // getHeightAndWidthFromDataUrl(mediaUrl).then((dimension) => {
-
-    // });
   };
-
-  //   const getHeightAndWidthFromDataUrl = (
-  //     dataURL: string
-  //   ): Promise<{ height: number; width: number }> =>
-  //     new Promise((resolve) => {
-  //       const img = new Image();
-  //       img.onload = () => {
-  //         resolve({
-  //           height: img.height,
-  //           width: img.width,
-  //         });
-  //       };
-  //       img.src = dataURL;
-  //     });
 
   return (
     <ModalTemplate
@@ -93,49 +96,83 @@ export const MediaTagModal = ({
       <Box
         className="crop-container"
         css={{
-          width: "50%",
+          width: "100%",
           position: "relative",
           background: "#333",
         }}
       >
-        <ImageTag
-          position="absolute"
+        <Image
+          cursor={"crosshair"}
+          position="relative"
           ref={imageRef}
           src={mediaUrl}
           zIndex={1}
-          //   onClick={(e) => {
-          //     handleClick(e);
-          //   }}
+          onClick={(e) => {
+            handleClick(e);
+          }}
         />
-        <Box
-          zIndex={3}
-          position="absolute"
-          height="20px"
-          width="20px"
-          borderRadius="50%"
-          top={tags?.yCoord ?? 0}
-          left={tags?.xCoord ?? 0}
-          background="white"
-        ></Box>
+        <Popover
+          returnFocusOnClose={false}
+          isOpen={popoverOpen}
+          onClose={() => {
+            setPopoverOpen(false);
+          }}
+          placement="bottom"
+        >
+          {tag && (
+            <PopoverTrigger>
+              <Box
+                zIndex={3}
+                position="absolute"
+                height="20px"
+                width="20px"
+                borderRadius="50%"
+                border="5px solid"
+                borderColor="primary"
+                top={tag?.yCoord ?? 0}
+                left={tag?.xCoord ?? 0}
+                background="#fff"
+              ></Box>
+            </PopoverTrigger>
+          )}
+          <PopoverContent>
+            <PopoverArrow />
+            <PopoverCloseButton />
+            <PopoverBody>
+              <FormElement
+                isInvalid={false}
+                formLabel="Title"
+                formFor="tag"
+                formField={
+                  <Input id="tag" placeholder="E.g. '3x2 Hardwood Board'..." />
+                }
+              />
+              <FormElement
+                isInvalid={false}
+                formLabel="URL (Optional)"
+                formFor="url"
+                formField={<Input id="url" placeholder={"https://"} />}
+              />
+            </PopoverBody>
+            <PopoverFooter d="flex" justifyContent="flex-end">
+              <ButtonGroup size="sm">
+                <Button
+                  variant="outline"
+                  borderRadius="sm"
+                  onClick={() => {
+                    setPopoverOpen(false);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button colorScheme="primary" borderRadius="sm">
+                  Add Tag
+                </Button>
+              </ButtonGroup>
+            </PopoverFooter>
+          </PopoverContent>
+        </Popover>
       </Box>
-      <ImageTag
-        w="100%"
-        position="relative"
-        ref={imageRef2}
-        src={mediaUrl}
-        onClick={(e) => {
-          handleClick(e);
-        }}
-      />
-      {/* <Box
-        position="absolute"
-        height="20px"
-        width="20px"
-        borderRadius="50%"
-        top={tags?.yCoord ?? 0}
-        left={tags?.xCoord ?? 0}
-        background="white"
-      ></Box> */}
     </ModalTemplate>
   );
 };

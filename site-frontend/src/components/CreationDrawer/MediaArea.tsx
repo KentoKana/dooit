@@ -142,7 +142,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
       position="relative"
       width="100%"
       m={["0px", "0px", "20px"]}
-      maxWidth={["100%", "100%", "600px"]}
+      maxWidth={["100%", "100%", "65%"]}
     >
       {watchProjectItems &&
       watchProjectItems[selectedItemIndex] &&
@@ -162,10 +162,6 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
             <EditButtonPopover
               onTagOptionClick={() => {
                 tagModalDisclosure.onOpen();
-              }}
-              onCropOptionClick={() => {
-                setFilePreviouslyBlank(false);
-                cropModalDisclosure.onOpen();
               }}
               onRemoveImageClick={() => {
                 setValue(
