@@ -18,21 +18,20 @@ export class UiStore {
     async apiRequest<TData, TResult = TData>(url: string, options: IApiRequestOptions<TData> = {}): Promise<TResult> {
 
         let headers: Headers = new Headers();
+        headers.set("Content-Type", "application/json")
         if (options.bodyData) {
             headers.set("Accept", "*/*")
-        }
-        headers.set("Content-Type", "application/json")
-        if (localStorage.getItem("user-jwt")) {
-            headers.set("Authorization", `Bearer ${localStorage.getItem("user-jwt")}`)
         }
         options = {
             method: "GET",
             ...options
         };
-
         return auth.currentUser?.getIdToken().then((retrievedToken) => {
             localStorage.setItem("user-jwt", retrievedToken);
             this.userStore.isSignedIn = true;
+            if (localStorage.getItem("user-jwt")) {
+                headers.set("Authorization", `Bearer ${retrievedToken}`)
+            }
         }).then(() => fetch(url, {
             method: options.method,
             headers: headers,

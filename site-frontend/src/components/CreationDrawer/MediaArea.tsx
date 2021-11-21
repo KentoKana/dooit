@@ -1,6 +1,5 @@
 import {
   Flex,
-  Image,
   Skeleton,
   useDisclosure,
   Button,
@@ -8,7 +7,7 @@ import {
   useToast,
   Text,
 } from "@chakra-ui/react";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { UseFormReturn, useWatch } from "react-hook-form";
 import getCroppedImg from "./cropImage";
 import { dataURLtoFile } from "./dataUrlToFile";
@@ -23,7 +22,7 @@ import { MediaCropModal } from "./MediaCropModal";
 import { ItemTextEditor } from "./ItemTextEditor";
 import { AiFillPlusCircle } from "react-icons/ai";
 import { EditButtonPopover } from "./EditButtonPopover";
-import { MediaTagModal } from "./MediaTagModal";
+import { MediaAreaImageContainer } from "./MediaAreaImageContainer";
 enum EDragState {
   None,
   DragEnter,
@@ -54,7 +53,6 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
   const [filePreviouslyBlank, setFilePreviouslyBlank] = useState(true);
 
   const cropModalDisclosure = useDisclosure();
-  const tagModalDisclosure = useDisclosure();
   const toast = useToast();
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -136,6 +134,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
     },
     [setValue, selectedItemIndex, watchProjectItems, cropModalDisclosure]
   );
+  const imageRef = useRef<HTMLImageElement>(null);
 
   return (
     <Box
@@ -148,45 +147,23 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
       watchProjectItems[selectedItemIndex] &&
       watchProjectItems[selectedItemIndex].mediaUrl ? (
         <Box position="relative">
-          <Flex
-            zIndex={1}
-            justifyContent="flex-end"
-            width="100%"
-            transition="0.2s ease all"
-            position="absolute"
-            top={0}
-            right={0}
-            // bottom={[0, 0, "initial"]}
-            m="5px"
-          >
-            <EditButtonPopover
-              onTagOptionClick={() => {
-                tagModalDisclosure.onOpen();
-              }}
-              onRemoveImageClick={() => {
-                setValue(
-                  `projectItems.${selectedItemIndex}.mediaAsFile`,
-                  undefined
-                );
-                setValue(
-                  `projectItems.${selectedItemIndex}.mediaUrl`,
-                  undefined
-                );
-                setFilePreviouslyBlank(true);
-              }}
-              onTriggerClick={() => {
-                setFilePreviouslyBlank(false);
-              }}
-            />
-          </Flex>
+          <EditButtonPopover
+            onRemoveImageClick={() => {
+              setValue(
+                `projectItems.${selectedItemIndex}.mediaAsFile`,
+                undefined
+              );
+              setValue(`projectItems.${selectedItemIndex}.mediaUrl`, undefined);
+              setFilePreviouslyBlank(true);
+            }}
+          />
           <Flex justifyContent="center">
             {mediaLoadingState !== LoadingState.Loading &&
             cropCompletionState !== LoadingState.Loading ? (
               <Box w="100%" h="100%">
-                <Image
-                  borderRadius="sm"
-                  width="100%"
-                  src={URL.createObjectURL(
+                <MediaAreaImageContainer
+                  imageRef={imageRef}
+                  mediaUrl={URL.createObjectURL(
                     watchProjectItems[selectedItemIndex].mediaAsFile
                   )}
                 />
@@ -282,22 +259,6 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
           mediaUrl={watchProjectItems[selectedItemIndex].mediaUrl!}
         />
       )}
-      {watchProjectItems &&
-        watchProjectItems[selectedItemIndex] &&
-        watchProjectItems[selectedItemIndex].mediaUrl && (
-          <MediaTagModal
-            isOpen={tagModalDisclosure.isOpen}
-            onClose={() => {
-              tagModalDisclosure.onClose();
-            }}
-            onCancel={() => {
-              tagModalDisclosure.onClose();
-            }}
-            mediaUrl={URL.createObjectURL(
-              watchProjectItems[selectedItemIndex].mediaAsFile
-            )}
-          />
-        )}
     </Box>
   );
 };
