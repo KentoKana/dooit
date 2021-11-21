@@ -30,29 +30,10 @@ export class UiStore {
             ...options
         };
 
-        const promise = new Promise((res, rej) => {
-            console.log('promising');
-
-            auth.onAuthStateChanged(async (user) => {
-                const retrievedToken = await user?.getIdToken();
-                if (retrievedToken) {
-                    res(() => {
-                        localStorage.setItem("user-jwt", retrievedToken);
-                        this.userStore.isSignedIn = true;
-                        console.log("token reset from ui store");
-                    });
-                } else {
-                    rej(() => {
-                        localStorage.removeItem("user-jwt");
-                        this.userStore.isSignedIn = false;
-                        console.log("rejected from ui store");
-                    })
-                }
-            })
-        });
-
-
-        return promise.then(() => fetch(url, {
+        return auth.currentUser?.getIdToken().then((retrievedToken) => {
+            localStorage.setItem("user-jwt", retrievedToken);
+            this.userStore.isSignedIn = true;
+        }).then(() => fetch(url, {
             method: options.method,
             headers: headers,
             body: (options.bodyData ? JSON.stringify(options.bodyData) : undefined)
