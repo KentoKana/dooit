@@ -7,7 +7,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import "../styles.css";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AiFillTag } from "react-icons/ai";
 import { UseFormReturn } from "react-hook-form";
 import { IProject } from "../index";
@@ -74,6 +74,7 @@ export const MediaAreaImageContainer = ({
     });
     setPopoverOpen(false);
   };
+
   const handleImageClick = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
@@ -91,40 +92,41 @@ export const MediaAreaImageContainer = ({
       originalImageWidth: imageRef!.current!.offsetWidth,
       isEditMode: false,
     });
+    formHook.setValue(`projectItems.${selectedItemIndex}.tags`, []);
   };
 
-  const handleTagEdit = (mode: "edit" | "delete", selectedTag: ITag) => {
-    if (mode === "edit") {
-      setTags((prev) => {
-        const newTags = prev.map((tag) => {
-          if (
-            selectedTag.xCoord === tag.xCoord &&
-            selectedTag.yCoord === tag.yCoord
-          ) {
-            tag = selectedTag;
-          }
-          return tag;
+  const handleTagEdit = useCallback(
+    (mode: "edit" | "delete", selectedTag: ITag) => {
+      if (mode === "edit") {
+        setTags((prev) => {
+          const newTags = prev.map((tag) => {
+            if (
+              selectedTag.xCoord === tag.xCoord &&
+              selectedTag.yCoord === tag.yCoord
+            ) {
+              tag = selectedTag;
+            }
+            return tag;
+          });
+          return [...newTags];
         });
-        return [...newTags];
-      });
-    } else {
-      setTags((prev) => {
-        return prev.reduce((acc: ITag[], tag) => {
-          if (
-            selectedTag.xCoord !== tag.xCoord &&
-            selectedTag.yCoord !== tag.yCoord
-          ) {
-            acc.push(tag);
-          }
-          return acc;
-        }, []);
-      });
-    }
-  };
-
-  useEffect(() => {
-    formHook.setValue(`projectItems.${selectedItemIndex}.tags`, tags);
-  }, [tags, formHook, selectedItemIndex]);
+      } else {
+        setTags((prev) => {
+          return prev.reduce((acc: ITag[], tag) => {
+            if (
+              selectedTag.xCoord !== tag.xCoord &&
+              selectedTag.yCoord !== tag.yCoord
+            ) {
+              acc.push(tag);
+            }
+            return acc;
+          }, []);
+        });
+      }
+      formHook.setValue(`projectItems.${selectedItemIndex}.tags`, tags);
+    },
+    [formHook, selectedItemIndex, tags]
+  );
 
   return (
     <>
@@ -223,7 +225,7 @@ export const MediaAreaImageContainer = ({
         <Box>
           {formHook
             .getValues(`projectItems.${selectedItemIndex}.tags`)
-            ?.map((tag, index) => {
+            ?.map((tag) => {
               return (
                 <Button
                   mr={2}
