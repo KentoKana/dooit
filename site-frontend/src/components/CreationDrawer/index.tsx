@@ -212,7 +212,7 @@ export const CreationDrawer = observer(
           }}
           modalHeading="All unsaved work will be lost. Are you sure?"
           confirmButtonColorScheme="red"
-          confirmButtonLabel="Yes"
+          confirmButtonLabel="Yep, I'm sure"
         />
       </DrawerTemplate>
     );

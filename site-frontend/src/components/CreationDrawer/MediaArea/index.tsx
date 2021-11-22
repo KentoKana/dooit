@@ -154,6 +154,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
                 undefined
               );
               setValue(`projectItems.${selectedItemIndex}.mediaUrl`, undefined);
+              setValue(`projectItems.${selectedItemIndex}.tags`, []);
               setFilePreviouslyBlank(true);
             }}
           />

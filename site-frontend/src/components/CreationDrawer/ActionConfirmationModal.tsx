@@ -31,10 +31,12 @@ export const ActionConfirmationModal = ({
             onClick={() => {
               onCancel();
             }}
+            minWidth="100px"
           >
             Cancel
           </Button>
           <Button
+            minWidth="100px"
             colorScheme={confirmButtonColorScheme}
             borderRadius="sm"
             onClick={() => {

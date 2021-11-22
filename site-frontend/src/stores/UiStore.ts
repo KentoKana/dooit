@@ -33,7 +33,7 @@ export class UiStore {
                 },
                 sign_in_provider: string
             }
-        }>(localStorage.getItem("user-jwt") ?? "", { header: true });
+        }>(localStorage.getItem("user-jwt") ?? "");
         let headers: Headers = new Headers();
         headers.set("Content-Type", "application/json")
         if (options.bodyData) {
@@ -83,8 +83,7 @@ export class UiStore {
                 return res.json();
             })
         }
-
-        if (decodedHeader.exp < Date.now() && !isPublicRoute) {
+        if (decodedHeader.exp > Date.now()) {
             return auth.currentUser?.getIdToken().then((retrievedToken) => {
                 localStorage.setItem("user-jwt", retrievedToken);
                 this.userStore.isSignedIn = true;
@@ -93,7 +92,7 @@ export class UiStore {
                 return tryFetch();
             });
         } else {
-            if (localStorage.getItem("user-jwt") && !isPublicRoute) {
+            if (localStorage.getItem("user-jwt")) {
                 headers.set("Authorization", `Bearer ${localStorage.getItem("user-jwt")}`)
             }
             return tryFetch();

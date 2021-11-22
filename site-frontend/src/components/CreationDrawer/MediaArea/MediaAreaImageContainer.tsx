@@ -7,7 +7,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import "../styles.css";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AiFillTag } from "react-icons/ai";
 import { UseFormReturn } from "react-hook-form";
 import { IProject } from "../index";
@@ -45,6 +45,7 @@ export const MediaAreaImageContainer = ({
   const [tags, setTags] = useState<ITag[]>([]);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [isTagMode, setIsTagMode] = useState(false);
+  const [tagEdited, setTagEdited] = useState(false);
   useOutsideClick({
     ref: imageRef,
     handler: () => {
@@ -94,38 +95,42 @@ export const MediaAreaImageContainer = ({
     });
   };
 
-  const handleTagEdit = useCallback(
-    (mode: "edit" | "delete", selectedTag: ITag) => {
-      if (mode === "edit") {
-        setTags((prev) => {
-          const newTags = prev.map((tag) => {
-            if (
-              selectedTag.xCoord === tag.xCoord &&
-              selectedTag.yCoord === tag.yCoord
-            ) {
-              tag = selectedTag;
-            }
-            return tag;
-          });
-          return [...newTags];
+  const handleTagEdit = (mode: "edit" | "delete", selectedTag: ITag) => {
+    if (mode === "edit") {
+      setTags((prev) => {
+        const newTags = prev.map((tag) => {
+          if (
+            selectedTag.xCoord === tag.xCoord &&
+            selectedTag.yCoord === tag.yCoord
+          ) {
+            tag = selectedTag;
+          }
+          return tag;
         });
-      } else {
-        setTags((prev) => {
-          return prev.reduce((acc: ITag[], tag) => {
-            if (
-              selectedTag.xCoord !== tag.xCoord &&
-              selectedTag.yCoord !== tag.yCoord
-            ) {
-              acc.push(tag);
-            }
-            return acc;
-          }, []);
-        });
-      }
+        return [...newTags];
+      });
+    } else {
+      setTags((prev) => {
+        return prev.reduce((acc: ITag[], tag) => {
+          if (
+            selectedTag.xCoord !== tag.xCoord &&
+            selectedTag.yCoord !== tag.yCoord
+          ) {
+            acc.push(tag);
+          }
+          return acc;
+        }, []);
+      });
+    }
+    setTagEdited(true);
+  };
+
+  useEffect(() => {
+    if (tagEdited) {
       formHook.setValue(`projectItems.${selectedItemIndex}.tags`, tags);
-    },
-    [formHook, selectedItemIndex, tags]
-  );
+      setTagEdited(false);
+    }
+  }, [tagEdited, selectedItemIndex, tags, formHook]);
 
   return (
     <>

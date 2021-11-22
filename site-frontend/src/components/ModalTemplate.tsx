@@ -39,7 +39,7 @@ export const ModalTemplate = ({
     >
       <ModalOverlay />
       <ModalContent borderRadius="sm">
-        {heading && <ModalHeader>{heading}</ModalHeader>}
+        {heading && <ModalHeader textAlign="center">{heading}</ModalHeader>}
         {displayCloseButton && <ModalCloseButton />}
         {children && <ModalBody p={0}>{children}</ModalBody>}
         {footer && <ModalFooter>{footer}</ModalFooter>}
