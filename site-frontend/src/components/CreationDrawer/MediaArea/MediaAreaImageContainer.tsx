@@ -92,7 +92,6 @@ export const MediaAreaImageContainer = ({
       originalImageWidth: imageRef!.current!.offsetWidth,
       isEditMode: false,
     });
-    formHook.setValue(`projectItems.${selectedItemIndex}.tags`, []);
   };
 
   const handleTagEdit = useCallback(
