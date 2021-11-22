@@ -9,11 +9,12 @@ import {
 import { useFieldArray, UseFormReturn, useWatch } from "react-hook-form";
 import { IProject } from "../";
 import { useCallback, useEffect, useState } from "react";
-import { MobileMediaAreaDrawer } from "../MobileMediaAreaDrawer";
+import { MobileMediaAreaDrawer } from "../MediaArea/MobileMediaAreaDrawer";
 import { BreakPoints } from "../../../enums/BreakPoints";
 import { ItemRemovalConfirmationModal } from "./ItemRemovalConfirmationModal";
 import { AddItemButton } from "./AddItemButton";
 import { ProjectItemCard } from "./ProjectItemCard";
+import { ITag } from "../MediaArea/MediaAreaImageContainer";
 export interface IProjectItem {
   title: string;
   description: string;
@@ -22,6 +23,7 @@ export interface IProjectItem {
   mediaAsFile?: File;
   order: number;
   progress?: number;
+  tags?: ITag[];
 }
 
 interface IProjectItemProps {

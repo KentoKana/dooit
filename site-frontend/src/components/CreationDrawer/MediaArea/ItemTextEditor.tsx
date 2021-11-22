@@ -1,5 +1,5 @@
 import { UseFormReturn, useWatch } from "react-hook-form";
-import { IProject } from ".";
+import { IProject } from "..";
 import { Textarea, chakra } from "@chakra-ui/react";
 import { DebounceInput } from "react-debounce-input";
 const DebouncedTextInput = chakra(DebounceInput, { baseStyle: {} });

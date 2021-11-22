@@ -40,6 +40,7 @@ export const CreationDrawer = observer(
             title: "",
             description: "",
             order: 0,
+            tags: [],
           },
         ],
       };

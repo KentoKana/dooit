@@ -9,15 +9,15 @@ import {
 } from "@chakra-ui/react";
 import { useCallback, useRef, useState } from "react";
 import { UseFormReturn, useWatch } from "react-hook-form";
-import getCroppedImg from "./cropImage";
-import { dataURLtoFile } from "./dataUrlToFile";
+import getCroppedImg from "../cropImage";
+import { dataURLtoFile } from "../dataUrlToFile";
 import Compressor from "compressorjs";
 import { useDropzone } from "react-dropzone";
 
-import "./styles.css";
+import "../styles.css";
 import { Area } from "react-easy-crop/types";
-import { IProject } from ".";
-import { LoadingState } from "../../enums/LoadingState";
+import { IProject } from "../";
+import { LoadingState } from "../../../enums/LoadingState";
 import { MediaCropModal } from "./MediaCropModal";
 import { ItemTextEditor } from "./ItemTextEditor";
 import { AiFillPlusCircle } from "react-icons/ai";
@@ -162,6 +162,8 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
             cropCompletionState !== LoadingState.Loading ? (
               <Box w="100%" h="100%">
                 <MediaAreaImageContainer
+                  selectedItemIndex={selectedItemIndex}
+                  formHook={formHook}
                   imageRef={imageRef}
                   mediaUrl={URL.createObjectURL(
                     watchProjectItems[selectedItemIndex].mediaAsFile

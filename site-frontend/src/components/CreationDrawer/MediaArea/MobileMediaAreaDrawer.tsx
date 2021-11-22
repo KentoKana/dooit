@@ -1,8 +1,8 @@
 import { Flex, IconButton } from "@chakra-ui/react";
 import { CheckIcon } from "@chakra-ui/icons";
 import { observer } from "mobx-react-lite";
-import { DrawerTemplate } from "../DrawerTemplate";
-import { IMediaAreaProps, MediaArea } from "./MediaArea";
+import { DrawerTemplate } from "../../DrawerTemplate";
+import { IMediaAreaProps, MediaArea } from ".";
 
 interface IMobileMediaAreaDrawerProps extends IMediaAreaProps {
   isOpen: boolean;

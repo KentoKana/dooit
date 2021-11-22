@@ -1,10 +1,10 @@
 import { Box, Flex, Button } from "@chakra-ui/react";
 import Cropper from "react-easy-crop";
-import "./styles.css";
-import { ModalTemplate } from "../ModalTemplate";
+import "../styles.css";
+import { ModalTemplate } from "../../ModalTemplate";
 import { useState } from "react";
 import { Area } from "react-easy-crop/types";
-import { LoadingState } from "../../enums/LoadingState";
+import { LoadingState } from "../../../enums/LoadingState";
 
 interface IMediaCropModalProps {
   isOpen: boolean;
