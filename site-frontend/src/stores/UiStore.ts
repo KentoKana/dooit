@@ -16,7 +16,7 @@ export class UiStore {
 
     readonly userStore: UserStore;
 
-    async apiRequest<TData, TResult = TData>(url: string, options: IApiRequestOptions<TData> = {}): Promise<TResult> {
+    async apiRequest<TData, TResult = TData>(url: string, options: IApiRequestOptions<TData> = {}, isPublicRoute: boolean | undefined = false): Promise<TResult> {
         var decodedHeader = jwt_decode<{
             iss: string,
             aud: string,
@@ -84,7 +84,7 @@ export class UiStore {
             })
         }
 
-        if (decodedHeader.exp < Date.now()) {
+        if (decodedHeader.exp < Date.now() && !isPublicRoute) {
             return auth.currentUser?.getIdToken().then((retrievedToken) => {
                 localStorage.setItem("user-jwt", retrievedToken);
                 this.userStore.isSignedIn = true;
@@ -93,7 +93,7 @@ export class UiStore {
                 return tryFetch();
             });
         } else {
-            if (localStorage.getItem("user-jwt")) {
+            if (localStorage.getItem("user-jwt") && !isPublicRoute) {
                 headers.set("Authorization", `Bearer ${localStorage.getItem("user-jwt")}`)
             }
             return tryFetch();
