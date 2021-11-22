@@ -1,19 +1,26 @@
 import { Flex, Button } from "@chakra-ui/react";
-import { ModalTemplate } from "../../ModalTemplate";
-interface IItemRemovalConfirmationModalProps {
+import { ReactNode } from "react";
+import { ModalTemplate } from "../ModalTemplate";
+interface IActionConfirmationModalProps {
   isOpen: boolean;
   onCancel: () => void;
-  onRemoveConfirm: () => void;
+  onConfirm: () => void;
+  confirmButtonLabel: ReactNode;
+  modalHeading: string;
+  confirmButtonColorScheme?: string;
 }
-export const ItemRemovalConfirmationModal = ({
+export const ActionConfirmationModal = ({
   isOpen,
   onCancel,
-  onRemoveConfirm,
-}: IItemRemovalConfirmationModalProps) => {
+  onConfirm,
+  confirmButtonLabel,
+  modalHeading,
+  confirmButtonColorScheme = "red",
+}: IActionConfirmationModalProps) => {
   return (
     <ModalTemplate
       size="md"
-      heading="Are you sure you want to delete this item?"
+      heading={modalHeading}
       isOpen={isOpen}
       footer={
         <Flex justifyContent="space-between" w="100%">
@@ -28,13 +35,13 @@ export const ItemRemovalConfirmationModal = ({
             Cancel
           </Button>
           <Button
-            colorScheme="red"
+            colorScheme={confirmButtonColorScheme}
             borderRadius="sm"
             onClick={() => {
-              onRemoveConfirm();
+              onConfirm();
             }}
           >
-            Yes, Remove it
+            {confirmButtonLabel}
           </Button>
         </Flex>
       }

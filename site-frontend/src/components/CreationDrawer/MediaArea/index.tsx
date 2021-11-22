@@ -21,7 +21,7 @@ import { LoadingState } from "../../../enums/LoadingState";
 import { MediaCropModal } from "./MediaCropModal";
 import { ItemTextEditor } from "./ItemTextEditor";
 import { AiFillPlusCircle } from "react-icons/ai";
-import { EditButtonPopover } from "./EditButtonPopover";
+import { EditButton } from "./EditButtonPopover";
 import { MediaAreaImageContainer } from "./MediaAreaImageContainer";
 enum EDragState {
   None,
@@ -147,7 +147,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
       watchProjectItems[selectedItemIndex] &&
       watchProjectItems[selectedItemIndex].mediaUrl ? (
         <Box position="relative">
-          <EditButtonPopover
+          <EditButton
             onRemoveImageClick={() => {
               setValue(
                 `projectItems.${selectedItemIndex}.mediaAsFile`,

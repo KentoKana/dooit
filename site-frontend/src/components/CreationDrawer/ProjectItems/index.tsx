@@ -11,10 +11,10 @@ import { IProject } from "../";
 import { useCallback, useEffect, useState } from "react";
 import { MobileMediaAreaDrawer } from "../MediaArea/MobileMediaAreaDrawer";
 import { BreakPoints } from "../../../enums/BreakPoints";
-import { ItemRemovalConfirmationModal } from "./ItemRemovalConfirmationModal";
 import { AddItemButton } from "./AddItemButton";
 import { ProjectItemCard } from "./ProjectItemCard";
 import { ITag } from "../MediaArea/MediaAreaImageContainer";
+import { ActionConfirmationModal } from "../ActionConfirmationModal";
 export interface IProjectItem {
   title: string;
   description: string;
@@ -193,9 +193,11 @@ export const ProjectItems = observer(
                     formHook={formHook}
                     selectedItemIndex={selectedItemIndex}
                   />
-                  <ItemRemovalConfirmationModal
+                  <ActionConfirmationModal
+                    confirmButtonLabel=" Yes, Remove it"
+                    modalHeading="Are you sure you want to delete this item?"
                     onCancel={deleteConfirmationDisclosure.onClose}
-                    onRemoveConfirm={() => {
+                    onConfirm={() => {
                       if (watchProjectItems.length === 1) {
                         remove(selectedItemIndex);
                         insert(selectedItemIndex, {

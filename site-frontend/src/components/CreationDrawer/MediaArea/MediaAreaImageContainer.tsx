@@ -4,11 +4,10 @@ import {
   Image,
   useOutsideClick,
   Flex,
-  Tag,
   Text,
 } from "@chakra-ui/react";
 import "../styles.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AiFillTag } from "react-icons/ai";
 import { UseFormReturn } from "react-hook-form";
 import { IProject } from "../index";
@@ -27,6 +26,7 @@ export interface ITag {
   title: string;
   url?: string;
   originalImageWidth: number;
+  isEditMode: boolean;
 }
 
 export const MediaAreaImageContainer = ({
@@ -35,15 +35,20 @@ export const MediaAreaImageContainer = ({
   formHook,
   selectedItemIndex,
 }: IMediaAreaImageContainerProps) => {
-  const [tagPopover, setTagPopover] = useState<ITag>();
-  const [_, setTags] = useState<ITag[]>([]);
+  const [tagPopover, setTagPopover] = useState<ITag>({
+    xCoord: 0,
+    yCoord: 0,
+    title: "",
+    originalImageWidth: 0,
+    isEditMode: false,
+  });
+  const [tags, setTags] = useState<ITag[]>([]);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [isTagMode, setIsTagMode] = useState(false);
   useOutsideClick({
     ref: imageRef,
     handler: () => {
       if (!popoverOpen) {
-        setTagPopover(undefined);
         setPopoverOpen(false);
       }
     },
@@ -62,11 +67,11 @@ export const MediaAreaImageContainer = ({
           title: tagPopover?.title!,
           url: tagPopover?.url,
           originalImageWidth: tagPopover?.originalImageWidth!,
+          isEditMode: false,
         }
       );
       return newTagsState;
     });
-    setTagPopover(undefined);
     setPopoverOpen(false);
   };
   const handleImageClick = (
@@ -84,8 +89,42 @@ export const MediaAreaImageContainer = ({
       title: "",
       url: "",
       originalImageWidth: imageRef!.current!.offsetWidth,
+      isEditMode: false,
     });
   };
+
+  const handleTagEdit = (mode: "edit" | "delete", selectedTag: ITag) => {
+    if (mode === "edit") {
+      setTags((prev) => {
+        const newTags = prev.map((tag) => {
+          if (
+            selectedTag.xCoord === tag.xCoord &&
+            selectedTag.yCoord === tag.yCoord
+          ) {
+            tag = selectedTag;
+          }
+          return tag;
+        });
+        return [...newTags];
+      });
+    } else {
+      setTags((prev) => {
+        return prev.reduce((acc: ITag[], tag) => {
+          if (
+            selectedTag.xCoord !== tag.xCoord &&
+            selectedTag.yCoord !== tag.yCoord
+          ) {
+            acc.push(tag);
+          }
+          return acc;
+        }, []);
+      });
+    }
+  };
+
+  useEffect(() => {
+    formHook.setValue(`projectItems.${selectedItemIndex}.tags`, tags);
+  }, [tags, formHook, selectedItemIndex]);
 
   return (
     <>
@@ -136,7 +175,6 @@ export const MediaAreaImageContainer = ({
             isOpen={popoverOpen}
             onClose={() => {
               setPopoverOpen(false);
-              setTagPopover(undefined);
             }}
             onImageClick={(newTag) => {
               setPopoverOpen(true);
@@ -165,12 +203,20 @@ export const MediaAreaImageContainer = ({
               });
             }}
             onAddTag={handleAddTag}
+            onEditTag={(selectedTag) => {
+              handleTagEdit("edit", selectedTag);
+              setPopoverOpen(false);
+            }}
+            onDeleteTag={(selectedTag) => {
+              handleTagEdit("delete", selectedTag);
+              setPopoverOpen(false);
+            }}
           />
         )}
       </Box>
       <Flex
-        mt={3}
-        justifyContent="flex-end"
+        p={[1, 1, 0]}
+        justifyContent="space-between"
         alignItems="flex-start"
         width="100%"
       >
@@ -180,15 +226,21 @@ export const MediaAreaImageContainer = ({
             ?.map((tag, index) => {
               return (
                 <Button
-                  variant="unstyled"
+                  mr={2}
+                  mt={2}
+                  display="inline-block"
+                  size="sm"
+                  colorScheme="purple"
+                  key={tag.xCoord + " " + tag.yCoord}
                   onClick={() => {
                     setPopoverOpen(true);
-                    setTagPopover(tag);
+                    setTagPopover({ ...tag, isEditMode: true });
                   }}
+                  maxWidth="150px"
+                  overflow="hidden"
+                  textOverflow="ellipsis"
                 >
-                  <Tag key={index} m={1} colorScheme="cyan" size="lg">
-                    {tag.title}
-                  </Tag>
+                  {tag.title}
                 </Button>
               );
             })}
@@ -196,7 +248,7 @@ export const MediaAreaImageContainer = ({
         <Box>
           <Button
             borderRadius="sm"
-            mt={1}
+            mt={2}
             size="sm"
             colorScheme={isTagMode ? "primary" : "yellow"}
             onClick={() => {

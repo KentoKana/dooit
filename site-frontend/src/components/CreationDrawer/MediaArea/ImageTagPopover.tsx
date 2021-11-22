@@ -16,6 +16,7 @@ import { UseFormReturn } from "react-hook-form";
 import { IProject } from "../index";
 import { isNullOrUndefined } from "../../../utils";
 import { ITag } from "./MediaAreaImageContainer";
+import { DebounceInput } from "react-debounce-input";
 
 interface IMediaAreaImageContainerProps {
   currentTagPopoverState?: ITag;
@@ -27,6 +28,8 @@ interface IMediaAreaImageContainerProps {
   onTitleChange: (newTitle: string) => void;
   onUrlChange: (newUrl: string) => void;
   onAddTag: () => void;
+  onEditTag: (selectedTag: ITag) => void;
+  onDeleteTag: (selectedTag: ITag) => void;
 }
 
 export const ImageTagPopover = ({
@@ -39,6 +42,8 @@ export const ImageTagPopover = ({
   onTitleChange,
   onUrlChange,
   onAddTag,
+  onEditTag,
+  onDeleteTag,
 }: IMediaAreaImageContainerProps) => {
   return (
     <>
@@ -48,7 +53,7 @@ export const ImageTagPopover = ({
         onClose={onClose}
         placement="bottom"
       >
-        {currentTagPopoverState && (
+        {isOpen && (
           <PopoverTrigger>
             <Box
               zIndex={3}
@@ -71,7 +76,10 @@ export const ImageTagPopover = ({
               return (
                 <Box
                   onClick={() => {
-                    onImageClick(tag);
+                    onImageClick({
+                      ...tag,
+                      isEditMode: true,
+                    });
                   }}
                   key={index}
                   zIndex={3}
@@ -96,13 +104,17 @@ export const ImageTagPopover = ({
               formLabel="Title"
               formFor="tagTitle"
               formField={
-                <Input
-                  value={currentTagPopoverState?.title}
+                <DebounceInput
+                  className="chakra-input css-k72x6j"
+                  type="text"
+                  value={currentTagPopoverState?.title ?? ""}
                   id="tagTitle"
                   placeholder="E.g. '3x2 Hardwood Board'..."
-                  borderRadius="sm"
                   onChange={(e) => {
                     onTitleChange(e.target.value);
+                  }}
+                  onKeyPress={(e: React.KeyboardEvent) => {
+                    if (e.key === "Enter") e.preventDefault();
                   }}
                 />
               }
@@ -112,30 +124,58 @@ export const ImageTagPopover = ({
               formLabel="URL (Optional)"
               formFor="url"
               formField={
-                <Input
-                  value={currentTagPopoverState?.url}
+                <DebounceInput
+                  className="chakra-input css-k72x6j"
+                  type="text"
+                  value={currentTagPopoverState?.url ?? ""}
                   id="url"
                   placeholder="https://"
-                  borderRadius="sm"
                   onChange={(e) => {
                     onUrlChange(e.target.value);
+                  }}
+                  onKeyPress={(e: React.KeyboardEvent) => {
+                    if (e.key === "Enter") e.preventDefault();
                   }}
                 />
               }
             />
+            <Input type="hidden" borderRadius="sm" />
           </PopoverBody>
           <PopoverFooter d="flex" justifyContent="flex-end">
             <ButtonGroup size="sm">
               <Button borderRadius="sm" onClick={onClose}>
                 Cancel
               </Button>
-              <Button
-                colorScheme="primary"
-                borderRadius="sm"
-                onClick={onAddTag}
-              >
-                Add Tag
-              </Button>
+              {currentTagPopoverState?.isEditMode ? (
+                <>
+                  <Button
+                    colorScheme="red"
+                    borderRadius="sm"
+                    onClick={() => {
+                      onDeleteTag(currentTagPopoverState);
+                    }}
+                  >
+                    Delete
+                  </Button>
+                  <Button
+                    colorScheme="primary"
+                    borderRadius="sm"
+                    onClick={() => {
+                      onEditTag(currentTagPopoverState);
+                    }}
+                  >
+                    Edit Tag
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  colorScheme="primary"
+                  borderRadius="sm"
+                  onClick={onAddTag}
+                >
+                  Add Tag
+                </Button>
+              )}
             </ButtonGroup>
           </PopoverFooter>
         </PopoverContent>
