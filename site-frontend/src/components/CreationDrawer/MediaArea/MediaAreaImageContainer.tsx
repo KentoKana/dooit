@@ -7,7 +7,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import "../styles.css";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { AiFillTag } from "react-icons/ai";
 import { UseFormReturn } from "react-hook-form";
 import { IProject } from "../index";

@@ -1,4 +1,11 @@
-import { Button, Flex, Spinner, useToast, Box } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  Spinner,
+  useToast,
+  Box,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -11,6 +18,7 @@ import { LoadingState } from "../../enums/LoadingState";
 import { useGetProjectCreationOptions } from "../../hooks/useGetProjectCreationOptions";
 import { UseStores } from "../../stores/StoreContexts";
 import { DrawerTemplate } from "../DrawerTemplate";
+import { ActionConfirmationModal } from "./ActionConfirmationModal";
 import { DrawerLayout } from "./DrawerLayout";
 import { MediaArea } from "./MediaArea";
 import { IProjectItem } from "./ProjectItems";
@@ -51,6 +59,7 @@ export const CreationDrawer = observer(
     const { handleSubmit, reset } = formHook;
     const [selectedItemIndex, setSelectedItemIndex] = useState(0);
     const useProjectCreationOptions = useGetProjectCreationOptions();
+    const cancelConfirmDisclosure = useDisclosure();
 
     //#region Mutation handlers
     const onError = (err: HttpError) => {
@@ -152,8 +161,7 @@ export const CreationDrawer = observer(
                 variant="outline"
                 mr={3}
                 onClick={() => {
-                  reset();
-                  onClose();
+                  cancelConfirmDisclosure.onOpen();
                 }}
               >
                 Cancel
@@ -192,6 +200,20 @@ export const CreationDrawer = observer(
         ) : (
           <></>
         )}
+        <ActionConfirmationModal
+          isOpen={cancelConfirmDisclosure.isOpen}
+          onCancel={() => {
+            cancelConfirmDisclosure.onClose();
+          }}
+          onConfirm={() => {
+            reset();
+            onClose();
+            cancelConfirmDisclosure.onClose();
+          }}
+          modalHeading="All unsaved work will be lost. Are you sure?"
+          confirmButtonColorScheme="red"
+          confirmButtonLabel="Yes"
+        />
       </DrawerTemplate>
     );
   }
