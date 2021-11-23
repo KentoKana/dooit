@@ -17,6 +17,8 @@ import { IProject } from "../index";
 import { isNullOrUndefined } from "../../../utils";
 import { ITag } from "./MediaAreaImageContainer";
 import { DebounceInput } from "react-debounce-input";
+import { useWindowSize } from "../../../hooks/useWindowSize";
+import { useLayoutEffect, useState } from "react";
 
 interface IMediaAreaImageContainerProps {
   currentTagPopoverState?: ITag;
@@ -30,9 +32,11 @@ interface IMediaAreaImageContainerProps {
   onAddTag: () => void;
   onEditTag: (selectedTag: ITag) => void;
   onDeleteTag: (selectedTag: ITag) => void;
+  imageRef: React.RefObject<HTMLImageElement>;
 }
 
 export const ImageTagPopover = ({
+  imageRef,
   currentTagPopoverState,
   formHook,
   selectedItemIndex,
@@ -45,6 +49,19 @@ export const ImageTagPopover = ({
   onEditTag,
   onDeleteTag,
 }: IMediaAreaImageContainerProps) => {
+  const [width, height] = useWindowSize();
+  const [scaleFactor, setScaleFactor] = useState(
+    imageRef!.current!.offsetWidth! /
+      currentTagPopoverState!.originalImageWidth!
+  );
+
+  useLayoutEffect(() => {
+    setScaleFactor(
+      imageRef!.current!.offsetWidth! /
+        currentTagPopoverState!.originalImageWidth!
+    );
+  }, [width, height, imageRef, currentTagPopoverState]);
+
   return (
     <>
       <Popover
@@ -63,8 +80,8 @@ export const ImageTagPopover = ({
               borderRadius="50%"
               border="5px solid"
               borderColor="primary"
-              top={currentTagPopoverState?.yCoord ?? 0}
-              left={currentTagPopoverState?.xCoord ?? 0}
+              top={currentTagPopoverState!.yCoord! * scaleFactor ?? 0}
+              left={currentTagPopoverState!.xCoord! * scaleFactor ?? 0}
               background="#fff"
             ></Box>
           </PopoverTrigger>
@@ -87,8 +104,8 @@ export const ImageTagPopover = ({
                   height="20px"
                   width="20px"
                   borderRadius="50%"
-                  top={tag?.yCoord ?? 0}
-                  left={tag?.xCoord ?? 0}
+                  top={tag?.yCoord * scaleFactor ?? 0}
+                  left={tag?.xCoord * scaleFactor ?? 0}
                   background="#fff"
                 ></Box>
               );

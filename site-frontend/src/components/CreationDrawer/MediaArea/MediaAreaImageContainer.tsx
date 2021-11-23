@@ -7,7 +7,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import "../styles.css";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AiFillTag } from "react-icons/ai";
 import { UseFormReturn } from "react-hook-form";
 import { IProject } from "../index";
@@ -175,6 +175,7 @@ export const MediaAreaImageContainer = ({
         </Box>
         {isTagMode && (
           <ImageTagPopover
+            imageRef={imageRef}
             currentTagPopoverState={tagPopover}
             formHook={formHook}
             selectedItemIndex={selectedItemIndex}

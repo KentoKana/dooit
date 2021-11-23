@@ -83,7 +83,8 @@ export class UiStore {
                 return res.json();
             })
         }
-        if (decodedHeader.exp > Date.now()) {
+
+        if (decodedHeader.exp * 1000 < Date.now()) {
             return auth.currentUser?.getIdToken().then((retrievedToken) => {
                 localStorage.setItem("user-jwt", retrievedToken);
                 this.userStore.isSignedIn = true;
