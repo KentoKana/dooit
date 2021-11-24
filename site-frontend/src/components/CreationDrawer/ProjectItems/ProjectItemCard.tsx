@@ -63,6 +63,10 @@ export const ProjectItemCard = ({
         backgroundColor={
           selectedItemIndex === currentItemIndex ? "cyan.100" : "grey.50"
         }
+        _hover={{
+          width: ["150px", "150px", "170px"],
+          height: ["150px", "150px", "170px"],
+        }}
       >
         <Box w="10%">
           <Flex
@@ -110,6 +114,7 @@ export const ProjectItemCard = ({
                     <Image
                       borderRadius="sm"
                       boxSize="100px"
+                      transition="0.2s ease all"
                       objectFit="cover"
                       src={mediaPreviewUrl}
                       alt=""

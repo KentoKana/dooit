@@ -19,8 +19,8 @@ export const EditButton = ({ onRemoveImageClick }: IEditButtonProps) => {
         m="5px"
         _hover={{ opacity: 1 }}
         className="mediabox"
-        width="60px"
-        height="60px"
+        width="40px"
+        height="40px"
         title="Delete media"
         icon={<DeleteIcon />}
         aria-label="Edit media"

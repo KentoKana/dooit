@@ -5,6 +5,7 @@ import {
   useOutsideClick,
   Flex,
   Text,
+  IconButton,
 } from "@chakra-ui/react";
 import "../styles.css";
 import { useEffect, useState } from "react";
@@ -12,6 +13,7 @@ import { AiFillTag } from "react-icons/ai";
 import { UseFormReturn } from "react-hook-form";
 import { IProject } from "../index";
 import { ImageTagPopover } from "./ImageTagPopover";
+import { CloseIcon } from "@chakra-ui/icons";
 
 interface IMediaAreaImageContainerProps {
   mediaUrl: string;
@@ -173,53 +175,52 @@ export const MediaAreaImageContainer = ({
             </Text>
           )}
         </Box>
-        {isTagMode && (
-          <ImageTagPopover
-            imageRef={imageRef}
-            currentTagPopoverState={tagPopover}
-            formHook={formHook}
-            selectedItemIndex={selectedItemIndex}
-            isOpen={popoverOpen}
-            onClose={() => {
-              setPopoverOpen(false);
-            }}
-            onImageClick={(newTag) => {
-              setPopoverOpen(true);
-              setTagPopover(newTag);
-            }}
-            onTitleChange={(newTitle) => {
-              setTagPopover((prev) => {
-                if (prev) {
-                  return {
-                    ...prev,
-                    title: newTitle,
-                  };
-                }
-                return prev;
-              });
-            }}
-            onUrlChange={(newUrl) => {
-              setTagPopover((prev) => {
-                if (prev) {
-                  return {
-                    ...prev,
-                    url: newUrl,
-                  };
-                }
-                return prev;
-              });
-            }}
-            onAddTag={handleAddTag}
-            onEditTag={(selectedTag) => {
-              handleTagEdit("edit", selectedTag);
-              setPopoverOpen(false);
-            }}
-            onDeleteTag={(selectedTag) => {
-              handleTagEdit("delete", selectedTag);
-              setPopoverOpen(false);
-            }}
-          />
-        )}
+        <ImageTagPopover
+          readonly={!isTagMode}
+          imageRef={imageRef}
+          currentTagPopoverState={tagPopover}
+          formHook={formHook}
+          selectedItemIndex={selectedItemIndex}
+          isOpen={popoverOpen}
+          onClose={() => {
+            setPopoverOpen(false);
+          }}
+          onImageClick={(newTag) => {
+            setPopoverOpen(true);
+            setTagPopover(newTag);
+          }}
+          onTitleChange={(newTitle) => {
+            setTagPopover((prev) => {
+              if (prev) {
+                return {
+                  ...prev,
+                  title: newTitle,
+                };
+              }
+              return prev;
+            });
+          }}
+          onUrlChange={(newUrl) => {
+            setTagPopover((prev) => {
+              if (prev) {
+                return {
+                  ...prev,
+                  url: newUrl,
+                };
+              }
+              return prev;
+            });
+          }}
+          onAddTag={handleAddTag}
+          onEditTag={(selectedTag) => {
+            handleTagEdit("edit", selectedTag);
+            setPopoverOpen(false);
+          }}
+          onDeleteTag={(selectedTag) => {
+            handleTagEdit("delete", selectedTag);
+            setPopoverOpen(false);
+          }}
+        />
       </Box>
       <Flex
         p={[1, 1, 0]}
@@ -232,23 +233,44 @@ export const MediaAreaImageContainer = ({
             .getValues(`projectItems.${selectedItemIndex}.tags`)
             ?.map((tag) => {
               return (
-                <Button
+                <Box
+                  key={tag.xCoord + " " + tag.yCoord}
+                  display="inline-flex"
+                  alignItems="center"
                   mr={2}
                   mt={2}
-                  display="inline-block"
-                  size="sm"
-                  colorScheme="purple"
-                  key={tag.xCoord + " " + tag.yCoord}
-                  onClick={() => {
-                    setPopoverOpen(true);
-                    setTagPopover({ ...tag, isEditMode: true });
-                  }}
-                  maxWidth="150px"
-                  overflow="hidden"
-                  textOverflow="ellipsis"
                 >
-                  {tag.title}
-                </Button>
+                  <Button
+                    title={isTagMode ? "Edit tag" : "View tag"}
+                    borderTopRightRadius={0}
+                    borderBottomRightRadius={0}
+                    display="inline-block"
+                    size="sm"
+                    colorScheme="purple"
+                    onClick={() => {
+                      setPopoverOpen(true);
+                      setTagPopover({ ...tag, isEditMode: true });
+                    }}
+                    maxWidth="150px"
+                    overflow="hidden"
+                    textOverflow="ellipsis"
+                  >
+                    {tag.title}
+                  </Button>
+                  <IconButton
+                    borderTopLeftRadius={0}
+                    borderBottomLeftRadius={0}
+                    colorScheme="purple"
+                    size="sm"
+                    icon={<CloseIcon fontSize="10px" />}
+                    aria-label="Remove tag"
+                    title="Remove tag"
+                    onClick={() => {
+                      handleTagEdit("delete", tag);
+                      setPopoverOpen(false);
+                    }}
+                  />
+                </Box>
               );
             })}
         </Box>
@@ -257,7 +279,7 @@ export const MediaAreaImageContainer = ({
             borderRadius="sm"
             mt={2}
             size="sm"
-            colorScheme={isTagMode ? "primary" : "yellow"}
+            colorScheme={isTagMode ? "blue" : "yellow"}
             onClick={() => {
               setIsTagMode(!isTagMode);
             }}
@@ -269,7 +291,7 @@ export const MediaAreaImageContainer = ({
                 <Box as="span" mr={1} mt={1}>
                   <AiFillTag />
                 </Box>{" "}
-                Tag Image
+                Add/Edit Tags
               </Text>
             )}
           </Button>
