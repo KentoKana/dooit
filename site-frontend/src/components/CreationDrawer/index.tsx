@@ -161,7 +161,14 @@ export const CreationDrawer = observer(
                 variant="outline"
                 mr={3}
                 onClick={() => {
-                  cancelConfirmDisclosure.onOpen();
+                  if (
+                    JSON.stringify(defaultValues) ===
+                    JSON.stringify(formHook.getValues())
+                  ) {
+                    onClose();
+                  } else {
+                    cancelConfirmDisclosure.onOpen();
+                  }
                 }}
               >
                 Cancel
