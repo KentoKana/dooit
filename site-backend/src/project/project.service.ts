@@ -11,6 +11,8 @@ import * as admin from "firebase-admin"
 import * as fs from "fs-extra"
 import { FlairRepository } from 'src/repository/flairRepository.repository';
 import { ProjectCreateOptionsDto } from './dto/ProjectCreateOptionsDto.dto';
+import { ProjectItemCreateDto } from './dto/ProjectItemCreateDto.dto';
+import { ImageTag } from 'src/models/imageTag.entity';
 
 @Injectable()
 export class ProjectService {
@@ -82,13 +84,26 @@ export class ProjectService {
         })
         //@ts-ignore
         // Must parse item, as the retrieved dto content type is multipart/form-data
-        const newProjectItems = JSON.parse(dto.projectItems).map((item) => {
+        const newProjectItems = JSON.parse(dto.projectItems).map((item: ProjectItemCreateDto) => {
             const fileForProjectItem = fileNames[item.order];
             let newItem = new ProjectItem();
             newItem.heading = item.heading;
             newItem.description = item.description;
             newItem.dateCreated = new Date()
             newItem.order = item.order;
+            const newImageTags = item.imageTags.map((tag) => {
+                let newTag = new ImageTag();
+                newTag.width = tag.width;
+                newTag.title = tag.title;
+                newTag.url = tag.url;
+                newTag.xCoordinate = tag.xCoordinate;
+                newTag.xCoordinate = tag.xCoordinate;
+                newTag.yCoordinate = tag.yCoordinate;
+                newTag.dateCreated = new Date();
+                return newTag;
+            });
+            newItem.imageTags = newImageTags;
+
             if (fileForProjectItem) {
                 const fileUrl = "https://firebasestorage.googleapis.com/v0/b/" + bucket.name + "/o/" + encodeURIComponent(fileForProjectItem.fileName) + "?alt=media"
                 newItem.imageUrl = fileUrl;
@@ -96,6 +111,9 @@ export class ProjectService {
             }
             return newItem;
         })
+
+        let newImageTags: ImageTag[] = [];
+
 
         // Assign data to new project 
         newProject.name = dto.name;

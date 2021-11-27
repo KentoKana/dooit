@@ -139,6 +139,7 @@ export const ProjectItems = observer(
                                         insert(index, {
                                           title: "",
                                           description: "",
+                                          tags: [],
                                         });
                                       } else {
                                         remove(index);

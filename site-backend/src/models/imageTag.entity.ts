@@ -1,10 +1,16 @@
 import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { ProjectItem } from './projectItem.entity';
 
-@Entity({ name: "imageTags" })
+@Entity({ name: "image_tags" })
 export class ImageTag {
     @PrimaryGeneratedColumn()
     id: string;
+
+    @Column()
+    title: string;
+
+    @Column()
+    url?: string;
 
     @Column()
     width?: number;

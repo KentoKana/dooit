@@ -66,7 +66,6 @@ export const ImageTagPopover = ({
   const currentTagScaleFactor =
     (imageRef.current?.offsetWidth ?? 0) /
     (currentTagPopoverState?.originalImageSize ?? 1);
-  console.log(formHook.getValues(`projectItems.${selectedItemIndex}`));
 
   return (
     <>
@@ -92,7 +91,7 @@ export const ImageTagPopover = ({
             ></Box>
           </PopoverTrigger>
         )}
-        {tags.map((tag, index) => {
+        {tags?.map((tag, index) => {
           const scaleFactor =
             (imageRef.current?.offsetWidth ?? 0) / (tag.originalImageSize ?? 1);
           return (

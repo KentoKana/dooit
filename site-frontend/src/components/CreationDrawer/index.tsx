@@ -131,6 +131,15 @@ export const CreationDrawer = observer(
               imageAlt: "",
               description: item.description,
               order: index,
+              imageTags: item.tags.map((tag) => {
+                return {
+                  title: tag.title,
+                  url: tag.url,
+                  width: tag.originalImageSize,
+                  xCoordinate: tag.xCoord,
+                  yCoordinate: tag.yCoord,
+                };
+              }),
             };
           }),
         });

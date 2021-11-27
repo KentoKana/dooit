@@ -64,8 +64,7 @@ export const ProjectItemCard = ({
           selectedItemIndex === currentItemIndex ? "cyan.100" : "grey.50"
         }
         _hover={{
-          width: ["150px", "150px", "170px"],
-          height: ["150px", "150px", "170px"],
+          backgroundColor: "cyan.100",
         }}
       >
         <Box w="10%">

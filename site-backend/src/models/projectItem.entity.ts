@@ -25,7 +25,7 @@ export class ProjectItem {
     @ManyToOne(() => Project, project => project.projectItems, { onDelete: "CASCADE" })
     project: Project;
 
-    @OneToMany(() => ImageTag, tag => tag.projectItem, { onDelete: "CASCADE" })
+    @OneToMany(() => ImageTag, tag => tag.projectItem, { cascade: true })
     imageTags: ImageTag[]
 
     @CreateDateColumn()
