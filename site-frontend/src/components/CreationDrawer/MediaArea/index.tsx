@@ -69,6 +69,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
       setDropzoneDragState(EDragState.None);
       setMediaLoadingState(LoadingState.Loading);
       setValue(`projectItems.${selectedItemIndex}.mediaAsFile`, files[0]);
+      setValue(`projectItems.${selectedItemIndex}.tags`, []);
       setValue(
         `projectItems.${selectedItemIndex}.mediaUrl`,
         URL.createObjectURL(files[0])
@@ -252,6 +253,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
                 undefined
               );
               setValue(`projectItems.${selectedItemIndex}.mediaUrl`, undefined);
+              setValue(`projectItems.${selectedItemIndex}.tags`, []);
             }
             cropModalDisclosure.onClose();
           }}

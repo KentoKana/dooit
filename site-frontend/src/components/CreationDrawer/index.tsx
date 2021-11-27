@@ -49,6 +49,7 @@ export const CreationDrawer = observer(
             description: "",
             order: 0,
             tags: [],
+            originalImageWidth: 0,
           },
         ],
       };

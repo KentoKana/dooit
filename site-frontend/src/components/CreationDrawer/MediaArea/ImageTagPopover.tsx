@@ -19,8 +19,8 @@ import { IProject } from "../index";
 import { isNullOrUndefined } from "../../../utils";
 import { ITag } from "./MediaAreaImageContainer";
 import { DebounceInput } from "react-debounce-input";
+import { useRef, useEffect } from "react";
 import { useWindowSize } from "../../../hooks/useWindowSize";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 interface IMediaAreaImageContainerProps {
   currentTagPopoverState?: ITag;
@@ -54,26 +54,19 @@ export const ImageTagPopover = ({
   readonly,
 }: IMediaAreaImageContainerProps) => {
   const [width, height] = useWindowSize();
-  const [scaleFactor, setScaleFactor] = useState(
-    imageRef?.current?.offsetWidth ??
-      0 / currentTagPopoverState!.originalImageWidth!
-  );
-
   // Close popover if selected item changes.
   const selectedItemIndexRef = useRef(selectedItemIndex);
   useEffect(() => {
     if (selectedItemIndexRef.current !== selectedItemIndex) {
-      onClose();
       selectedItemIndexRef.current = selectedItemIndex;
+      onClose();
     }
-  }, [selectedItemIndex, onClose]);
-
-  useLayoutEffect(() => {
-    setScaleFactor(
-      imageRef!.current!.offsetWidth! /
-        currentTagPopoverState!.originalImageWidth!
-    );
-  }, [width, height, imageRef, currentTagPopoverState]);
+  }, [width, height, selectedItemIndex, onClose]);
+  const tags = formHook.getValues(`projectItems.${selectedItemIndex}.tags`);
+  const currentTagScaleFactor =
+    (imageRef.current?.offsetWidth ?? 0) /
+    (currentTagPopoverState?.originalImageSize ?? 1);
+  console.log(formHook.getValues(`projectItems.${selectedItemIndex}`));
 
   return (
     <>
@@ -93,39 +86,38 @@ export const ImageTagPopover = ({
               borderRadius="50%"
               border="5px solid"
               borderColor="primary"
-              top={currentTagPopoverState!.yCoord! * scaleFactor ?? 0}
-              left={currentTagPopoverState!.xCoord! * scaleFactor ?? 0}
+              top={currentTagPopoverState!.yCoord * currentTagScaleFactor}
+              left={currentTagPopoverState!.xCoord * currentTagScaleFactor}
               background="#fff"
             ></Box>
           </PopoverTrigger>
         )}
-        {formHook?.getValues(`projectItems.${selectedItemIndex}.tags`) &&
-          formHook
-            .getValues(`projectItems.${selectedItemIndex}.tags`)!
-            .map((tag, index) => {
-              return (
-                <Box
-                  onClick={() => {
-                    onImageClick({
-                      ...tag,
-                      isEditMode: true,
-                    });
-                  }}
-                  cursor="pointer"
-                  key={index}
-                  zIndex={3}
-                  position="absolute"
-                  height="20px"
-                  width="20px"
-                  borderRadius="50%"
-                  border="5px solid"
-                  borderColor="primary"
-                  top={tag?.yCoord * scaleFactor ?? 0}
-                  left={tag?.xCoord * scaleFactor ?? 0}
-                  background="#fff"
-                ></Box>
-              );
-            })}
+        {tags.map((tag, index) => {
+          const scaleFactor =
+            (imageRef.current?.offsetWidth ?? 0) / (tag.originalImageSize ?? 1);
+          return (
+            <Box
+              onClick={() => {
+                onImageClick({
+                  ...tag,
+                  isEditMode: true,
+                });
+              }}
+              cursor="pointer"
+              key={index}
+              zIndex={3}
+              position="absolute"
+              height="20px"
+              width="20px"
+              borderRadius="50%"
+              border="5px solid"
+              borderColor="primary"
+              top={tag?.yCoord * scaleFactor}
+              left={tag?.xCoord * scaleFactor}
+              background="#fff"
+            ></Box>
+          );
+        })}
         <PopoverContent width="100%" maxWidth={readonly ? "200px" : undefined}>
           <PopoverArrow />
           <PopoverBody>

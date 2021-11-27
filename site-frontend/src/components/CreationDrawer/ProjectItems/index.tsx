@@ -23,7 +23,7 @@ export interface IProjectItem {
   mediaAsFile?: File;
   order: number;
   progress?: number;
-  tags?: ITag[];
+  tags: ITag[];
 }
 
 interface IProjectItemProps {
@@ -121,6 +121,7 @@ export const ProjectItems = observer(
                                     insert(index + 1, {
                                       title: "",
                                       description: "",
+                                      tags: [],
                                     });
                                     handleItemSelect(index + 1);
                                     if (displayMobileMediaAreaDrawer) {
