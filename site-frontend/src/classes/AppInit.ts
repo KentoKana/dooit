@@ -13,21 +13,21 @@ export class AppInit {
     private _uiStore: UiStore;
 
     async init(onLoad: (loaded: boolean) => void) {
-        await this.getPersistedUser();
-        onLoad(true);
+        await this.getPersistedUser()?.then(() => {
+            onLoad(true);
+        });
     }
 
-    private getPersistedUser() {
+    private async getPersistedUser() {
         const token = localStorage.getItem("user-jwt")
         if (token) {
             this._userStore.isSignedIn = true;
-            return this._uiStore
+            const data = await this._uiStore
                 .apiRequest<UserGetDto>(AuthRoute.GetUser, {
                     method: "GET",
-                })
-                .then((data) => {
-                    this._userStore.user = data;
-                })
+                });
+            return this._userStore.user = data;
         }
+        return Promise.resolve();
     }
 }
