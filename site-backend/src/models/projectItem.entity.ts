@@ -10,10 +10,10 @@ export class ProjectItem {
     @Column({ length: 500 })
     heading?: string;
 
-    @Column()
+    @Column({ type: "text" })
     imageUrl?: string;
 
-    @Column()
+    @Column({ length: 400 })
     imageAlt?: string;
 
     @Column()

@@ -8,11 +8,14 @@ export class Project {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ length: 500 })
+    @Column({ length: 200 })
     name: string;
 
     @Column()
     flairId: number;
+
+    @Column({ length: 800 })
+    description: string;
 
     @ManyToOne(() => User, user => user.project, { onDelete: "CASCADE" })
     user: User;

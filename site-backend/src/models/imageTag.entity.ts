@@ -6,10 +6,10 @@ export class ImageTag {
     @PrimaryGeneratedColumn()
     id: string;
 
-    @Column()
+    @Column({ length: 200 })
     title: string;
 
-    @Column()
+    @Column({ type: "text" })
     url?: string;
 
     @Column()

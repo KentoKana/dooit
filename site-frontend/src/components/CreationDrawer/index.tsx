@@ -26,6 +26,7 @@ import { Sidebar } from "./Sidebar";
 
 export interface IProject {
   name: string;
+  projectDescription: string;
   flair?: string;
   projectItems: IProjectItem[];
 }
@@ -40,9 +41,10 @@ export const CreationDrawer = observer(
   ({ isOpen, onClose, onProjectCreation }: ICreationDrawerProps) => {
     const { userStore, uiStore } = UseStores();
     const toast = useToast();
-    const defaultValues = useMemo(() => {
+    const defaultValues: IProject = useMemo(() => {
       return {
         name: "",
+        projectDescription: "",
         projectItems: [
           {
             title: "",

@@ -97,7 +97,6 @@ export class ProjectService {
                 newTag.title = tag.title;
                 newTag.url = tag.url;
                 newTag.xCoordinate = tag.xCoordinate;
-                newTag.xCoordinate = tag.xCoordinate;
                 newTag.yCoordinate = tag.yCoordinate;
                 newTag.dateCreated = new Date();
                 return newTag;
@@ -111,9 +110,6 @@ export class ProjectService {
             }
             return newItem;
         })
-
-        let newImageTags: ImageTag[] = [];
-
 
         // Assign data to new project 
         newProject.name = dto.name;
@@ -140,7 +136,7 @@ export class ProjectService {
                     imageUrl: item.imageUrl,
                     imageAlt: item.imageAlt,
                     description: item.description,
-                    order: item.order
+                    order: item.order,
                 }
             })
         }

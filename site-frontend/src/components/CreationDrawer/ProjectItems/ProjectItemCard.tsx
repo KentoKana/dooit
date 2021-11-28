@@ -56,8 +56,8 @@ export const ProjectItemCard = ({
       />
       <Flex
         color="grey.700"
-        width={["150px", "150px", "180px"]}
-        height={["150px", "150px", "180px"]}
+        width={"150px"}
+        height={"150px"}
         transition="0.2s ease all"
         borderRadius="sm"
         backgroundColor={
@@ -112,7 +112,10 @@ export const ProjectItemCard = ({
                   {mediaPreviewUrl && (
                     <Image
                       borderRadius="sm"
-                      boxSize="100px"
+                      boxSize="110px"
+                      _hover={{
+                        boxSize: "115px",
+                      }}
                       transition="0.2s ease all"
                       objectFit="cover"
                       src={mediaPreviewUrl}
@@ -135,7 +138,7 @@ export const ProjectItemCard = ({
                         projectItemsState[currentItemIndex].description
                           ? truncateText(
                               projectItemsState[currentItemIndex].description,
-                              mediaPreviewUrl ? 60 : 100
+                              60
                             )
                           : ""}
                       </Text>

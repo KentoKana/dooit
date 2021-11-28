@@ -1,5 +1,7 @@
 import { Input } from "@chakra-ui/input";
 import { Box } from "@chakra-ui/layout";
+import { Textarea } from "@chakra-ui/textarea";
+import { DebounceInput } from "react-debounce-input";
 import { UseFormReturn } from "react-hook-form";
 import { IProject } from "..";
 import { ProjectCreateOptionsDto } from "../../../Dtos/ProjectCreateOptionsDto.dto";
@@ -21,6 +23,7 @@ export const Sidebar = ({
     register,
     formState: { errors },
   } = formHook;
+
   return (
     <Box>
       <Box width="100%" mr={["40px"]}>
@@ -30,14 +33,19 @@ export const Sidebar = ({
             formLabel="Project Name"
             formFor={"name"}
             isInvalid={errors.name ? true : false}
+            maxLengthDisplay={{
+              currentLengthCount: formHook.watch("name").length,
+              maxLength: 150,
+            }}
             formField={
               <Input
+                maxLength={150}
                 color="grey.700"
                 background="#fff"
                 borderRadius="sm"
                 id="name"
                 type="text"
-                placeholder="Project Name"
+                placeholder="Name your project with something catchy!"
                 {...register("name", {
                   required: "Please enter a project name",
                 })}
@@ -49,10 +57,42 @@ export const Sidebar = ({
             flairs={projectCreationOptions.flairs}
             formHook={formHook}
           />
+          <FormElement
+            isRequired
+            formLabel="Description"
+            formFor={"projectDescription"}
+            isInvalid={errors.projectDescription ? true : false}
+            maxLengthDisplay={{
+              currentLengthCount: formHook.watch("projectDescription").length,
+              maxLength: 800,
+            }}
+            formField={
+              <>
+                <DebounceInput
+                  required
+                  value={formHook.watch("projectDescription")}
+                  className="chakra-textarea css-ry2iob"
+                  element="textarea"
+                  id="projectDescription"
+                  placeholder="E.g. I built a desk with recycled cedar wood..."
+                  {...register("projectDescription", {
+                    required: "Please enter a project description",
+                  })}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    formHook.setValue(`projectDescription`, e.target.value);
+                  }}
+                  maxLength={800}
+                />
+              </>
+            }
+            errorMessage={
+              errors.projectDescription && errors.projectDescription.message
+            }
+          />
         </Box>
         <Box>
           <Box
-            mt="10"
+            mt={2}
             maxHeight="320px"
             overflow="auto"
             css={{
@@ -76,6 +116,14 @@ export const Sidebar = ({
             />
           </Box>
         </Box>
+        <Textarea
+          hidden
+          height={120}
+          resize="none"
+          color="grey.700"
+          background="#fff"
+          borderRadius="sm"
+        />
       </Box>
     </Box>
   );
