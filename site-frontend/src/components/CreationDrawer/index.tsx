@@ -1,3 +1,4 @@
+import { ArrowBackIcon, CheckIcon } from "@chakra-ui/icons";
 import {
   Button,
   Flex,
@@ -5,6 +6,9 @@ import {
   useToast,
   Box,
   useDisclosure,
+  IconButton,
+  useMediaQuery,
+  Text,
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -14,6 +18,7 @@ import { ProjectCreationService } from "../../classes/ProjectCreationService";
 import { HttpError } from "../../Dtos/HttpError.dto";
 import { ProjectCreateDto } from "../../Dtos/ProjectCreateDto.dto";
 import { ProjectGetDto } from "../../Dtos/ProjectGetDto.dto";
+import { BreakPoints } from "../../enums/BreakPoints";
 import { LoadingState } from "../../enums/LoadingState";
 import { useGetProjectCreationOptions } from "../../hooks/useGetProjectCreationOptions";
 import { UseStores } from "../../stores/StoreContexts";
@@ -41,6 +46,8 @@ export const CreationDrawer = observer(
   ({ isOpen, onClose, onProjectCreation }: ICreationDrawerProps) => {
     const { userStore, uiStore } = UseStores();
     const toast = useToast();
+    const [showMobileLayout] = useMediaQuery(BreakPoints.Mobile);
+
     const defaultValues: IProject = useMemo(() => {
       return {
         name: "",
@@ -167,12 +174,14 @@ export const CreationDrawer = observer(
         size="full"
         placement="right"
         drawerHeader={
-          <Box display="flex" justifyContent="space-between">
-            <Box>Add New Project</Box>
-            <Box>
-              <Button
-                variant="outline"
-                mr={3}
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Box display="flex" alignItems="center">
+              <IconButton
+                title="Cancel"
                 onClick={() => {
                   if (
                     JSON.stringify(defaultValues) ===
@@ -183,11 +192,34 @@ export const CreationDrawer = observer(
                     cancelConfirmDisclosure.onOpen();
                   }
                 }}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" form="project-form" variant="primary">
+                size="md"
+                icon={
+                  <>
+                    <ArrowBackIcon /> Back
+                  </>
+                }
+                aria-label="Cancel"
+                variant="unstyled"
+              />
+            </Box>
+            <Box>
+              <Text as="div" fontSize={showMobileLayout ? "md" : "lg"}>
                 Create Project
+              </Text>
+            </Box>
+            <Box>
+              <Button
+                title="Submit and Create Project"
+                type="submit"
+                form="project-form"
+                variant={!showMobileLayout ? "primary" : "unstyled"}
+                color={!showMobileLayout ? "#fff" : "primary"}
+              >
+                {!showMobileLayout ? (
+                  <Text as="span">Create!</Text>
+                ) : (
+                  <CheckIcon />
+                )}
               </Button>
             </Box>
           </Box>

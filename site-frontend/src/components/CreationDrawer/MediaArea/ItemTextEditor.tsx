@@ -1,6 +1,6 @@
 import { UseFormReturn, useWatch } from "react-hook-form";
 import { IProject } from "..";
-import { Textarea, chakra } from "@chakra-ui/react";
+import { Textarea, chakra, Box } from "@chakra-ui/react";
 import { DebounceInput } from "react-debounce-input";
 const DebouncedTextInput = chakra(DebounceInput, { baseStyle: {} });
 interface IItemTextEditor {
@@ -20,6 +20,7 @@ export const ItemTextEditor = ({
   return (
     <>
       <DebouncedTextInput
+        maxLength={1000}
         placeholder="✍️ Tell us something interesting about this item..."
         className="chakra-textarea css-1dt1p6p"
         element="textarea"
@@ -36,6 +37,9 @@ export const ItemTextEditor = ({
           );
         }}
       />
+      <Box textAlign="right" opacity={0.7} fontSize="sm">
+        {watchItem[selectedItemIndex]?.description.length ?? 0}/1000
+      </Box>
       <Textarea
         background="#fff"
         hidden

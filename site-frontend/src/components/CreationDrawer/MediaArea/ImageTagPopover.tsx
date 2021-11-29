@@ -143,9 +143,14 @@ export const ImageTagPopover = ({
                   isInvalid={false}
                   formLabel="Title"
                   formFor="tagTitle"
-                  errorMessage="nope"
+                  maxLengthDisplay={{
+                    maxLength: 200,
+                    currentLengthCount:
+                      currentTagPopoverState?.title.length ?? 0,
+                  }}
                   formField={
                     <DebounceInput
+                      maxLength={200}
                       required
                       className="chakra-input css-k72x6j"
                       type="text"
