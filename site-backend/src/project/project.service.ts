@@ -60,7 +60,8 @@ export class ProjectService {
                 userId: userId,
                 name: project.name,
                 dateCreated: project.dateCreated,
-                projectItems: projItemsDto
+                description: project.description,
+                projectItems: projItemsDto,
             }
         });
         return dtoList;
@@ -130,6 +131,7 @@ export class ProjectService {
             name: created.name,
             userId: created.user.id,
             dateCreated: created.dateCreated,
+            description: created.description,
             projectItems: created.projectItems.map((item) => {
                 return {
                     id: item.id,
