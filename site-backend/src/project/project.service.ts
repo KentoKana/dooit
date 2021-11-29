@@ -113,6 +113,7 @@ export class ProjectService {
 
         // Assign data to new project 
         newProject.name = dto.name;
+        newProject.description = dto.description;
         newProject.projectItems = newProjectItems;
         newProject.user = user;
         newProject.flairId = dto.flairId;

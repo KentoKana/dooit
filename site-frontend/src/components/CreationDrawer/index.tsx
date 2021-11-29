@@ -119,6 +119,7 @@ export const CreationDrawer = observer(
 
         mutate({
           name: projectData.name,
+          description: projectData.projectDescription,
           flairId:
             projectData.flair !== "-1" /**i.e. not "None" */
               ? parseInt(projectData.flair!)

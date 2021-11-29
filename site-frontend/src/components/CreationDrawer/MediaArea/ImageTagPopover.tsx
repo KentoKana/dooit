@@ -16,7 +16,6 @@ import "../styles.css";
 import { FormElement } from "../../Forms/FormElement";
 import { UseFormReturn } from "react-hook-form";
 import { IProject } from "../index";
-import { isNullOrUndefined } from "../../../utils";
 import { ITag } from "./MediaAreaImageContainer";
 import { DebounceInput } from "react-debounce-input";
 import { useRef, useEffect } from "react";
@@ -141,13 +140,13 @@ export const ImageTagPopover = ({
               <>
                 <FormElement
                   isRequired
-                  isInvalid={
-                    !isNullOrUndefined(formHook.formState!.errors?.projectItems)
-                  }
+                  isInvalid={false}
                   formLabel="Title"
                   formFor="tagTitle"
+                  errorMessage="nope"
                   formField={
                     <DebounceInput
+                      required
                       className="chakra-input css-k72x6j"
                       type="text"
                       value={currentTagPopoverState?.title ?? ""}
@@ -163,7 +162,15 @@ export const ImageTagPopover = ({
                   }
                 />
                 <FormElement
-                  isInvalid={false}
+                  isInvalid={
+                    currentTagPopoverState?.url &&
+                    !new RegExp(
+                      "^(http[s]?:\\/\\/(www\\.)?|ftp:\\/\\/(www\\.)?|www\\.){1}([0-9A-Za-z-\\.@:%_+~#=]+)+((\\.[a-zA-Z]{2,3})+)(/(.)*)?(\\?(.)*)?"
+                    ).test(currentTagPopoverState?.url ?? "")
+                      ? true
+                      : false
+                  }
+                  errorMessage="Please enter a valid URL. (E.g. https://dooit.today)"
                   formLabel="URL"
                   formFor="url"
                   formField={
@@ -204,6 +211,7 @@ export const ImageTagPopover = ({
                       Delete
                     </Button>
                     <Button
+                      disabled={!currentTagPopoverState?.title}
                       colorScheme="primary"
                       borderRadius="sm"
                       onClick={() => {
@@ -215,6 +223,7 @@ export const ImageTagPopover = ({
                   </>
                 ) : (
                   <Button
+                    disabled={!currentTagPopoverState?.title}
                     colorScheme="primary"
                     borderRadius="sm"
                     onClick={onAddTag}
