@@ -69,6 +69,7 @@ export class ProjectService {
                 id: project.id,
                 userId: userId,
                 name: project.name,
+                flairId: project.flairId,
                 dateCreated: project.dateCreated,
                 description: project.description,
                 projectItems: projItemsDto,
@@ -146,6 +147,7 @@ export class ProjectService {
             id: created.id,
             name: created.name,
             userId: created.user.id,
+            flairId: created.flairId,
             dateCreated: created.dateCreated,
             description: created.description,
             projectItems: created.projectItems.map((item) => {

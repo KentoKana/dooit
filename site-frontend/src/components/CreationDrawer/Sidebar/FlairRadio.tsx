@@ -22,6 +22,7 @@ import { observer } from "mobx-react-lite";
 import { UseFormReturn, useWatch } from "react-hook-form";
 import { IProject } from "..";
 import { ProjectFlairsDto } from "../../../Dtos/ProjectFlairsDto.dto";
+import { FlairTag } from "../../FlairTag";
 
 interface IFlairRadioProps {
   formHook: UseFormReturn<IProject, object>;
@@ -114,14 +115,7 @@ export const FlairRadio = observer(({ formHook, flairs }: IFlairRadioProps) => {
                       cursor="pointer"
                       width="100%"
                     >
-                      <Tag
-                        color={option.isDarkText ? "grey.700" : "#fff"}
-                        variant="solid"
-                        background={option.backgroundColor}
-                        cursor="pointer"
-                      >
-                        {option.flairLabel}
-                      </Tag>
+                      <FlairTag flair={option} />
                     </Radio>
                   </MenuItem>
                 );
