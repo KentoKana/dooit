@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AnyFilesInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
@@ -16,10 +16,10 @@ export class ProjectController {
         return this.projectService.getProjectCreateOptions();
     }
 
-    @Get("get-all-for-logged-in-user")
+    @Get("get-all-for-user/:userId")
     @UseGuards(AuthGuard('firebase-jwt'))
-    async getAllForLoggedInUser(@Req() request: Request) {
-        return this.projectService.getAllForLoggedInUser(request.user.user_id)
+    async getAllforUser(@Req() request: Request, @Param("userId") userId) {
+        return this.projectService.getAllProjectsForUser(userId)
     }
 
     @Post("create-project")

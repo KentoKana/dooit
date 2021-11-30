@@ -6,5 +6,5 @@ export class ProjectGetDto {
     userId: string;
     description: string;
     dateCreated: Date;
-    projectItems: ProjectItemGetDto[]
+    projectItems: ProjectItemGetDto[];
 }

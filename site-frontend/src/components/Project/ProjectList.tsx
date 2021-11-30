@@ -8,12 +8,14 @@ interface IProjectListProps {
 }
 export const ProjectList = observer(({ projects }: IProjectListProps) => {
   return (
-    <>
-      <Box>
-        {projects.map((project) => {
-          return <ProjectCard project={project} />;
-        })}
-      </Box>
-    </>
+    <Box>
+      {projects.map((project) => {
+        return (
+          <Box mb={2} mr={5} key={project.id}>
+            <ProjectCard project={project} />
+          </Box>
+        );
+      })}
+    </Box>
   );
 });

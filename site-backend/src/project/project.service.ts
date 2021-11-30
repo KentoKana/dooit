@@ -13,6 +13,8 @@ import { FlairRepository } from 'src/repository/flairRepository.repository';
 import { ProjectCreateOptionsDto } from './dto/ProjectCreateOptionsDto.dto';
 import { ProjectItemCreateDto } from './dto/ProjectItemCreateDto.dto';
 import { ImageTag } from 'src/models/imageTag.entity';
+import { ProjectGetListForUserDto } from './dto/ProjectGetListForUserDto.dto';
+import { UserGetWithProfileDto } from './dto/UserGetWithProfileDto.dto';
 
 @Injectable()
 export class ProjectService {
@@ -36,15 +38,23 @@ export class ProjectService {
         return dto;
     }
 
-    async getAllForLoggedInUser(userId: string): Promise<ProjectGetDto[]> {
+    async getAllProjectsForUser(userId: string): Promise<ProjectGetListForUserDto> {
         const projects = await this.projectRepository.getAllProjectsForUser(userId)
+        const currentUser = await this.userRepository.getUserWithProfileByUserId(userId);
         if (!projects) {
             let err = new HttpError();
             err.status = HttpStatus.NOT_FOUND.toString();
             err.message = "Projects not found";
             throw new HttpException(err, HttpStatus.NOT_FOUND);
         }
-        const dtoList: ProjectGetDto[] = projects.map((project) => {
+        const userProfile: UserGetWithProfileDto = {
+            id: currentUser.id,
+            firstName: currentUser.firstName,
+            lastName: currentUser.lastName,
+            bio: currentUser.profile.bio,
+            dateJoined: currentUser.dateCreated
+        }
+        const projectList = projects.map((project) => {
             const projItemsDto: ProjectItemGetDto[] = project.projectItems.map((item) => {
                 return {
                     id: item.id,
@@ -64,7 +74,13 @@ export class ProjectService {
                 projectItems: projItemsDto,
             }
         });
-        return dtoList;
+
+        const dto: ProjectGetListForUserDto = {
+            user: userProfile,
+            projects: projectList
+        }
+
+        return dto;
     }
 
     async createProject(@Body() dto: ProjectCreateDto, userId: string, files: Array<Express.Multer.File>): Promise<ProjectGetDto> {

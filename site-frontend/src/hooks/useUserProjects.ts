@@ -1,13 +1,14 @@
 import { useQuery } from "react-query";
-import { ProjectGetDto } from "../Dtos/ProjectGetDto.dto";
+import { ProjectGetListForUserDto } from "../Dtos/ProjectGetListForUserDto.dto";
 import { ProjectRoute } from "../enums/ApiRoutes";
 import { UseStores } from "../stores/StoreContexts";
 
-export const useUserProjects = () => {
+
+export const useUserProjects = (userId: string) => {
     const { uiStore, userStore } = UseStores();
 
-    return useQuery("loggedInUserProjects", async () => {
-        return await uiStore.apiRequest<ProjectGetDto[]>(ProjectRoute.GetLoggedInUserProject)
+    return useQuery("allProjectsForUser", async () => {
+        return await uiStore.apiRequest<ProjectGetListForUserDto>(`${ProjectRoute.GetAllProjectsForUser}/${userId}`)
             .then((data) => {
                 return data
             })
