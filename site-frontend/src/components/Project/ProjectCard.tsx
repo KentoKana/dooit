@@ -4,11 +4,10 @@ import { Heading, Image, Text } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { ProjectGetDto } from "../../Dtos/ProjectGetDto.dto";
 import dayjs from "dayjs";
-import { useQueryClient } from "react-query";
 import { FlairTag } from "../FlairTag";
-import { ProjectFlairsDto } from "../../Dtos/ProjectFlairsDto.dto";
 import { useGetProjectCreationOptions } from "../../hooks/useGetProjectCreationOptions";
-import { useState } from "react";
+import { truncateText } from "../../utils";
+import { Fragment } from "react";
 
 interface IProjectListProps {
   project: ProjectGetDto;
@@ -41,7 +40,7 @@ export const ProjectCard = observer(({ project }: IProjectListProps) => {
           <Box mt={1} fontSize="smaller" opacity={0.7}>
             {dayjs(project.dateCreated).format("MMMM DD YYYY")}
           </Box>
-          <Heading as="h3" size="md" fontWeight="medium">
+          <Heading as="h3" fontSize="lg" fontWeight="medium" lineHeight="1.3">
             {project.name}
           </Heading>
           {projectFlair && (
@@ -50,29 +49,31 @@ export const ProjectCard = observer(({ project }: IProjectListProps) => {
             </Box>
           )}
           <Text mt={3} fontSize="medium" fontWeight="light">
-            {project.description}
+            {truncateText(project.description, 150)}
           </Text>
         </Box>
         <Box
           width="60%"
-          p={5}
+          //   p={5}
           background="grey.50"
           borderTopRightRadius="md"
           borderBottomRightRadius="md"
         >
-          <Flex>
-            {project.projectItems.map((item) => {
-              return (
+          <Flex flexWrap="wrap" alignItems="center" h="100%">
+            {project.projectItems.map((item, index) => {
+              return index < 1 ? (
                 <Image
-                  borderRadius="10px"
+                  src={item.imageUrl ?? ""}
+                  objectPosition="center"
+                  w="100%"
+                  h="100%"
+                  borderTopRightRadius="md"
+                  borderBottomRightRadius="md"
                   key={item.id}
-                  boxSize="33.33%"
                   objectFit="cover"
-                  px="5px"
-                  pb="5px"
-                  src={item.imageUrl}
-                  alt={item.description ?? ""}
                 />
+              ) : (
+                <Fragment key={item.id}></Fragment>
               );
             })}
           </Flex>

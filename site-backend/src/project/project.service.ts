@@ -51,7 +51,7 @@ export class ProjectService {
             id: currentUser.id,
             firstName: currentUser.firstName,
             lastName: currentUser.lastName,
-            bio: currentUser.profile.bio,
+            bio: currentUser.profile?.bio ?? "",
             dateJoined: currentUser.dateCreated
         }
         const projectList = projects.map((project) => {
