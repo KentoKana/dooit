@@ -8,6 +8,7 @@ import { useGetProjectCreationOptions } from "../../hooks/useGetProjectCreationO
 import { truncateText } from "../../utils";
 import { ProjectGetDto } from "../../Dtos/project/ProjectGetDto.dto";
 import { UserGetWithProfileDto } from "../../Dtos/project/UserGetWithProfileDto.dto";
+import { LocalRoutes } from "../../enums/LocalRoutes";
 
 interface IProjectListProps {
   project: ProjectGetDto;
@@ -25,7 +26,7 @@ export const ProjectCard = observer(
         display="block"
         key={project.id}
         as={RouterLink}
-        to="#"
+        to={`${LocalRoutes.Project}/${project.userId}/${project.id}`}
         _hover={{
           textDecoration: "none",
           color: "primary",
@@ -70,12 +71,17 @@ export const ProjectCard = observer(
               background="grey.50"
               borderTopRightRadius="md"
               borderBottomRightRadius="md"
+              overflow="hidden"
             >
               <Image
                 src={projectItemImage.imageUrl}
                 objectPosition="center"
                 w="100%"
                 h="100%"
+                transition="0.8s ease all"
+                _hover={{
+                  transform: "scale(1.1)",
+                }}
                 borderTopRightRadius="md"
                 borderBottomRightRadius="md"
                 objectFit="cover"
