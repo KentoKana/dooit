@@ -5,19 +5,15 @@ import {
   DrawerBody,
   DrawerFooter,
   DrawerHeader,
+  DrawerProps,
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 
-interface IDrawerTemplateProps {
+interface IDrawerTemplateProps extends DrawerProps {
   drawerHeader?: ReactNode;
   drawerFooter?: ReactNode;
-  children?: ReactNode;
-  isOpen: boolean;
-  onClose: () => void;
-  placement: "right" | "top" | "bottom" | "left";
-  size: "xs" | "sm" | "md" | "lg" | "xl" | "full";
-  closeOnEsc?: boolean;
+  children: ReactNode;
 }
 
 export const DrawerTemplate = observer(
@@ -27,18 +23,10 @@ export const DrawerTemplate = observer(
     children,
     drawerFooter,
     drawerHeader,
-    isOpen,
-    onClose,
-    closeOnEsc,
+    ...props
   }: IDrawerTemplateProps) => {
     return (
-      <Drawer
-        closeOnEsc={closeOnEsc}
-        isOpen={isOpen}
-        placement={placement}
-        onClose={onClose}
-        size={size}
-      >
+      <Drawer {...props} placement={placement} size={size}>
         <DrawerOverlay />
         <DrawerContent>
           {/* <DrawerCloseButton /> */}

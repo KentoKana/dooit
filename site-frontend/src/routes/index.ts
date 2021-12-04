@@ -7,7 +7,6 @@ import { Home } from "../pages/Home";
 import { Login } from "../pages/Login";
 import { SignUp } from "../pages/SignUp";
 import { UserSettings } from "../pages/UserSettings";
-import { Project } from "../pages/Project";
 
 interface IRoutes {
     isPrivate: boolean;
@@ -51,10 +50,5 @@ export const mainRoutes: IRoutes[] = [
         isPrivate: true,
         component: Portfolio,
         path: LocalRoutes.Portfolio
-    },
-    {
-        isPrivate: false,
-        component: Project,
-        path: LocalRoutes.Project
     },
 ];
