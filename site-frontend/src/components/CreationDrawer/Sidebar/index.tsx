@@ -38,13 +38,11 @@ export const Sidebar = ({
               maxLength: 150,
             }}
             formField={
-              <Input
+              <DebounceInput
+                required
                 maxLength={150}
-                color="grey.700"
-                background="#fff"
-                borderRadius="sm"
                 id="name"
-                type="text"
+                className="chakra-input css-r7n77o"
                 placeholder="Name your project with something catchy!"
                 {...register("name", {
                   required: "Please enter a project name",
@@ -116,6 +114,14 @@ export const Sidebar = ({
             />
           </Box>
         </Box>
+        <Input
+          maxLength={150}
+          color="grey.700"
+          background="#fff"
+          borderRadius="sm"
+          type="text"
+          hidden
+        />
         <Textarea
           hidden
           height={120}

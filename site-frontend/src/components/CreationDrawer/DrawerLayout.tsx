@@ -58,6 +58,7 @@ export const DrawerLayout = ({
           overflow="auto"
           justifyContent="flex-start"
           background="grey.50"
+          overflowY="scroll"
         >
           <Flex width="100%" justifyContent="center" maxHeight="100%">
             {contentArea}

@@ -8,30 +8,38 @@ import { UseStores } from "../stores/StoreContexts";
 import dayjs from "dayjs";
 export const Portfolio = observer(() => {
   const { userStore } = UseStores();
-  const projects = useUserProjects(userStore?.user?.id ?? "");
+  const projectData = useUserProjects(userStore?.user?.id ?? "");
 
   return (
     <PageWrapper
       pageHeading="My Portfolio"
       headingIcon={<AiOutlineFolderOpen />}
     >
-      <Flex>
-        <Box width="70%">
-          <ProjectList projects={projects.data?.projects ?? []} />
-        </Box>
-        <Box width="30%" p={5} background="grey.50" height="100%">
-          <Heading as="h3" fontSize="lg">
-            {projects.data?.user?.firstName} {projects.data?.user?.lastName}
-          </Heading>
-          {projects?.data?.user?.bio && <Text>{projects.data?.user.bio}</Text>}
-          <Box>
-            <Text as="div" fontWeight="bold" opacity={0.7}>
-              Joined
-            </Text>
-            {dayjs(projects.data?.user?.dateJoined).format("MMMM D, YYYY")}
+      {projectData && (
+        <Flex>
+          <Box width="65%">
+            <ProjectList
+              projects={projectData.data?.projects ?? []}
+              userData={projectData.data?.user!}
+            />
           </Box>
-        </Box>
-      </Flex>
+          <Box width="35%" p={5} background="grey.50" height="100%">
+            <Heading as="h3" fontSize="lg">
+              {projectData.data?.user?.firstName}{" "}
+              {projectData.data?.user?.lastName}
+            </Heading>
+            {projectData?.data?.user?.bio && (
+              <Text>{projectData.data?.user.bio}</Text>
+            )}
+            <Box>
+              <Text as="div" fontWeight="bold" opacity={0.7}>
+                Joined
+              </Text>
+              {dayjs(projectData.data?.user?.dateJoined).format("MMMM D, YYYY")}
+            </Box>
+          </Box>
+        </Flex>
+      )}
     </PageWrapper>
   );
 });

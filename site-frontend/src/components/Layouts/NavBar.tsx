@@ -32,7 +32,13 @@ export const NavBar = observer(() => {
   }, [userStore.isSignedIn]);
 
   return (
-    <Box position="fixed" width="100%" backgroundColor={"white"} top="0">
+    <Box
+      position="fixed"
+      width="100%"
+      backgroundColor={"white"}
+      top="0"
+      zIndex={1}
+    >
       <Container maxW="container.xl" height="80px">
         <Flex
           as="nav"
