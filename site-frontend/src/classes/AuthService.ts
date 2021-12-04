@@ -1,12 +1,12 @@
-import { UserCreateDto } from "../Dtos/UserCreateDto.dto";
-import { UserGetCreatedDto } from "../Dtos/UserGetCreatedDto.dto";
-import { UserGetLoggedIn } from "../Dtos/UserGetLoggedInDto.dto";
-import { UserLoginByEmailDto } from "../Dtos/UserLoginByEmailDto.dto";
 import { AuthRoute } from "../enums/ApiRoutes";
 import { auth } from "../firebase";
 import { UiStore } from "../stores/UiStore";
 import { UserStore } from "../stores/UserStore";
 import { browserLocalPersistence, createUserWithEmailAndPassword, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword } from '@firebase/auth';
+import { UserLoginByEmailDto } from "../Dtos/user/UserLoginByEmailDto.dto";
+import { UserCreateDto } from "../Dtos/user/UserCreateDto.dto";
+import { UserGetCreatedDto } from "../Dtos/user/UserGetCreatedDto.dto";
+import { UserGetLoggedIn } from "../Dtos/user/UserGetLoggedInDto.dto";
 
 export class AuthService {
     constructor(userStore: UserStore, uiStore: UiStore) {

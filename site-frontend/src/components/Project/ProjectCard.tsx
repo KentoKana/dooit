@@ -2,12 +2,12 @@ import { Box, Flex, Link } from "@chakra-ui/layout";
 import { Link as RouterLink } from "react-router-dom";
 import { Heading, Image, Text } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
-import { ProjectGetDto } from "../../Dtos/ProjectGetDto.dto";
 import dayjs from "dayjs";
 import { FlairTag } from "../FlairTag";
 import { useGetProjectCreationOptions } from "../../hooks/useGetProjectCreationOptions";
 import { truncateText } from "../../utils";
-import { UserGetWithProfileDto } from "../../Dtos/UserGetWithProfileDto.dto";
+import { ProjectGetDto } from "../../Dtos/project/ProjectGetDto.dto";
+import { UserGetWithProfileDto } from "../../Dtos/project/UserGetWithProfileDto.dto";
 
 interface IProjectListProps {
   project: ProjectGetDto;

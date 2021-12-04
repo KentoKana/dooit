@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import { ProjectCreateOptionsDto } from "../Dtos/ProjectCreateOptionsDto.dto";
+import { ProjectCreateOptionsDto } from "../Dtos/project/ProjectCreateOptionsDto.dto";
 import { ProjectRoute } from "../enums/ApiRoutes";
 import { UseStores } from "../stores/StoreContexts";
 

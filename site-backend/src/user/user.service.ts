@@ -1,18 +1,18 @@
 import { Body, HttpException, HttpStatus, Injectable, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { User } from '../models/user.entity';
-import { UserCreateDto } from './dto/UserCreateDto.dto'
 import { FirebaseAuthenticationService } from '@aginix/nestjs-firebase-admin';
 import { FirebaseError } from '@firebase/util';
-import { UserGetCreatedDto } from './dto/UserGetCreatedDto.dto';
-import { HttpError } from 'src/shared/dto/HttpError.dto';
+import { HttpError } from 'src/Dtos/HttpError.dto';
 import { generateFirebaseAuthErrorMessage } from 'src/helpers/firebase';
-import { UserGetDto } from './dto/UserGetDto.dto';
-import { UserGetLoggedIn } from './dto/UserGetLoggedInDto.dto';
-import { UserEditDto } from './dto/UserEditDto.dto';
 import { Profile } from 'src/models/profile.entity';
-import { UserProfileViewDto } from './dto/UserProfileViewDto.dto';
 import { UserRepository } from 'src/repository/UserRepository.repository';
+import { UserGetDto } from 'src/Dtos/user/UserGetDto.dto';
+import { UserCreateDto } from 'src/Dtos/user/UserCreateDto.dto';
+import { UserGetCreatedDto } from 'src/Dtos/user/UserGetCreatedDto.dto';
+import { UserGetLoggedIn } from 'src/Dtos/user/UserGetLoggedInDto.dto';
+import { UserProfileViewDto } from 'src/Dtos/user/UserProfileViewDto.dto';
+import { UserEditDto } from 'src/Dtos/user/UserEditDto.dto';
 
 @Injectable()
 export class UserService {

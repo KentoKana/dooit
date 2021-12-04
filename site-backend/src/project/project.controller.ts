@@ -2,9 +2,9 @@ import { Body, Controller, Get, Param, Post, Req, UploadedFiles, UseGuards, UseI
 import { AuthGuard } from '@nestjs/passport';
 import { AnyFilesInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
-import { ProjectCreateDto } from './dto/ProjectCreateDto.dto';
 import { ProjectService } from './project.service';
 import * as fs from "fs";
+import { ProjectCreateDto } from 'src/Dtos/project/ProjectCreateDto.dto';
 
 @Controller('project')
 export class ProjectController {

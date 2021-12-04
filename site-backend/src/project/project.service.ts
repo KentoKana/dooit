@@ -3,18 +3,17 @@ import { Project } from 'src/models/project.entity';
 import { ProjectItem } from 'src/models/projectItem.entity';
 import { ProjectRepository } from 'src/repository/projectRepository.repository';
 import { UserRepository } from 'src/repository/UserRepository.repository';
-import { HttpError } from 'src/shared/dto/HttpError.dto';
-import { ProjectCreateDto } from './dto/ProjectCreateDto.dto';
-import { ProjectGetDto } from './dto/ProjectGetDto.dto';
-import { ProjectItemGetDto } from './dto/ProjectItemGetDto.dto';
+import { HttpError } from 'src/Dtos/HttpError.dto';
 import * as admin from "firebase-admin"
 import * as fs from "fs-extra"
 import { FlairRepository } from 'src/repository/flairRepository.repository';
-import { ProjectCreateOptionsDto } from './dto/ProjectCreateOptionsDto.dto';
-import { ProjectItemCreateDto } from './dto/ProjectItemCreateDto.dto';
 import { ImageTag } from 'src/models/imageTag.entity';
-import { ProjectGetListForUserDto } from './dto/ProjectGetListForUserDto.dto';
-import { UserGetWithProfileDto } from './dto/UserGetWithProfileDto.dto';
+import { UserGetWithProfileDto } from 'src/Dtos/project/UserGetWithProfileDto.dto';
+import { ProjectItemGetDto } from 'src/Dtos/project/ProjectItemGetDto.dto';
+import { ProjectCreateOptionsDto } from 'src/Dtos/project/ProjectCreateOptionsDto.dto';
+import { ProjectGetListForUserDto } from 'src/Dtos/project/ProjectGetListForUserDto.dto';
+import { ProjectCreateDto } from 'src/Dtos/project/ProjectCreateDto.dto';
+import { ProjectGetDto } from 'src/Dtos/project/ProjectGetDto.dto';
 
 @Injectable()
 export class ProjectService {
@@ -84,7 +83,11 @@ export class ProjectService {
         return dto;
     }
 
-    async createProject(@Body() dto: ProjectCreateDto, userId: string, files: Array<Express.Multer.File>): Promise<ProjectGetDto> {
+    async createProject(
+        @Body() dto: ProjectCreateDto,
+        userId: string,
+        files: Array<Express.Multer.File>
+    ): Promise<ProjectGetDto> {
         let user = await this.userRepository.findOne(userId);
         let newProject = new Project();
         let fileNames: { [order: number]: { fileName: string, mimeType: string } } = {};

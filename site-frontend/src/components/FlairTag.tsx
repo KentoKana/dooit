@@ -1,5 +1,5 @@
 import { Tag } from "@chakra-ui/tag";
-import { ProjectFlairsDto } from "../Dtos/ProjectFlairsDto.dto";
+import { ProjectFlairsDto } from "../Dtos/project/ProjectFlairsDto.dto";
 
 interface IFlairTagProps {
   flair: ProjectFlairsDto;

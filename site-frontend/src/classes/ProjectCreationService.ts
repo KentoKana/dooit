@@ -1,4 +1,4 @@
-import { ProjectCreateDto } from "../Dtos/ProjectCreateDto.dto";
+import { ProjectCreateDto } from "../Dtos/project/ProjectCreateDto.dto";
 import { ProjectRoute } from "../enums/ApiRoutes";
 import { UiStore } from "../stores/UiStore";
 import { UserStore } from "../stores/UserStore";

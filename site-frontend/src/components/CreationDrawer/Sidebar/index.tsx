@@ -4,7 +4,7 @@ import { Textarea } from "@chakra-ui/textarea";
 import { DebounceInput } from "react-debounce-input";
 import { UseFormReturn } from "react-hook-form";
 import { IProject } from "..";
-import { ProjectCreateOptionsDto } from "../../../Dtos/ProjectCreateOptionsDto.dto";
+import { ProjectCreateOptionsDto } from "../../../Dtos/project/ProjectCreateOptionsDto.dto";
 import { FormElement } from "../../Forms/FormElement";
 import { ProjectItems } from "../ProjectItems";
 import { FlairRadio } from "./FlairRadio";

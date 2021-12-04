@@ -21,7 +21,7 @@ import {
 import { observer } from "mobx-react-lite";
 import { UseFormReturn, useWatch } from "react-hook-form";
 import { IProject } from "..";
-import { ProjectFlairsDto } from "../../../Dtos/ProjectFlairsDto.dto";
+import { ProjectFlairsDto } from "../../../Dtos/project/ProjectFlairsDto.dto";
 import { FlairTag } from "../../FlairTag";
 
 interface IFlairRadioProps {

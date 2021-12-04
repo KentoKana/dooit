@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import { UserProfileViewDto } from "../Dtos/UserProfileViewDto.dto";
+import { UserProfileViewDto } from "../Dtos/user/UserProfileViewDto.dto";
 import { UserRoute } from "../enums/ApiRoutes";
 import { UseStores } from "../stores/StoreContexts";
 

@@ -1,7 +1,7 @@
 import { Box } from "@chakra-ui/layout";
 import { observer } from "mobx-react-lite";
-import { ProjectGetDto } from "../../Dtos/ProjectGetDto.dto";
-import { UserGetWithProfileDto } from "../../Dtos/UserGetWithProfileDto.dto";
+import { ProjectGetDto } from "../../Dtos/project/ProjectGetDto.dto";
+import { UserGetWithProfileDto } from "../../Dtos/project/UserGetWithProfileDto.dto";
 import { ProjectCard } from "./ProjectCard";
 
 interface IProjectListProps {

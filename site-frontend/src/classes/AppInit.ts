@@ -1,4 +1,4 @@
-import { UserGetDto } from "../Dtos/UserGetDto.dto";
+import { UserGetDto } from "../Dtos/user/UserGetDto.dto";
 import { AuthRoute } from "../enums/ApiRoutes";
 import { UiStore } from "../stores/UiStore";
 import { UserStore } from "../stores/UserStore";

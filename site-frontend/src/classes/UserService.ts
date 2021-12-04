@@ -1,5 +1,5 @@
 import { EmailAuthProvider, reauthenticateWithCredential, updateEmail, updatePassword } from "@firebase/auth";
-import { UserEditDto } from "../Dtos/UserEditDto.dto";
+import { UserEditDto } from "../Dtos/user/UserEditDto.dto";
 import { UserRoute } from "../enums/ApiRoutes";
 import { auth } from "../firebase";
 import { UiStore } from "../stores/UiStore";

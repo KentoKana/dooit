@@ -16,10 +16,10 @@ import { observer } from "mobx-react-lite";
 import { UserService } from "../../../classes/UserService";
 import { generateFirebaseAuthErrorMessage } from "../../../utils";
 import { HttpError } from "../../../Dtos/HttpError.dto";
-import { UserEditDto } from "../../../Dtos/UserEditDto.dto";
-import { UserProfileViewDto } from "../../../Dtos/UserProfileViewDto.dto";
 import { useMutation } from "react-query";
 import { FormElement } from "../FormElement";
+import { UserEditDto } from "../../../Dtos/user/UserEditDto.dto";
+import { UserProfileViewDto } from "../../../Dtos/user/UserProfileViewDto.dto";
 
 interface IProfileEditForm {
   firstName: string;

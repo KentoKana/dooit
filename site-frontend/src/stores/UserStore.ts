@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import { UserGetDto } from "../Dtos/UserGetDto.dto";
+import { UserGetDto } from "../Dtos/user/UserGetDto.dto";
 import { auth } from "../firebase";
 
 export class UserStore {

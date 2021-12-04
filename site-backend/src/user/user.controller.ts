@@ -1,9 +1,8 @@
 import { Body, Controller, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { request, Request } from 'express';
-import { UserCreateDto } from './dto/UserCreateDto.dto';
-import { UserEditDto } from './dto/UserEditDto.dto';
-import { UserLoginByEmailDto } from './dto/UserLoginByEmailDto.dto';
+import { UserCreateDto } from 'src/Dtos/user/UserCreateDto.dto';
+import { UserEditDto } from 'src/Dtos/user/UserEditDto.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
