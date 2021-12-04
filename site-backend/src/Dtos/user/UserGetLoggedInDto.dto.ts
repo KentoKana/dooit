@@ -1,6 +1,5 @@
 export class UserGetLoggedIn {
     id: string;
-    firstName: string;
-    lastName: string;
+    displayName: string;
     email: string;
 }

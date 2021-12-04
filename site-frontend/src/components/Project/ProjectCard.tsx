@@ -8,7 +8,7 @@ import { useGetProjectCreationOptions } from "../../hooks/useGetProjectCreationO
 import { truncateText } from "../../utils";
 import { ProjectGetDto } from "../../Dtos/project/ProjectGetDto.dto";
 import { UserGetWithProfileDto } from "../../Dtos/project/UserGetWithProfileDto.dto";
-import { LocalRoutes } from "../../enums/LocalRoutes";
+import { UseStores } from "../../stores/StoreContexts";
 
 interface IProjectListProps {
   project: ProjectGetDto;
@@ -16,6 +16,7 @@ interface IProjectListProps {
 }
 export const ProjectCard = observer(
   ({ project, userData }: IProjectListProps) => {
+    const { userStore } = UseStores();
     const projectOptions = useGetProjectCreationOptions();
     const projectFlair = projectOptions.data?.flairs?.find(
       (flair) => flair.id === project.flairId
@@ -26,7 +27,7 @@ export const ProjectCard = observer(
         display="block"
         key={project.id}
         as={RouterLink}
-        to={`${LocalRoutes.Project}/${project.userId}/${project.id}`}
+        to={`/${userStore.user?.displayName}/${project.id}`}
         _hover={{
           textDecoration: "none",
           color: "primary",
@@ -42,9 +43,7 @@ export const ProjectCard = observer(
             borderBottomLeftRadius="md"
             borderRadius={projectItemImage ? undefined : "md"}
           >
-            <Box fontSize="sm">
-              {`${userData.firstName} ${userData.lastName}`}
-            </Box>
+            <Box fontSize="sm">{`${userData.displayName}`}</Box>
             <Box fontSize="xs" opacity={0.7} mb={2}>
               {dayjs(project.dateCreated).format("MMMM DD YYYY")}
             </Box>

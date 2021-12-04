@@ -17,6 +17,11 @@ export class UserController {
         return this.userService.get(request);
     }
 
+    @Post("check-username-availability")
+    checkUsernameAvailability(@Body() username: { username: string }) {
+        return this.userService.checkUsernameAvailability(username.username)
+    }
+
     @Post("create")
     create(@Body() user: UserCreateDto) {
         return this.userService.create(user);

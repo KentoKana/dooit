@@ -8,7 +8,8 @@ export enum AuthRoute {
 
 export enum UserRoute {
     GetUserProfile = "http://localhost:4000/user/user-profile",
-    UpdateUserProfile = "http://localhost:4000/user/update-user-profile"
+    UpdateUserProfile = "http://localhost:4000/user/update-user-profile",
+    CheckUsernameAvailability = "http://localhost:4000/user/check-username-availability"
 }
 
 export enum ProjectRoute {

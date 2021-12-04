@@ -10,11 +10,9 @@ import { UseStores } from "../../../stores/StoreContexts";
 import { useForm } from "react-hook-form";
 import { observer } from "mobx-react-lite";
 import { generateFirebaseAuthErrorMessage } from "../../../utils";
-import { FirebaseError } from "@firebase/util";
 
 interface ISignUpForm {
-  firstName: string;
-  lastName: string;
+  displayName: string;
   email: string;
   password: string;
 }
@@ -45,8 +43,7 @@ export const SignUpForm = observer(({ onCreate }: ISignUpFormProps) => {
       authService
         .createUserWithEmailAndPassword({
           id: "",
-          firstName: formData.firstName,
-          lastName: formData.lastName,
+          displayName: formData.displayName,
           password: formData.password,
           email: formData.email,
         })
@@ -59,51 +56,42 @@ export const SignUpForm = observer(({ onCreate }: ISignUpFormProps) => {
             position: "top",
           });
         })
-        .catch((error: FirebaseError) => {
+        .catch((error) => {
           setError("serverError", {
             type: "server",
-            message: generateFirebaseAuthErrorMessage(error.code),
+            message: error.code
+              ? generateFirebaseAuthErrorMessage(error.code)
+              : error?.message ?? "",
           });
           setLoadingState(LoadingState.Error);
+
           reset();
         });
     },
     [uiStore, userStore, reset, setError, toast]
   );
+  console.log(errors);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <FormControl isInvalid={errors.firstName} mb={3}>
-        <FormLabel htmlFor="firstName" mr={0} mb={2}>
-          First Name:{" "}
+      <FormControl isInvalid={errors.displayName} mb={3}>
+        <FormLabel htmlFor="username" mr={0} mb={2}>
+          Username:{" "}
         </FormLabel>
         <Input
-          id="firstName"
+          id="username"
           disabled={loadingState === LoadingState.Loading}
-          placeholder="First Name"
-          {...register("firstName", {
-            required: "Please enter your first name.",
+          placeholder="Username"
+          {...register("displayName", {
+            pattern: {
+              value: /^[A-Za-z]+$/,
+              message: "Please enter a valid username",
+            },
+            required: "Please enter your username.",
           })}
         />
         <FormErrorMessage>
-          {errors.firstName && errors.firstName.message}
-        </FormErrorMessage>
-      </FormControl>
-      <FormControl isInvalid={errors.lastName} mb={3}>
-        <FormLabel htmlFor="lastName" mr={0} mb={2}>
-          Last Name:{" "}
-        </FormLabel>
-        <Input
-          disabled={loadingState === LoadingState.Loading}
-          id="lastName"
-          type="text"
-          placeholder="Last Name"
-          {...register("lastName", {
-            required: "Please enter your last name.",
-          })}
-        />
-        <FormErrorMessage>
-          {errors.lastName && errors.lastName.message}
+          {errors.displayName && errors.displayName.message}
         </FormErrorMessage>
       </FormControl>
       <FormControl isInvalid={errors.email} mb={3}>

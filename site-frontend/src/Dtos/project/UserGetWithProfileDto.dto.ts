@@ -1,7 +1,6 @@
 export class UserGetWithProfileDto {
     id: string;
-    firstName: string;
-    lastName: string;
+    displayName: string;
     title?: string;
     bio?: string;
     dateJoined: Date;

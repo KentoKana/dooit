@@ -24,12 +24,11 @@ export class UserService {
                             method: "PATCH",
                             bodyData: userEditDto
                         }).then((data) => {
-                            const { firstName, lastName, email } = userEditDto;
+                            const { displayName, email } = userEditDto;
                             this._userStore.user = {
                                 ...this._userStore.user,
                                 id: this._userStore.user?.id!,
-                                firstName,
-                                lastName,
+                                displayName,
                                 email
                             }
                             return data;

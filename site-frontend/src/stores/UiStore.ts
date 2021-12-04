@@ -17,23 +17,6 @@ export class UiStore {
     readonly userStore: UserStore;
 
     async apiRequest<TData, TResult = TData>(url: string, options: IApiRequestOptions<TData> = {}, isPublicRoute: boolean | undefined = false): Promise<TResult> {
-        var decodedHeader = jwt_decode<{
-            iss: string,
-            aud: string,
-            auth_time: number,
-            user_id: string,
-            sub: string,
-            iat: number,
-            exp: number,
-            email: string,
-            email_verified: boolean,
-            firebase: {
-                identities: {
-                    email: string[]
-                },
-                sign_in_provider: string
-            }
-        }>(localStorage.getItem("user-jwt") ?? "");
         let headers: Headers = new Headers();
         headers.set("Content-Type", "application/json")
         if (options.bodyData) {
@@ -73,6 +56,7 @@ export class UiStore {
                     if (res.status === 401) {
                         console.log("fobidden");
                         this.userStore.isSignedIn = false;
+                        // localStorage.removeItem("user-jwt");
                         return Promise.reject({ status: resultJson.status, message: resultJson.message, httpCodeStatus: res.status })
                     }
 
@@ -83,8 +67,28 @@ export class UiStore {
                 return res.json();
             })
         }
+        let decodedHeader: {
+            iss: string,
+            aud: string,
+            auth_time: number,
+            user_id: string,
+            sub: string,
+            iat: number,
+            exp: number,
+            email: string,
+            email_verified: boolean,
+            firebase: {
+                identities: {
+                    email: string[]
+                },
+                sign_in_provider: string
+            }
+        } | null = null;
+        if (localStorage.getItem("user-jwt")) {
+            decodedHeader = jwt_decode(localStorage.getItem("user-jwt") ?? "");
+        }
 
-        if (decodedHeader.exp * 1000 < Date.now()) {
+        if (decodedHeader && decodedHeader?.exp * 1000 < Date.now()) {
             return auth.currentUser?.getIdToken().then((retrievedToken) => {
                 localStorage.setItem("user-jwt", retrievedToken);
                 this.userStore.isSignedIn = true;

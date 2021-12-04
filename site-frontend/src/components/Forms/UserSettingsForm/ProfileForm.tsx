@@ -20,10 +20,10 @@ import { useMutation } from "react-query";
 import { FormElement } from "../FormElement";
 import { UserEditDto } from "../../../Dtos/user/UserEditDto.dto";
 import { UserProfileViewDto } from "../../../Dtos/user/UserProfileViewDto.dto";
+import { UserRoute } from "../../../enums/ApiRoutes";
 
 interface IProfileEditForm {
-  firstName: string;
-  lastName: string;
+  displayName: string;
   email: string;
   bio?: string;
   title?: string;
@@ -87,19 +87,42 @@ export const UserProfileForm = observer(
       async (formData: IProfileEditForm) => {
         setLoadingState(LoadingState.Loading);
         let userEditDto = new UserEditDto();
-        const { email, firstName, lastName, bio, title } = formData;
+        const { email, displayName, bio, title } = formData;
         userEditDto = {
           email,
-          firstName,
-          lastName,
+          displayName,
           profile: {
             bio,
             title,
           },
         };
-        mutate(userEditDto);
+        if (userStore.user?.displayName !== displayName) {
+          uiStore
+            .apiRequest<{ username: string }, boolean>(
+              UserRoute.CheckUsernameAvailability,
+              {
+                method: "POST",
+                bodyData: {
+                  username: formData.displayName,
+                },
+              }
+            )
+            .then((usernameIsAvailable) => {
+              if (usernameIsAvailable) {
+                mutate(userEditDto);
+              } else {
+                setError("displayName", {
+                  type: "taken",
+                  message: "This username is taken.",
+                });
+                setLoadingState(LoadingState.Error);
+              }
+            });
+        } else {
+          mutate(userEditDto);
+        }
       },
-      [mutate]
+      [mutate, uiStore, userStore, setError]
     );
 
     return (
@@ -107,41 +130,26 @@ export const UserProfileForm = observer(
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormElement
             isRequired
-            formLabel="First Name"
-            formFor={"firstName"}
-            isInvalid={errors.firstName}
+            formLabel="Username"
+            formFor={"displayName"}
+            isInvalid={errors.displayName}
             formField={
               <Input
-                defaultValue={data.firstName}
+                defaultValue={data.displayName}
                 disabled={loadingState === LoadingState.Loading}
-                id="firstName"
+                id="displayName"
                 type="text"
-                placeholder="First Name"
-                {...register("firstName", {
-                  required: "Please enter your first name.",
+                placeholder="Username"
+                {...register("displayName", {
+                  pattern: {
+                    value: /^[A-Za-z]+$/,
+                    message: "Please enter a valid username",
+                  },
+                  required: "Please enter your username.",
                 })}
               />
             }
-            errorMessage={errors.firstName && errors.firstName.message}
-          />
-          <FormElement
-            isRequired
-            formLabel="Last Name"
-            formFor={"lastName"}
-            isInvalid={errors.lastName}
-            formField={
-              <Input
-                defaultValue={data.lastName}
-                disabled={loadingState === LoadingState.Loading}
-                id="lastName"
-                type="text"
-                placeholder="Last Name"
-                {...register("lastName", {
-                  required: "Please enter your last name.",
-                })}
-              />
-            }
-            errorMessage={errors.lastName && errors.lastName.message}
+            errorMessage={errors.displayName && errors.displayName.message}
           />
           <FormElement
             formLabel="Title"

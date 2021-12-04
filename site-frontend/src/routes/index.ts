@@ -55,6 +55,6 @@ export const mainRoutes: IRoutes[] = [
     {
         isPrivate: false,
         component: Project,
-        path: `${LocalRoutes.Project}/:userId/:id`
+        path: LocalRoutes.Project
     },
 ];

@@ -35,7 +35,11 @@ export const Sidebar = observer(() => {
                 <Link
                   ml={5}
                   as={RouteLink}
-                  to={route.url}
+                  to={
+                    route.url !== LocalRoutes.Portfolio
+                      ? route.url
+                      : `/${userStore.user?.displayName ?? ""}`
+                  }
                   variant={
                     route.url === selectedLink
                       ? "dashboard_active"

@@ -25,8 +25,7 @@ export const Portfolio = observer(() => {
           </Box>
           <Box width="35%" p={5} background="grey.50" height="100%">
             <Heading as="h3" fontSize="lg">
-              {projectData.data?.user?.firstName}{" "}
-              {projectData.data?.user?.lastName}
+              {projectData.data?.user?.displayName}
             </Heading>
             {projectData?.data?.user?.bio && (
               <Text>{projectData.data?.user.bio}</Text>

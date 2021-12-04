@@ -2,9 +2,7 @@ import { Body, HttpException, HttpStatus, Injectable, Req } from '@nestjs/common
 import { Request } from 'express';
 import { User } from '../models/user.entity';
 import { FirebaseAuthenticationService } from '@aginix/nestjs-firebase-admin';
-import { FirebaseError } from '@firebase/util';
 import { HttpError } from 'src/Dtos/HttpError.dto';
-import { generateFirebaseAuthErrorMessage } from 'src/helpers/firebase';
 import { Profile } from 'src/models/profile.entity';
 import { UserRepository } from 'src/repository/UserRepository.repository';
 import { UserGetDto } from 'src/Dtos/user/UserGetDto.dto';
@@ -30,19 +28,26 @@ export class UserService {
 
         return {
             id: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName,
+            displayName: user.displayName,
             email: user.email,
         };
     }
 
+    async checkUsernameAvailability(username: string) {
+        const user = await this.usersRepository.getUserByDisplayName(username);
+        if (user) {
+            return false;
+        }
+        return true;
+    }
+
     async create(@Body() userDto: UserCreateDto): Promise<UserGetCreatedDto> {
         let userToCreate: User = new User();
-        const { firstName, lastName, email } = userDto;
+        const { displayName, email } = userDto;
+
         userToCreate = {
             ...userToCreate,
-            firstName,
-            lastName,
+            displayName,
             email,
             id: userDto.id,
             isActive: true
@@ -50,8 +55,7 @@ export class UserService {
         const created = await this.usersRepository.save(userToCreate);
         return {
             id: userDto.id,
-            firstName: created.firstName,
-            lastName: created.lastName,
+            displayName: created.displayName,
             email: created.email,
         }
     }
@@ -66,8 +70,7 @@ export class UserService {
         }
         return {
             id: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName,
+            displayName: user.displayName,
             email: user.email
         };
     }
@@ -81,11 +84,10 @@ export class UserService {
             }, HttpStatus.NOT_FOUND);
         }
 
-        const { firstName, lastName, email, profile } = user;
+        const { displayName, email, profile } = user;
 
         return {
-            firstName,
-            lastName,
+            displayName,
             email,
             profile
         };
@@ -115,8 +117,7 @@ export class UserService {
         profile.bio = userEditDto.profile.bio;
         profile.title = userEditDto.profile.title;
         let user = userToUpdate;
-        user.firstName = userEditDto.firstName;
-        user.lastName = userEditDto.lastName;
+        user.displayName = userEditDto.displayName;
         user.email = userEditDto.email;
         user.profile = {
             ...user.profile,

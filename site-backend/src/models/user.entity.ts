@@ -8,10 +8,7 @@ export class User {
     id: string;
 
     @Column({ length: 100 })
-    firstName: string;
-
-    @Column({ length: 100 })
-    lastName: string;
+    displayName: string;
 
     @Column({ default: true })
     isActive: boolean;
