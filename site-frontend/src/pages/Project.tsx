@@ -1,6 +1,6 @@
 import { useParams } from "react-router";
 import { PageWrapper } from "../components/Layouts/PageWrapper";
-import { useGetProjectById } from "../hooks/useGetProjectById";
+import { useGetProjectById } from "../hooks/data/useGetProjectById";
 
 export const Project = () => {
   const { projectId } = useParams<{ username: string; projectId: string }>();

@@ -20,7 +20,7 @@ import { ProjectCreateDto } from "../../Dtos/project/ProjectCreateDto.dto";
 import { ProjectGetDto } from "../../Dtos/project/ProjectGetDto.dto";
 import { BreakPoints } from "../../enums/BreakPoints";
 import { LoadingState } from "../../enums/LoadingState";
-import { useGetProjectCreationOptions } from "../../hooks/useGetProjectCreationOptions";
+import { useGetProjectCreationOptions } from "../../hooks/data/useGetProjectCreationOptions";
 import { UseStores } from "../../stores/StoreContexts";
 import { DrawerTemplate } from "../DrawerTemplate";
 import { ActionConfirmationModal } from "./ActionConfirmationModal";

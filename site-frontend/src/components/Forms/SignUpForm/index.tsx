@@ -4,12 +4,12 @@ import { Button } from "@chakra-ui/button";
 import { Flex, FormErrorMessage, useToast } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
 import { LoadingState } from "../../../enums/LoadingState";
-import { useReset } from "../../../hooks/useReset";
 import { AuthService } from "../../../classes/AuthService";
 import { UseStores } from "../../../stores/StoreContexts";
 import { useForm } from "react-hook-form";
 import { observer } from "mobx-react-lite";
 import { generateFirebaseAuthErrorMessage } from "../../../utils";
+import { useReset } from "../../../hooks/data/useReset";
 
 interface ISignUpForm {
   displayName: string;

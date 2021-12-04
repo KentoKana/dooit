@@ -1,5 +1,5 @@
 import { useQueryClient } from "react-query";
-import { UseStores } from "../stores/StoreContexts";
+import { UseStores } from "../../stores/StoreContexts";
 
 /**
  * Hook to reset all data cached via React Query

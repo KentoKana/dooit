@@ -4,11 +4,11 @@ import { Heading, Image, Text } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import dayjs from "dayjs";
 import { FlairTag } from "../FlairTag";
-import { useGetProjectCreationOptions } from "../../hooks/useGetProjectCreationOptions";
 import { truncateText } from "../../utils";
 import { ProjectGetDto } from "../../Dtos/project/ProjectGetDto.dto";
 import { UserGetWithProfileDto } from "../../Dtos/project/UserGetWithProfileDto.dto";
 import { UseStores } from "../../stores/StoreContexts";
+import { useGetProjectCreationOptions } from "../../hooks/data/useGetProjectCreationOptions";
 
 interface IProjectListProps {
   project: ProjectGetDto;

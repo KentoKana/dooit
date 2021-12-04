@@ -1,7 +1,7 @@
 import { useQuery } from "react-query";
-import { UserProfileViewDto } from "../Dtos/user/UserProfileViewDto.dto";
-import { UserRoute } from "../enums/ApiRoutes";
-import { UseStores } from "../stores/StoreContexts";
+import { UserProfileViewDto } from "../../Dtos/user/UserProfileViewDto.dto";
+import { UserRoute } from "../../enums/ApiRoutes";
+import { UseStores } from "../../stores/StoreContexts";
 
 export const useUserSettingsData = () => {
     const { uiStore, userStore } = UseStores();

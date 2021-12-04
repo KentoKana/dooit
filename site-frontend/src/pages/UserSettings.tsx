@@ -3,9 +3,9 @@ import { observer } from "mobx-react-lite";
 import { UserProfileForm } from "../components/Forms/UserSettingsForm/index";
 import { AccountSecurityForm } from "../components/Forms/UserSettingsForm/SecurityForm";
 import { FormSkeleton } from "../components/Skeletons/FormSkeleton";
-import { useUserSettingsData } from "../hooks/useUserSettings";
 import { PageWrapper } from "../components/Layouts/PageWrapper";
 import { AiFillLock, AiOutlineUser, AiTwotoneSetting } from "react-icons/ai";
+import { useUserSettingsData } from "../hooks/data/useUserSettings";
 
 export const UserSettings = observer(() => {
   const userSettingsData = useUserSettingsData();

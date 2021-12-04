@@ -1,11 +1,11 @@
 import { observer } from "mobx-react-lite";
 import { PageWrapper } from "../components/Layouts/PageWrapper";
 import { AiOutlineFolderOpen } from "react-icons/ai";
-import { useUserProjects } from "../hooks/useUserProjects";
 import { ProjectList } from "../components/Project/ProjectList";
 import { Box, Flex, Heading, Text } from "@chakra-ui/react";
 import { UseStores } from "../stores/StoreContexts";
 import dayjs from "dayjs";
+import { useUserProjects } from "../hooks/data/useUserProjects";
 export const Portfolio = observer(() => {
   const { userStore } = UseStores();
   const projectData = useUserProjects(userStore?.user?.id ?? "");

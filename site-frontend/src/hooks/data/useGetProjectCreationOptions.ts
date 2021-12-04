@@ -1,7 +1,8 @@
 import { useQuery } from "react-query";
-import { ProjectCreateOptionsDto } from "../Dtos/project/ProjectCreateOptionsDto.dto";
-import { ProjectRoute } from "../enums/ApiRoutes";
-import { UseStores } from "../stores/StoreContexts";
+import { ProjectCreateOptionsDto } from "../../Dtos/project/ProjectCreateOptionsDto.dto";
+import { ProjectRoute } from "../../enums/ApiRoutes";
+import { UseStores } from "../../stores/StoreContexts";
+
 
 export const useGetProjectCreationOptions = () => {
     const { uiStore, userStore } = UseStores();

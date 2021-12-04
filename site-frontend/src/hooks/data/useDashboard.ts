@@ -1,6 +1,6 @@
 import { useQuery } from "react-query";
-import { AuthRoute } from "../enums/ApiRoutes";
-import { UseStores } from "../stores/StoreContexts";
+import { AuthRoute } from "../../enums/ApiRoutes";
+import { UseStores } from "../../stores/StoreContexts";
 
 export const useDashboard = () => {
     const { uiStore, userStore } = UseStores();

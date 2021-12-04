@@ -8,8 +8,8 @@ import { sidebarRoutes } from "../../routes/sidebarRoutes";
 import { useLocation } from "react-router-dom";
 import { UseStores } from "../../stores/StoreContexts";
 import { AuthService } from "../../classes/AuthService";
-import { useReset } from "../../hooks/useReset";
 import { AiOutlinePoweroff } from "react-icons/ai";
+import { useReset } from "../../hooks/data/useReset";
 
 export const Sidebar = observer(() => {
   const { uiStore, userStore } = UseStores();

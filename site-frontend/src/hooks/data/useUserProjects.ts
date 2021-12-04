@@ -1,8 +1,7 @@
 import { useQuery } from "react-query";
-import { ProjectGetListForUserDto } from "../Dtos/project/ProjectGetListForUserDto.dto";
-import { ProjectRoute } from "../enums/ApiRoutes";
-import { UseStores } from "../stores/StoreContexts";
-
+import { ProjectGetListForUserDto } from "../../Dtos/project/ProjectGetListForUserDto.dto";
+import { ProjectRoute } from "../../enums/ApiRoutes";
+import { UseStores } from "../../stores/StoreContexts";
 
 export const useUserProjects = (userId: string) => {
     const { uiStore, userStore } = UseStores();
