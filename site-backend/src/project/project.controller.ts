@@ -22,6 +22,11 @@ export class ProjectController {
         return this.projectService.getAllProjectsForUser(userId)
     }
 
+    @Get("get-project/:projectId")
+    async getProjectById(@Param("projectId") projectId) {
+        return this.projectService.getProjectById(projectId)
+    }
+
     @Post("create-project")
     @UseGuards(AuthGuard('firebase-jwt'))
     @UseInterceptors(FilesInterceptor("files"))

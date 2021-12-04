@@ -14,6 +14,7 @@ import { ProjectCreateOptionsDto } from 'src/Dtos/project/ProjectCreateOptionsDt
 import { ProjectGetListForUserDto } from 'src/Dtos/project/ProjectGetListForUserDto.dto';
 import { ProjectCreateDto } from 'src/Dtos/project/ProjectCreateDto.dto';
 import { ProjectGetDto } from 'src/Dtos/project/ProjectGetDto.dto';
+import { ProjectGetOneDto } from 'src/Dtos/project/ProjectGetOneDto';
 
 @Injectable()
 export class ProjectService {
@@ -165,7 +166,37 @@ export class ProjectService {
         }
     }
 
+    async getProjectById(projectId: number): Promise<ProjectGetOneDto> {
+        const project = await this.projectRepository.getProjectAndUserById(projectId);
+        const { id, name, flairId, description, user, projectItems } = project;
+        let dto: ProjectGetOneDto = {
+            id,
+            name,
+            flairId,
+            description,
+            user: {
+                id: user.id,
+                displayName: user.displayName,
+                title: user.profile.title,
+                bio: user.profile.bio,
+                dateJoined: user.dateCreated
+            },
+            projectItems: projectItems.sort((a, b) => a.order - b.order).map((item) => {
+                return {
+                    id: item.id,
+                    heading: item.heading,
+                    imageAlt: item.imageAlt,
+                    imageUrl: item.imageUrl,
+                    description: item.imageUrl,
+                    order: item.order
+                }
+            })
+        }
+        return dto;
+    }
+
     private generateFileName = (file: Express.Multer.File, userId: string) => {
         return `projects/${userId}/${Date.now() + file.originalname.toString() + "." + /[^/]*$/.exec(file.mimetype)[0]}`
     }
+
 }

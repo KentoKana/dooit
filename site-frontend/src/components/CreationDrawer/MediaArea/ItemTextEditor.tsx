@@ -38,7 +38,7 @@ export const ItemTextEditor = ({
         }}
       />
       <Box textAlign="right" opacity={0.7} fontSize="sm">
-        {watchItem[selectedItemIndex]?.description.length ?? 0}/1000
+        {watchItem[selectedItemIndex]?.description?.length ?? 0}/1000
       </Box>
       <Textarea
         background="#fff"

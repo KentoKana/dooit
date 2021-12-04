@@ -14,12 +14,15 @@ export class ProjectRepository extends Repository<Project>{
         return projects;
     }
 
-    async getProject(projectId: number) {
+    async getProjectAndUserById(projectId: number) {
         const project = await this
             .createQueryBuilder("project")
-            .where("project.id = :projectId", { projectId: projectId })
+            .leftJoinAndSelect("project.user", "user")
+            .leftJoinAndSelect("user.profile", "profile")
             .leftJoinAndSelect("project.projectItems", "projectItems")
+            .where("project.id = :projectId", { projectId: projectId })
             .getOne();
+
         return project;
     }
 }

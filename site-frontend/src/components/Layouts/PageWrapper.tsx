@@ -5,22 +5,28 @@ import { ReactNode } from "react";
 interface IPageWrapperProps {
   headingIcon?: ReactNode;
   pageHeading?: string;
+  headingFontSize?: string | number | string[] | number[];
   children?: ReactNode;
 }
 export const PageWrapper = observer(
-  ({ children, pageHeading, headingIcon }: IPageWrapperProps) => {
+  ({
+    children,
+    pageHeading,
+    headingIcon,
+    headingFontSize = "18px",
+  }: IPageWrapperProps) => {
     return (
       <Box as="main">
         {pageHeading && (
           <Heading
             as="h1"
-            fontSize="18px"
+            fontSize={headingFontSize}
             color="grey.700"
             display="flex"
             alignItems="center"
           >
             <Text>{headingIcon}</Text>{" "}
-            <Text as="span" ml={2}>
+            <Text as="span" ml={headingIcon ? 2 : undefined}>
               {pageHeading}
             </Text>
           </Heading>
