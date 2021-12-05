@@ -7,7 +7,6 @@ import { FlairTag } from "../FlairTag";
 import { truncateText } from "../../utils";
 import { ProjectGetDto } from "../../Dtos/project/ProjectGetDto.dto";
 import { UserGetWithProfileDto } from "../../Dtos/project/UserGetWithProfileDto.dto";
-import { UseStores } from "../../stores/StoreContexts";
 import { useGetProjectCreationOptions } from "../../hooks/data/useGetProjectCreationOptions";
 
 interface IProjectListProps {
@@ -16,7 +15,6 @@ interface IProjectListProps {
 }
 export const ProjectCard = observer(
   ({ project, userData }: IProjectListProps) => {
-    const { userStore } = UseStores();
     const projectOptions = useGetProjectCreationOptions();
     const projectFlair = projectOptions.data?.flairs?.find(
       (flair) => flair.id === project.flairId
@@ -27,7 +25,7 @@ export const ProjectCard = observer(
         display="block"
         key={project.id}
         as={RouterLink}
-        to={`/${userStore.user?.displayName}/${project.id}`}
+        to={`/${userData.displayName}/${project.id}`}
         _hover={{
           textDecoration: "none",
           color: "primary",

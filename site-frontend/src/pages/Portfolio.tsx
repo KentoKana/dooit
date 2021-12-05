@@ -70,7 +70,7 @@ export const Portfolio = observer(() => {
               <Button
                 variant="outline"
                 onClick={() => {
-                  history.push(`/${userStore.user?.displayName}`);
+                  history.push(`/${projectData.data?.user?.displayName}`);
                   setDrawerOpen(false);
                 }}
               >

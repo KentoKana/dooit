@@ -47,7 +47,7 @@ export const mainRoutes: IRoutes[] = [
         path: LocalRoutes.UserSettings
     },
     {
-        isPrivate: true,
+        isPrivate: false,
         component: Portfolio,
         path: LocalRoutes.Portfolio
     },
