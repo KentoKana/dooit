@@ -3,7 +3,6 @@ import { PageWrapper } from "../components/Layouts/PageWrapper";
 import { AiOutlineFolderOpen } from "react-icons/ai";
 import { ProjectList } from "../components/Project/ProjectList";
 import { Box, Button, Container, Flex, Heading, Text } from "@chakra-ui/react";
-import { UseStores } from "../stores/StoreContexts";
 import dayjs from "dayjs";
 import { useUserProjects } from "../hooks/data/useUserProjects";
 import { useEffect, useState } from "react";
@@ -11,10 +10,11 @@ import { isNullOrUndefined } from "../utils";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import { DrawerTemplate } from "../components/DrawerTemplate";
 import { Project } from "./Project";
+
 export const Portfolio = observer(() => {
-  const { userStore } = UseStores();
-  const { projectId } = useParams<{ username: string; projectId?: string }>();
-  const projectData = useUserProjects(userStore?.user?.id ?? "");
+  const { projectId, username } =
+    useParams<{ username: string; projectId?: string }>();
+  const projectData = useUserProjects(username);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(
     !isNullOrUndefined(projectId)
   );

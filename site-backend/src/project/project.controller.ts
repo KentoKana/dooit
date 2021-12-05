@@ -17,9 +17,8 @@ export class ProjectController {
     }
 
     @Get("get-all-for-user/:userId")
-    @UseGuards(AuthGuard('firebase-jwt'))
-    async getAllforUser(@Req() request: Request, @Param("userId") userId) {
-        return this.projectService.getAllProjectsForUser(userId)
+    async getAllforUser(@Param("userId") userId) {
+        return this.projectService.getAllProjectsForUserByUsername(userId)
     }
 
     @Get("get-project/:projectId")

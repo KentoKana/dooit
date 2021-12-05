@@ -5,10 +5,11 @@ import { EntityRepository, Repository } from 'typeorm';
 @Injectable()
 @EntityRepository(Project)
 export class ProjectRepository extends Repository<Project>{
-    async getAllProjectsForUser(userId: string) {
+    async getAllProjectsForUserByUsername(username: string) {
         const projects = await this
             .createQueryBuilder("project")
-            .where("project.userId = :userId", { userId: userId })
+            .leftJoinAndSelect("project.user", "user")
+            .where("user.username = :username", { username: username })
             .leftJoinAndSelect("project.projectItems", "projectItems")
             .getMany();
         return projects;

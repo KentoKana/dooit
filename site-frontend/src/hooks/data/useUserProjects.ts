@@ -4,12 +4,12 @@ import { ProjectRoute } from "../../enums/ApiRoutes";
 import { UseStores } from "../../stores/StoreContexts";
 
 export const useUserProjects = (userId: string) => {
-    const { uiStore, userStore } = UseStores();
+    const { uiStore } = UseStores();
 
     return useQuery("allProjectsForUser", async () => {
         return await uiStore.apiRequest<ProjectGetListForUserDto>(`${ProjectRoute.GetAllProjectsForUser}/${userId}`)
             .then((data) => {
                 return data
             })
-    }, { enabled: userStore.isSignedIn });
+    });
 }

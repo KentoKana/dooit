@@ -38,9 +38,9 @@ export class ProjectService {
         return dto;
     }
 
-    async getAllProjectsForUser(userId: string): Promise<ProjectGetListForUserDto> {
-        const projects = await this.projectRepository.getAllProjectsForUser(userId)
-        const currentUser = await this.userRepository.getUserWithProfileByUserId(userId);
+    async getAllProjectsForUserByUsername(username: string): Promise<ProjectGetListForUserDto> {
+        const projects = await this.projectRepository.getAllProjectsForUserByUsername(username)
+        const currentUser = await this.userRepository.getUserWithProfileByUsername(username);
         if (!projects) {
             let err = new HttpError();
             err.status = HttpStatus.NOT_FOUND.toString();
@@ -66,7 +66,7 @@ export class ProjectService {
             })
             return {
                 id: project.id,
-                userId: userId,
+                userId: username,
                 name: project.name,
                 flairId: project.flairId,
                 dateCreated: project.dateCreated,

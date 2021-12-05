@@ -15,6 +15,15 @@ export class UserRepository extends Repository<User>{
         return user;
     }
 
+    async getUserWithProfileByUsername(username: string) {
+        const user = await this
+            .createQueryBuilder("user")
+            .leftJoinAndSelect("user.profile", "profile")
+            .where("user.username = :username", { username: username })
+            .getOne();
+        return user;
+    }
+
     async getUserByUsername(username: string) {
         const user = await this
             .createQueryBuilder("user")
