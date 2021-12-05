@@ -28,13 +28,13 @@ export class UserService {
 
         return {
             id: user.id,
-            displayName: user.displayName,
+            username: user.username,
             email: user.email,
         };
     }
 
     async checkUsernameAvailability(username: string) {
-        const user = await this.usersRepository.getUserByDisplayName(username);
+        const user = await this.usersRepository.getUserByUsername(username);
         if (user) {
             return false;
         }
@@ -43,11 +43,11 @@ export class UserService {
 
     async create(@Body() userDto: UserCreateDto): Promise<UserGetCreatedDto> {
         let userToCreate: User = new User();
-        const { displayName, email } = userDto;
+        const { username, email } = userDto;
 
         userToCreate = {
             ...userToCreate,
-            displayName,
+            username,
             email,
             id: userDto.id,
             isActive: true
@@ -55,7 +55,7 @@ export class UserService {
         const created = await this.usersRepository.save(userToCreate);
         return {
             id: userDto.id,
-            displayName: created.displayName,
+            username: created.username,
             email: created.email,
         }
     }
@@ -70,7 +70,7 @@ export class UserService {
         }
         return {
             id: user.id,
-            displayName: user.displayName,
+            username: user.username,
             email: user.email
         };
     }
@@ -84,10 +84,10 @@ export class UserService {
             }, HttpStatus.NOT_FOUND);
         }
 
-        const { displayName, email, profile } = user;
+        const { username, email, profile } = user;
 
         return {
-            displayName,
+            username,
             email,
             profile
         };
@@ -117,7 +117,7 @@ export class UserService {
         profile.bio = userEditDto.profile.bio;
         profile.title = userEditDto.profile.title;
         let user = userToUpdate;
-        user.displayName = userEditDto.displayName;
+        user.username = userEditDto.username;
         user.email = userEditDto.email;
         user.profile = {
             ...user.profile,

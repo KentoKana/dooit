@@ -15,10 +15,10 @@ export class UserRepository extends Repository<User>{
         return user;
     }
 
-    async getUserByDisplayName(displayName: string) {
+    async getUserByUsername(username: string) {
         const user = await this
             .createQueryBuilder("user")
-            .where("user.displayName = :displayName", { displayName: displayName })
+            .where("user.username = :username", { username: username })
             .getOne();
         return user;
     }

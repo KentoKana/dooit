@@ -13,7 +13,7 @@ export const Jumbotron = observer(() => {
       p={5}
       style={gradient}
     >
-      <Heading as="h1">Howdy, {userStore.user?.displayName}!</Heading>
+      <Heading as="h1">Howdy, {userStore.user?.username}!</Heading>
     </Box>
   );
 });

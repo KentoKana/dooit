@@ -23,7 +23,7 @@ import { UserProfileViewDto } from "../../../Dtos/user/UserProfileViewDto.dto";
 import { UserRoute } from "../../../enums/ApiRoutes";
 
 interface IProfileEditForm {
-  displayName: string;
+  username: string;
   email: string;
   bio?: string;
   title?: string;
@@ -87,23 +87,23 @@ export const UserProfileForm = observer(
       async (formData: IProfileEditForm) => {
         setLoadingState(LoadingState.Loading);
         let userEditDto = new UserEditDto();
-        const { email, displayName, bio, title } = formData;
+        const { email, username, bio, title } = formData;
         userEditDto = {
           email,
-          displayName,
+          username,
           profile: {
             bio,
             title,
           },
         };
-        if (userStore.user?.displayName !== displayName) {
+        if (userStore.user?.username !== username) {
           uiStore
             .apiRequest<{ username: string }, boolean>(
               UserRoute.CheckUsernameAvailability,
               {
                 method: "POST",
                 bodyData: {
-                  username: formData.displayName,
+                  username: formData.username,
                 },
               }
             )
@@ -111,7 +111,7 @@ export const UserProfileForm = observer(
               if (usernameIsAvailable) {
                 mutate(userEditDto);
               } else {
-                setError("displayName", {
+                setError("username", {
                   type: "taken",
                   message: "This username is taken.",
                 });
@@ -131,16 +131,16 @@ export const UserProfileForm = observer(
           <FormElement
             isRequired
             formLabel="Username"
-            formFor={"displayName"}
-            isInvalid={errors.displayName}
+            formFor={"username"}
+            isInvalid={errors.username}
             formField={
               <Input
-                defaultValue={data.displayName}
+                defaultValue={data.username}
                 disabled={loadingState === LoadingState.Loading}
-                id="displayName"
+                id="username"
                 type="text"
                 placeholder="Username"
-                {...register("displayName", {
+                {...register("username", {
                   pattern: {
                     value: /^[A-Za-z]+$/,
                     message: "Please enter a valid username",
@@ -149,7 +149,7 @@ export const UserProfileForm = observer(
                 })}
               />
             }
-            errorMessage={errors.displayName && errors.displayName.message}
+            errorMessage={errors.username && errors.username.message}
           />
           <FormElement
             formLabel="Title"

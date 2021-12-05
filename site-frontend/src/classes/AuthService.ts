@@ -2,7 +2,7 @@ import { AuthRoute, UserRoute } from "../enums/ApiRoutes";
 import { auth } from "../firebase";
 import { UiStore } from "../stores/UiStore";
 import { UserStore } from "../stores/UserStore";
-import { browserLocalPersistence, createUserWithEmailAndPassword, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword, updateProfile } from '@firebase/auth';
+import { browserLocalPersistence, createUserWithEmailAndPassword, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword } from '@firebase/auth';
 import { UserLoginByEmailDto } from "../Dtos/user/UserLoginByEmailDto.dto";
 import { UserCreateDto } from "../Dtos/user/UserCreateDto.dto";
 import { UserGetCreatedDto } from "../Dtos/user/UserGetCreatedDto.dto";
@@ -60,7 +60,7 @@ class AuthByEmailPassword {
                 .then((data) => {
                     userStore.user = {
                         id: data.id,
-                        displayName: data.displayName,
+                        username: data.username,
                         email: data.email,
                     };
                 })
@@ -72,16 +72,14 @@ class AuthByEmailPassword {
             .apiRequest<{ username: string }, boolean>(UserRoute.CheckUsernameAvailability, {
                 method: "POST",
                 bodyData: {
-                    username: formData.displayName
+                    username: formData.username
                 },
             }).then(async (usernameIsAvailable) => {
                 if (usernameIsAvailable) {
                     const userCred = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-                    updateProfile(userCred.user, { displayName: formData.displayName });
-                    const userCred_1 = userCred;
-                    const token = await userCred_1.user.getIdToken();
+                    const token = await userCred.user.getIdToken();
                     localStorage.setItem("user-jwt", token);
-                    formData.id = userCred_1.user.uid;
+                    formData.id = userCred.user.uid;
                     userStore.isSignedIn = true;
                     const data = await uiStore
                         .apiRequest<UserCreateDto, UserGetCreatedDto>(AuthRoute.Create, {
@@ -90,7 +88,7 @@ class AuthByEmailPassword {
                         });
                     userStore.user = {
                         id: data.id,
-                        displayName: data.displayName,
+                        username: data.username,
                         email: data.email,
                     };
                     return data;

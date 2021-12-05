@@ -49,7 +49,7 @@ export class ProjectService {
         }
         const userProfile: UserGetWithProfileDto = {
             id: currentUser.id,
-            displayName: currentUser.displayName,
+            username: currentUser.username,
             bio: currentUser.profile?.bio ?? "",
             dateJoined: currentUser.dateCreated
         }
@@ -176,7 +176,7 @@ export class ProjectService {
             description,
             user: {
                 id: user.id,
-                displayName: user.displayName,
+                username: user.username,
                 title: user.profile.title,
                 bio: user.profile.bio,
                 dateJoined: user.dateCreated

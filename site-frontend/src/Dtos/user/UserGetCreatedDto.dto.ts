@@ -1,5 +1,5 @@
 export class UserGetCreatedDto {
     id: string;
-    displayName: string;
+    username: string;
     email: string;
 }

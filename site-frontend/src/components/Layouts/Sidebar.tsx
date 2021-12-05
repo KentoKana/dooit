@@ -38,7 +38,7 @@ export const Sidebar = observer(() => {
                   to={
                     route.url !== LocalRoutes.Portfolio
                       ? route.url
-                      : `/${userStore.user?.displayName ?? ""}`
+                      : `/${userStore.user?.username ?? ""}`
                   }
                   variant={
                     route.url === selectedLink

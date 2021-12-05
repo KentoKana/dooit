@@ -4,7 +4,7 @@ import { UserGetWithProfileDto } from "./UserGetWithProfileDto.dto";
 export class ProjectGetOneDto {
     id: number;
     name: string;
-    flairId: string;
+    flairId: number;
     description: string;
     user: UserGetWithProfileDto;
     projectItems: ProjectItemGetDto[]

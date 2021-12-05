@@ -12,7 +12,7 @@ import { generateFirebaseAuthErrorMessage } from "../../../utils";
 import { useReset } from "../../../hooks/data/useReset";
 
 interface ISignUpForm {
-  displayName: string;
+  username: string;
   email: string;
   password: string;
 }
@@ -43,7 +43,7 @@ export const SignUpForm = observer(({ onCreate }: ISignUpFormProps) => {
       authService
         .createUserWithEmailAndPassword({
           id: "",
-          displayName: formData.displayName,
+          username: formData.username,
           password: formData.password,
           email: formData.email,
         })
@@ -74,7 +74,7 @@ export const SignUpForm = observer(({ onCreate }: ISignUpFormProps) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <FormControl isInvalid={errors.displayName} mb={3}>
+      <FormControl isInvalid={errors.username} mb={3}>
         <FormLabel htmlFor="username" mr={0} mb={2}>
           Username:{" "}
         </FormLabel>
@@ -82,7 +82,7 @@ export const SignUpForm = observer(({ onCreate }: ISignUpFormProps) => {
           id="username"
           disabled={loadingState === LoadingState.Loading}
           placeholder="Username"
-          {...register("displayName", {
+          {...register("username", {
             pattern: {
               value: /^[A-Za-z]+$/,
               message: "Please enter a valid username",
@@ -91,7 +91,7 @@ export const SignUpForm = observer(({ onCreate }: ISignUpFormProps) => {
           })}
         />
         <FormErrorMessage>
-          {errors.displayName && errors.displayName.message}
+          {errors.username && errors.username.message}
         </FormErrorMessage>
       </FormControl>
       <FormControl isInvalid={errors.email} mb={3}>

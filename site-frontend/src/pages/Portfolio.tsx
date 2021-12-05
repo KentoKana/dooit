@@ -43,7 +43,7 @@ export const Portfolio = observer(() => {
           </Box>
           <Box width="35%" p={5} background="grey.50" height="100%">
             <Heading as="h3" fontSize="lg">
-              {projectData.data?.user?.displayName}
+              {projectData.data?.user?.username}
             </Heading>
             {projectData?.data?.user?.bio && (
               <Text>{projectData.data?.user.bio}</Text>
@@ -70,7 +70,7 @@ export const Portfolio = observer(() => {
               <Button
                 variant="outline"
                 onClick={() => {
-                  history.push(`/${projectData.data?.user?.displayName}`);
+                  history.push(`/${projectData.data?.user?.username}`);
                   setDrawerOpen(false);
                 }}
               >

@@ -1,7 +1,7 @@
 import { UserProfileGetDto } from "./UserProfileGetDto.dto";
 
 export class UserProfileViewDto {
-    displayName: string;
+    username: string;
     email: string;
     profile: UserProfileGetDto;
 }
