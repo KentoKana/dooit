@@ -187,7 +187,7 @@ export class ProjectService {
                     heading: item.heading,
                     imageAlt: item.imageAlt,
                     imageUrl: item.imageUrl,
-                    description: item.imageUrl,
+                    description: item.description,
                     order: item.order
                 }
             })

@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { isNullOrUndefined } from "../utils";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import { DrawerTemplate } from "../components/DrawerTemplate";
-import { Project } from "./Project";
+import { ProjectSingle } from "../components/Project/ProjectSingle";
 
 export const Portfolio = observer(() => {
   const { projectId, username } =
@@ -25,6 +25,8 @@ export const Portfolio = observer(() => {
   useEffect(() => {
     if (projectId) {
       setDrawerOpen(true);
+    } else {
+      setDrawerOpen(false);
     }
   }, [projectId, history, location]);
 
@@ -81,7 +83,7 @@ export const Portfolio = observer(() => {
         }
       >
         <Container maxWidth="1200px">
-          <Project />
+          <ProjectSingle />
         </Container>
       </DrawerTemplate>
     </PageWrapper>

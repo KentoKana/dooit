@@ -23,7 +23,6 @@ export class ProjectRepository extends Repository<Project>{
             .leftJoinAndSelect("project.projectItems", "projectItems")
             .where("project.id = :projectId", { projectId: projectId })
             .getOne();
-
         return project;
     }
 }
