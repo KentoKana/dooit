@@ -22,6 +22,7 @@ export const Sidebar = ({
   const {
     register,
     formState: { errors },
+    watch,
   } = formHook;
 
   return (
@@ -34,7 +35,7 @@ export const Sidebar = ({
             formFor={"name"}
             isInvalid={errors.name ? true : false}
             maxLengthDisplay={{
-              currentLengthCount: formHook.watch("name").length,
+              currentLengthCount: watch("name").length,
               maxLength: 150,
             }}
             formField={
@@ -42,11 +43,15 @@ export const Sidebar = ({
                 required
                 maxLength={150}
                 id="name"
+                value={watch("name")}
                 className="chakra-input css-r7n77o"
-                placeholder="Name your project with something catchy!"
+                placeholder="Name your pr oject with something catchy!"
                 {...register("name", {
                   required: "Please enter a project name",
                 })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  formHook.setValue(`name`, e.target.value);
+                }}
               />
             }
             errorMessage={errors.name && errors.name.message}
@@ -61,14 +66,14 @@ export const Sidebar = ({
             formFor={"projectDescription"}
             isInvalid={errors.projectDescription ? true : false}
             maxLengthDisplay={{
-              currentLengthCount: formHook.watch("projectDescription").length,
+              currentLengthCount: watch("projectDescription").length,
               maxLength: 800,
             }}
             formField={
               <>
                 <DebounceInput
                   required
-                  value={formHook.watch("projectDescription")}
+                  value={watch("projectDescription")}
                   className="chakra-textarea css-ry2iob"
                   element="textarea"
                   id="projectDescription"

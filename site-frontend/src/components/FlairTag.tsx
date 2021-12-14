@@ -18,3 +18,4 @@ export const FlairTag = ({ flair, size }: IFlairTagProps) => {
     </Tag>
   );
 };
+ 

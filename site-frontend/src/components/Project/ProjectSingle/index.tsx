@@ -35,20 +35,23 @@ export const ProjectSingle = () => {
               }}
               navigation={true}
             >
-              {data?.projectItems.map((item) => {
-                return (
-                  <SwiperSlide key={item.id}>
-                    <Image
-                      src={item.imageUrl}
-                      alt={item.description}
-                      w="100%"
-                    />
-                    <Box mt={5}>
-                      <Text>{item.description}</Text>
-                    </Box>
-                  </SwiperSlide>
-                );
-              })}
+              {data?.projectItems &&
+                data?.projectItems[0].imageUrl &&
+                data?.projectItems[0].description &&
+                data?.projectItems?.map((item) => {
+                  return (
+                    <SwiperSlide key={item.id}>
+                      <Image
+                        src={item.imageUrl}
+                        alt={item.description}
+                        w="100%"
+                      />
+                      <Box mt={5}>
+                        <Text>{item.description}</Text>
+                      </Box>
+                    </SwiperSlide>
+                  );
+                })}
             </Swiper>
           </Box>
         </Box>

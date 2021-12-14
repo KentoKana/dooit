@@ -22,7 +22,12 @@ export const App = observer(() => {
   useEffect(() => {
     const app = new AppInit(userStore, uiStore);
     app
-      .init((loaded) => setAppInitialized(loaded))
+      .init((loaded) => {
+        setAppInitialized(true);
+      })
+      .then(() => {
+        setAppInitialized(true);
+      })
       .catch((error) => {
         return <Redirect to={LocalRoutes.Login} />;
       });

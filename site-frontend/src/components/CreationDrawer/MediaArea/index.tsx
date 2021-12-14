@@ -167,9 +167,14 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
                   selectedItemIndex={selectedItemIndex}
                   formHook={formHook}
                   imageRef={imageRef}
-                  mediaUrl={URL.createObjectURL(
+                  mediaUrl={
                     watchProjectItems[selectedItemIndex].mediaAsFile
-                  )}
+                      ? URL.createObjectURL(
+                          watchProjectItems![selectedItemIndex]!
+                            .mediaAsFile! as Blob
+                        )
+                      : ""
+                  }
                 />
               </Box>
             ) : (

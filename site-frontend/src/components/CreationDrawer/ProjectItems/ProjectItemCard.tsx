@@ -32,7 +32,7 @@ export const ProjectItemCard = ({
     projectItemsState[currentItemIndex].mediaUrl
   ) {
     mediaPreviewUrl = URL.createObjectURL(
-      projectItemsState[currentItemIndex].mediaAsFile
+      projectItemsState[currentItemIndex].mediaAsFile as Blob
     );
   }
   return (
