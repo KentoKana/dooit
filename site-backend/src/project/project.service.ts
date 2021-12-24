@@ -189,7 +189,16 @@ export class ProjectService {
                     imageAlt: item.imageAlt,
                     imageUrl: item.imageUrl,
                     description: item.description,
-                    order: item.order
+                    order: item.order,
+                    tags: item.imageTags?.map((tag) => {
+                        return {
+                            width: tag.width,
+                            title: tag.title,
+                            url: tag.url,
+                            xCoordinate: tag.xCoordinate,
+                            yCoordinate: tag.yCoordinate,
+                        }
+                    }) ?? []
                 }
             })
         }

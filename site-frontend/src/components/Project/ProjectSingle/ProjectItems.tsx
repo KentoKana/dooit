@@ -11,10 +11,12 @@ import "swiper/swiper.scss"; // core Swiper
 import "swiper/components/navigation/navigation.scss"; // Navigation module
 import "swiper/components/scrollbar/scrollbar.scss"; // Navigation module
 import "swiper/components/pagination/pagination.scss"; // Navigation module
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import "./style.css";
 import { ProjectGetOneDto } from "../../../Dtos/project/ProjectGetOneDto";
+import { useWindowSize } from "../../../hooks/useWindowSize";
+import { ProjectItemGetDto } from "../../../Dtos/project/ProjectItemGetDto.dto";
 
 SwiperCore.use([Keyboard, Navigation, Pagination, Mousewheel]);
 interface IProjectItemsProps {
@@ -23,8 +25,40 @@ interface IProjectItemsProps {
 export const ProjectItems = ({ data }: IProjectItemsProps) => {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const [width, height] = useWindowSize();
+  const [items, setItems] = useState<ProjectItemGetDto[]>(
+    data?.projectItems ?? []
+  );
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+
+  // Rerender on window size change.
+  useEffect(() => {
+    if (data) {
+      setItems([
+        ...(data?.projectItems.map((item) => {
+          const tags =
+            item.tags?.map((tag) => {
+              const scaleFactor =
+                (imageRef.current?.offsetWidth ?? 1) / (tag.width ?? 1);
+              return {
+                ...tag,
+                xCoordinate: (tag.xCoordinate ?? 0) * scaleFactor,
+                yCoordinate: (tag.yCoordinate ?? 0) * scaleFactor,
+              };
+            }) ?? [];
+
+          return {
+            ...item,
+            tags: [...tags],
+          };
+        }) ?? []),
+      ]);
+    }
+  }, [data?.projectItems, width, height, imagesLoaded]);
+
   return (
-    <Box mt={7} maxW="600px">
+    <Box mt={7} maxW="600px" w="100%" position="relative">
       <Flex justifyContent="end" gap={3}>
         <Button ref={prevRef} variant="unstyled">
           <ChevronLeftIcon fontSize="30px" />
@@ -48,19 +82,46 @@ export const ProjectItems = ({ data }: IProjectItemsProps) => {
           nextEl: nextRef.current,
         }}
       >
-        {data?.projectItems &&
-          data?.projectItems[0].imageUrl &&
-          data?.projectItems[0].description &&
-          data?.projectItems?.map((item) => {
-            return (
-              <SwiperSlide key={item.id}>
-                <Image src={item.imageUrl} alt={item.description} w="100%" />
+        {items?.map((item) => {
+          return (
+            <SwiperSlide key={item.id}>
+              <Image
+                id={`image_${item.id}`}
+                src={item.imageUrl}
+                alt={item.description}
+                w="100%"
+                ref={imageRef}
+                onLoad={() => {
+                  setImagesLoaded(true);
+                }}
+              />
+              {item.tags?.map((tag, index) => {
+                return (
+                  <Box
+                    onClick={() => {}}
+                    cursor="pointer"
+                    key={index}
+                    zIndex={3}
+                    position="absolute"
+                    height="20px"
+                    width="20px"
+                    borderRadius="50%"
+                    border="5px solid"
+                    borderColor="primary"
+                    top={tag?.yCoordinate}
+                    left={tag?.xCoordinate}
+                    background="#fff"
+                  ></Box>
+                );
+              })}
+              {item.description && (
                 <Box mt={5}>
                   <Text>{item.description}</Text>
                 </Box>
-              </SwiperSlide>
-            );
-          })}
+              )}
+            </SwiperSlide>
+          );
+        })}
       </Swiper>
     </Box>
   );

@@ -1,3 +1,5 @@
+import { ImageTagsDto } from "./ImageTagsDto.dto";
+
 export class ProjectItemGetDto {
     id: number;
     heading?: string;
@@ -5,4 +7,5 @@ export class ProjectItemGetDto {
     imageAlt?: string;
     description?: string;
     order: number;
+    tags?: ImageTagsDto[]
 }

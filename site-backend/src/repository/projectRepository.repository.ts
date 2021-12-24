@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { ImageTag } from 'src/models/imageTag.entity';
 import { Project } from 'src/models/project.entity';
-import { EntityRepository, Repository } from 'typeorm';
+import { ProjectItem } from 'src/models/projectItem.entity';
+import { EntityRepository, getRepository, Repository } from 'typeorm';
 
 @Injectable()
 @EntityRepository(Project)
@@ -16,13 +18,8 @@ export class ProjectRepository extends Repository<Project>{
     }
 
     async getProjectAndUserById(projectId: number) {
-        const project = await this
-            .createQueryBuilder("project")
-            .leftJoinAndSelect("project.user", "user")
-            .leftJoinAndSelect("user.profile", "profile")
-            .leftJoinAndSelect("project.projectItems", "projectItems")
-            .where("project.id = :projectId", { projectId: projectId })
-            .getOne();
+        const project = await getRepository(Project)
+            .findOne(projectId, { relations: ["projectItems", "user", "user.profile", "projectItems.imageTags"] });
         return project;
     }
 }
