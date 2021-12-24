@@ -168,11 +168,12 @@ export class ProjectService {
 
     async getProjectById(projectId: number): Promise<ProjectGetOneDto> {
         const project = await this.projectRepository.getProjectAndUserById(projectId);
-        const { id, name, flairId, description, user, projectItems } = project;
+        const { id, name, flairId, description, user, projectItems, dateCreated } = project;
         let dto: ProjectGetOneDto = {
             id,
             name,
             flairId,
+            dateCreated,
             description,
             user: {
                 id: user.id,

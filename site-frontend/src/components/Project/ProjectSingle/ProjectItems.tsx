@@ -1,5 +1,3 @@
-import { useRef } from "react";
-import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { Box, Flex, Text, Image, Button } from "@chakra-ui/react";
 import { Swiper, SwiperSlide } from "swiper/react/";
 import SwiperCore, {
@@ -13,7 +11,8 @@ import "swiper/swiper.scss"; // core Swiper
 import "swiper/components/navigation/navigation.scss"; // Navigation module
 import "swiper/components/scrollbar/scrollbar.scss"; // Navigation module
 import "swiper/components/pagination/pagination.scss"; // Navigation module
-
+import { useRef } from "react";
+import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import "./style.css";
 import { ProjectGetOneDto } from "../../../Dtos/project/ProjectGetOneDto";
 
@@ -35,7 +34,8 @@ export const ProjectItems = ({ data }: IProjectItemsProps) => {
         </Button>
       </Flex>
       <Swiper
-        mousewheel
+        direction="horizontal"
+        mousewheel={{ forceToAxis: true }}
         initialSlide={0}
         pagination={{ type: "progressbar" }}
         slidesPerView={1}

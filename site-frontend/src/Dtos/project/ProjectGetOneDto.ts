@@ -7,5 +7,6 @@ export class ProjectGetOneDto {
     flairId: number;
     description: string;
     user: UserGetWithProfileDto;
-    projectItems: ProjectItemGetDto[]
+    projectItems: ProjectItemGetDto[];
+    dateCreated: Date;
 }
