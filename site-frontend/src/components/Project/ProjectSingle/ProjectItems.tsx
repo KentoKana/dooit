@@ -9,7 +9,6 @@ import {
   PopoverContent,
   PopoverBody,
   PopoverArrow,
-  useOutsideClick,
 } from "@chakra-ui/react";
 import { Swiper, SwiperSlide } from "swiper/react/";
 import SwiperCore, {
@@ -44,7 +43,7 @@ export const ProjectItems = ({ data }: IProjectItemsProps) => {
     data?.projectItems ?? []
   );
   const [imagesLoaded, setImagesLoaded] = useState(false);
-  const [selectedTag, setSelectedTag] = useState<{ tagId?: number }>();
+  const [displayTags, setDisplayTags] = useState(false);
   // Rerender on window size change.
   useEffect(() => {
     if (data) {
@@ -69,12 +68,7 @@ export const ProjectItems = ({ data }: IProjectItemsProps) => {
       ]);
     }
   }, [data?.projectItems, width, height, imagesLoaded]);
-  useOutsideClick({
-    ref: tagRef,
-    handler: () => {
-      setSelectedTag(undefined);
-    },
-  });
+
   return (
     <Box mt={7} maxW="700px" w="100%" position="relative">
       <Flex
@@ -109,7 +103,13 @@ export const ProjectItems = ({ data }: IProjectItemsProps) => {
         {items?.map((item) => {
           return (
             <SwiperSlide key={item.id}>
-              <Button variant="unstyled" h="100%" onClick={() => {}}>
+              <Button
+                variant="unstyled"
+                h="100%"
+                onClick={() => {
+                  setDisplayTags((prev) => !prev);
+                }}
+              >
                 <Image
                   position="relative"
                   id={`image_${item.id}`}
@@ -125,35 +125,33 @@ export const ProjectItems = ({ data }: IProjectItemsProps) => {
               {item.tags?.map((tag, index) => {
                 return (
                   <Popover
-                    isOpen={tag.id === selectedTag?.tagId}
-                    onClose={() => setSelectedTag(undefined)}
+                    autoFocus={false}
+                    isOpen={displayTags}
                     placement="bottom"
                     closeOnBlur={false}
                   >
-                    <PopoverTrigger>
-                      <Box
-                        ref={tagRef}
-                        onClick={() => {
-                          setSelectedTag({ tagId: tag.id });
-                        }}
-                        cursor="pointer"
-                        key={index}
-                        zIndex={3}
-                        position="absolute"
-                        height="20px"
-                        width="20px"
-                        borderRadius="50%"
-                        border="5px solid"
-                        borderColor="primary"
-                        top={tag?.yCoordinate}
-                        left={tag?.xCoordinate}
-                        background="#fff"
-                      ></Box>
-                    </PopoverTrigger>
+                    {displayTags && (
+                      <PopoverTrigger>
+                        <Box
+                          cursor="pointer"
+                          key={index}
+                          zIndex={3}
+                          position="absolute"
+                          height="20px"
+                          width="20px"
+                          borderRadius="50%"
+                          border="5px solid"
+                          borderColor="primary"
+                          top={tag?.yCoordinate}
+                          left={tag?.xCoordinate}
+                          background="#fff"
+                        ></Box>
+                      </PopoverTrigger>
+                    )}
                     <PopoverContent width="100%" maxWidth={"200px"}>
                       <PopoverArrow />
                       <PopoverBody>
-                        <Box>
+                        <Box ref={tagRef}>
                           {tag?.url ? (
                             <a href={tag?.url} target="_blank" rel="noreferrer">
                               <LinkIcon mr={3} />
