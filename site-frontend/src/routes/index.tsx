@@ -53,7 +53,7 @@ export const mainRoutes: IRoutes[] = [
   },
   {
     isPrivate: false,
-    component: <ProjectSingle showSidebar={true} />,
+    component: <ProjectSingle showSidebar={false} />,
     path: LocalRoutes.ProjectSingle,
   },
 ];

@@ -4,7 +4,7 @@ import { ProjectItem } from './projectItem.entity';
 @Entity({ name: "image_tags" })
 export class ImageTag {
     @PrimaryGeneratedColumn()
-    id: string;
+    id: number;
 
     @Column({ length: 200 })
     title: string;

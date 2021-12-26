@@ -143,6 +143,7 @@ export const CreationDrawer = observer(
               order: index,
               imageTags: item.tags.map((tag) => {
                 return {
+                  id: tag.id ?? undefined,
                   title: tag.title,
                   url: tag.url,
                   width: tag.originalImageSize,

@@ -1,4 +1,16 @@
-import { Box, Flex, Text, Image, Button } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Text,
+  Image,
+  Button,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverBody,
+  PopoverArrow,
+  useOutsideClick,
+} from "@chakra-ui/react";
 import { Swiper, SwiperSlide } from "swiper/react/";
 import SwiperCore, {
   Keyboard,
@@ -12,7 +24,7 @@ import "swiper/components/navigation/navigation.scss"; // Navigation module
 import "swiper/components/scrollbar/scrollbar.scss"; // Navigation module
 import "swiper/components/pagination/pagination.scss"; // Navigation module
 import { useEffect, useRef, useState } from "react";
-import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
+import { ChevronLeftIcon, ChevronRightIcon, LinkIcon } from "@chakra-ui/icons";
 import "./style.css";
 import { ProjectGetOneDto } from "../../../Dtos/project/ProjectGetOneDto";
 import { useWindowSize } from "../../../hooks/useWindowSize";
@@ -26,12 +38,13 @@ export const ProjectItems = ({ data }: IProjectItemsProps) => {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
   const imageRef = useRef<HTMLImageElement>(null);
+  const tagRef = useRef(null);
   const [width, height] = useWindowSize();
   const [items, setItems] = useState<ProjectItemGetDto[]>(
     data?.projectItems ?? []
   );
   const [imagesLoaded, setImagesLoaded] = useState(false);
-
+  const [selectedTag, setSelectedTag] = useState<{ tagId?: number }>();
   // Rerender on window size change.
   useEffect(() => {
     if (data) {
@@ -56,7 +69,12 @@ export const ProjectItems = ({ data }: IProjectItemsProps) => {
       ]);
     }
   }, [data?.projectItems, width, height, imagesLoaded]);
-
+  useOutsideClick({
+    ref: tagRef,
+    handler: () => {
+      setSelectedTag(undefined);
+    },
+  });
   return (
     <Box mt={7} maxW="700px" w="100%" position="relative">
       <Flex
@@ -91,34 +109,63 @@ export const ProjectItems = ({ data }: IProjectItemsProps) => {
         {items?.map((item) => {
           return (
             <SwiperSlide key={item.id}>
-              <Image
-                position="relative"
-                id={`image_${item.id}`}
-                src={item.imageUrl}
-                alt={item.description}
-                w="100%"
-                ref={imageRef}
-                onLoad={() => {
-                  setImagesLoaded(true);
-                }}
-              />
+              <Button variant="unstyled" h="100%" onClick={() => {}}>
+                <Image
+                  position="relative"
+                  id={`image_${item.id}`}
+                  src={item.imageUrl}
+                  alt={item.description}
+                  w="100%"
+                  ref={imageRef}
+                  onLoad={() => {
+                    setImagesLoaded(true);
+                  }}
+                />
+              </Button>
               {item.tags?.map((tag, index) => {
                 return (
-                  <Box
-                    onClick={() => {}}
-                    cursor="pointer"
-                    key={index}
-                    zIndex={3}
-                    position="absolute"
-                    height="20px"
-                    width="20px"
-                    borderRadius="50%"
-                    border="5px solid"
-                    borderColor="primary"
-                    top={tag?.yCoordinate}
-                    left={tag?.xCoordinate}
-                    background="#fff"
-                  ></Box>
+                  <Popover
+                    isOpen={tag.id === selectedTag?.tagId}
+                    onClose={() => setSelectedTag(undefined)}
+                    placement="bottom"
+                    closeOnBlur={false}
+                  >
+                    <PopoverTrigger>
+                      <Box
+                        ref={tagRef}
+                        onClick={() => {
+                          setSelectedTag({ tagId: tag.id });
+                        }}
+                        cursor="pointer"
+                        key={index}
+                        zIndex={3}
+                        position="absolute"
+                        height="20px"
+                        width="20px"
+                        borderRadius="50%"
+                        border="5px solid"
+                        borderColor="primary"
+                        top={tag?.yCoordinate}
+                        left={tag?.xCoordinate}
+                        background="#fff"
+                      ></Box>
+                    </PopoverTrigger>
+                    <PopoverContent width="100%" maxWidth={"200px"}>
+                      <PopoverArrow />
+                      <PopoverBody>
+                        <Box>
+                          {tag?.url ? (
+                            <a href={tag?.url} target="_blank" rel="noreferrer">
+                              <LinkIcon mr={3} />
+                              {tag?.title}
+                            </a>
+                          ) : (
+                            <Text textAlign="center">{tag?.title}</Text>
+                          )}
+                        </Box>
+                      </PopoverBody>
+                    </PopoverContent>
+                  </Popover>
                 );
               })}
               {item.description && (

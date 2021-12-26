@@ -192,6 +192,7 @@ export class ProjectService {
                     order: item.order,
                     tags: item.imageTags?.map((tag) => {
                         return {
+                            id: tag.id,
                             width: tag.width,
                             title: tag.title,
                             url: tag.url,

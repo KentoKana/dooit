@@ -23,6 +23,7 @@ interface IMediaAreaImageContainerProps {
 }
 
 export interface ITag {
+  id?: number;
   xCoord: number;
   yCoord: number;
   title: string;
