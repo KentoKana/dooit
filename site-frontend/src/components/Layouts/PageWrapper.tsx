@@ -31,7 +31,7 @@ export const PageWrapper = observer(
             </Text>
           </Heading>
         )}
-        <Box my={5}>{children}</Box>
+        <Box my={pageHeading ? 5 : 0}>{children}</Box>
       </Box>
     );
   }

@@ -58,8 +58,14 @@ export const ProjectItems = ({ data }: IProjectItemsProps) => {
   }, [data?.projectItems, width, height, imagesLoaded]);
 
   return (
-    <Box mt={7} maxW="600px" w="100%" position="relative">
-      <Flex justifyContent="end" gap={3}>
+    <Box mt={7} maxW="700px" w="100%" position="relative">
+      <Flex
+        justifyContent="end"
+        gap={3}
+        position="absolute"
+        top="-40px"
+        right="0"
+      >
         <Button ref={prevRef} variant="unstyled">
           <ChevronLeftIcon fontSize="30px" />
         </Button>
@@ -86,6 +92,7 @@ export const ProjectItems = ({ data }: IProjectItemsProps) => {
           return (
             <SwiperSlide key={item.id}>
               <Image
+                position="relative"
                 id={`image_${item.id}`}
                 src={item.imageUrl}
                 alt={item.description}

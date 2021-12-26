@@ -5,33 +5,36 @@ import { UseStores } from "../../stores/StoreContexts";
 import { Sidebar } from "./Sidebar";
 
 interface IBasePageProps {
+  showSidebar: boolean;
   children: ReactNode;
 }
-export const BasePage = observer(({ children }: IBasePageProps) => {
-  const { userStore } = UseStores();
+export const BasePage = observer(
+  ({ children, showSidebar }: IBasePageProps) => {
+    const { userStore } = UseStores();
 
-  const getDesktopWidths = useCallback(() => {
-    let sidebar = "20%";
-    let main = "80%";
-    if (!userStore.isSignedIn) {
-      main = "100%";
-    }
-    return {
-      sidebar: sidebar,
-      main: main,
-    };
-  }, [userStore.isSignedIn]);
+    const getDesktopWidths = useCallback(() => {
+      let sidebar = "20%";
+      let main = "80%";
+      if (!showSidebar) {
+        main = "100%";
+      }
+      return {
+        sidebar: sidebar,
+        main: main,
+      };
+    }, [userStore.isSignedIn]);
 
-  return (
-    <Container maxW="container.xl" as="div" marginTop="100px">
-      <Flex>
-        {userStore.isSignedIn && (
-          <Box width={getDesktopWidths().sidebar} pr={5}>
-            <Sidebar />
-          </Box>
-        )}
-        <Box width={getDesktopWidths().main}>{children}</Box>
-      </Flex>
-    </Container>
-  );
-});
+    return (
+      <Container maxW="container.xl" as="div" marginTop="100px">
+        <Flex>
+          {userStore.isSignedIn && showSidebar && (
+            <Box width={getDesktopWidths().sidebar} pr={5}>
+              <Sidebar />
+            </Box>
+          )}
+          <Box width={getDesktopWidths().main}>{children}</Box>
+        </Flex>
+      </Container>
+    );
+  }
+);

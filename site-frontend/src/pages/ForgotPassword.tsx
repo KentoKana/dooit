@@ -13,12 +13,14 @@ import { UseStores } from "../stores/StoreContexts";
 import { generateFirebaseAuthErrorMessage, isNullOrUndefined } from "../utils";
 import { LocalRoutes } from "../enums/LocalRoutes";
 import { FirebaseError } from "@firebase/util";
+import { BasePage } from "../components/Layouts/BasePage";
+import { IPageProps } from "../utils/SharedInterfaces";
 
 interface IForgotPasswordForm {
   email: string;
   serverError: string;
 }
-export const ForgotPassword = observer(() => {
+export const ForgotPassword = observer(({ showSidebar }: IPageProps) => {
   const {
     handleSubmit,
     register,
@@ -60,63 +62,65 @@ export const ForgotPassword = observer(() => {
   );
 
   return (
-    <Flex
-      minHeight="100vh"
-      direction="column"
-      justifyContent="center"
-      alignItems="center"
-      padding="20px"
-    >
-      <Heading as="h1" mb="50">
-        Reset Your Password
-      </Heading>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Box mb="5">
-          <FormControl isInvalid={!!errors.email} mb={3}>
-            <FormLabel htmlFor="email" mr={0} mb={2}>
-              E-mail:{" "}
-            </FormLabel>
-            <Input
-              disabled={loadingState === LoadingState.Loading}
-              id="email"
-              type="text"
-              placeholder="E-mail"
-              {...register("email", {
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "Invalid email address",
-                },
-                required: "Please enter your e-mail.",
-              })}
-            />
-            <FormErrorMessage>
-              {errors.email && errors.email.message}
-            </FormErrorMessage>
-          </FormControl>
-          <FormControl isInvalid={!isNullOrUndefined(errors.serverError)}>
-            <FormErrorMessage justifyContent="center">
-              {errors.serverError && errors.serverError.message}
-            </FormErrorMessage>
-          </FormControl>
+    <BasePage showSidebar={showSidebar}>
+      <Flex
+        minHeight="100vh"
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
+        padding="20px"
+      >
+        <Heading as="h1" mb="50">
+          Reset Your Password
+        </Heading>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Box mb="5">
+            <FormControl isInvalid={!!errors.email} mb={3}>
+              <FormLabel htmlFor="email" mr={0} mb={2}>
+                E-mail:{" "}
+              </FormLabel>
+              <Input
+                disabled={loadingState === LoadingState.Loading}
+                id="email"
+                type="text"
+                placeholder="E-mail"
+                {...register("email", {
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: "Invalid email address",
+                  },
+                  required: "Please enter your e-mail.",
+                })}
+              />
+              <FormErrorMessage>
+                {errors.email && errors.email.message}
+              </FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={!isNullOrUndefined(errors.serverError)}>
+              <FormErrorMessage justifyContent="center">
+                {errors.serverError && errors.serverError.message}
+              </FormErrorMessage>
+            </FormControl>
+          </Box>
+          <Button
+            onClick={() => {
+              clearErrors(["serverError"]);
+            }}
+            isLoading={loadingState === LoadingState.Loading}
+            type="submit"
+            variant="primary"
+            width="100%"
+            disabled={loadingState === LoadingState.Loading}
+          >
+            Request Reset Link
+          </Button>
+        </form>
+        <Box mt="5">
+          <Text as="span" variant="link">
+            <Link to={LocalRoutes.Login}>Back to Login Page</Link>
+          </Text>
         </Box>
-        <Button
-          onClick={() => {
-            clearErrors(["serverError"]);
-          }}
-          isLoading={loadingState === LoadingState.Loading}
-          type="submit"
-          variant="primary"
-          width="100%"
-          disabled={loadingState === LoadingState.Loading}
-        >
-          Request Reset Link
-        </Button>
-      </form>
-      <Box mt="5">
-        <Text as="span" variant="link">
-          <Link to={LocalRoutes.Login}>Back to Login Page</Link>
-        </Text>
-      </Box>
-    </Flex>
+      </Flex>
+    </BasePage>
   );
 });

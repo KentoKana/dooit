@@ -6,8 +6,10 @@ import { LocalRoutes } from "../enums/LocalRoutes";
 import { isNullOrUndefined } from "../utils";
 import { useState } from "react";
 import { UseStores } from "../stores/StoreContexts";
+import { BasePage } from "../components/Layouts/BasePage";
+import { IPageProps } from "../utils/SharedInterfaces";
 
-export const SignUp = observer(() => {
+export const SignUp = observer(({ showSidebar }: IPageProps) => {
   const { userStore } = UseStores();
 
   const [created, setCreated] = useState(false);
@@ -19,29 +21,31 @@ export const SignUp = observer(() => {
   }
 
   return (
-    <Flex
-      justifyContent="center"
-      alignItems="center"
-      // minHeight="100vh"
-      direction="column"
-      padding="20px"
-    >
-      <Flex direction="column" justifyContent="center" alignItems="center">
-        <Heading as="h1" mb="5">
-          Sign Up
-        </Heading>
-        <SignUpForm
-          onCreate={() => {
-            setCreated(true);
-          }}
-        />
+    <BasePage showSidebar={showSidebar}>
+      <Flex
+        justifyContent="center"
+        alignItems="center"
+        // minHeight="100vh"
+        direction="column"
+        padding="20px"
+      >
+        <Flex direction="column" justifyContent="center" alignItems="center">
+          <Heading as="h1" mb="5">
+            Sign Up
+          </Heading>
+          <SignUpForm
+            onCreate={() => {
+              setCreated(true);
+            }}
+          />
+        </Flex>
+        <Box mt="5">
+          Already have an account? Log in{" "}
+          <Text as="span" variant="link">
+            <Link to={LocalRoutes.Login}>here!</Link>
+          </Text>
+        </Box>
       </Flex>
-      <Box mt="5">
-        Already have an account? Log in{" "}
-        <Text as="span" variant="link">
-          <Link to={LocalRoutes.Login}>here!</Link>
-        </Text>
-      </Box>
-    </Flex>
+    </BasePage>
   );
 });

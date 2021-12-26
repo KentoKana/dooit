@@ -10,7 +10,6 @@ import { useEffect, useState } from "react";
 import { UseStores } from "./stores/StoreContexts";
 import { AppInit } from "./classes/AppInit";
 import { NavBar } from "./components/Layouts/NavBar";
-import { BasePage } from "./components/Layouts/BasePage";
 import { LocalRoutes } from "./enums/LocalRoutes";
 import { mainRoutes } from "./routes";
 import { Box, Flex } from "@chakra-ui/layout";
@@ -38,30 +37,32 @@ export const App = observer(() => {
       {appInitialized ? (
         <Router>
           <NavBar />
-          <BasePage>
-            <Switch>
-              {mainRoutes.map((route) => {
-                return route.isPrivate ? (
-                  <PrivateRoute
-                    key={route.path}
-                    exact
-                    path={route.path}
-                    authenticationPath={
-                      route.authenticationPath ?? LocalRoutes.Login
-                    }
-                    component={route.component}
-                  />
-                ) : (
-                  <Route
-                    key={route.path}
-                    exact
-                    path={route.path}
-                    component={route.component}
-                  />
-                );
-              })}
-            </Switch>
-          </BasePage>
+          <Switch>
+            {mainRoutes.map((route) => {
+              return route.isPrivate ? (
+                <PrivateRoute
+                  key={route.path}
+                  exact
+                  path={route.path}
+                  authenticationPath={
+                    route.authenticationPath ?? LocalRoutes.Login
+                  }
+                  render={() => {
+                    return route.component;
+                  }}
+                />
+              ) : (
+                <Route
+                  key={route.path}
+                  exact
+                  path={route.path}
+                  render={() => {
+                    return route.component;
+                  }}
+                />
+              );
+            })}
+          </Switch>
         </Router>
       ) : (
         <Flex
