@@ -34,6 +34,8 @@ export const ProjectItems = ({ data }: IProjectItemsProps) => {
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [displayTags, setDisplayTags] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [selectedTag, setSelectedTag] = useState<number>();
+
   // Rerender on window size change.
   useEffect(() => {
     if (data) {
@@ -137,6 +139,10 @@ export const ProjectItems = ({ data }: IProjectItemsProps) => {
                       displayTags={displayTags}
                       tag={tag}
                       key={tag.id}
+                      onSelectedTagChange={(tagId) => {
+                        setSelectedTag(tagId);
+                      }}
+                      selectedTag={selectedTag}
                     />
                   );
                 })}

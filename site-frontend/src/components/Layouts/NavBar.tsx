@@ -37,7 +37,7 @@ export const NavBar = observer(() => {
       width="100%"
       backgroundColor={"white"}
       top="0"
-      zIndex={1}
+      zIndex={2}
     >
       <Container maxW="container.xl" height="80px">
         <Flex

@@ -1,6 +1,7 @@
-import { Box, Container, Flex } from "@chakra-ui/react";
+import { Box, Container, Flex, useMediaQuery } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useCallback } from "react";
+import { BreakPoints } from "../../enums/BreakPoints";
 import { UseStores } from "../../stores/StoreContexts";
 import { Sidebar } from "./Sidebar";
 
@@ -11,6 +12,7 @@ interface IBasePageProps {
 export const BasePage = observer(
   ({ children, showSidebar }: IBasePageProps) => {
     const { userStore } = UseStores();
+    const [showMobileLayout] = useMediaQuery(BreakPoints.Mobile);
 
     const getDesktopWidths = useCallback(() => {
       let sidebar = "20%";
@@ -25,7 +27,12 @@ export const BasePage = observer(
     }, [userStore.isSignedIn]);
 
     return (
-      <Container maxW="container.xl" as="div" marginTop="100px">
+      <Container
+        maxW="container.xl"
+        as="div"
+        marginTop="100px"
+        p={showMobileLayout ? 0 : undefined}
+      >
         <Flex>
           {userStore.isSignedIn && showSidebar && (
             <Box width={getDesktopWidths().sidebar} pr={5}>

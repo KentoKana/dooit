@@ -1,6 +1,14 @@
 import { useParams } from "react-router";
 import { useGetProjectById } from "../../../hooks/data/useGetProjectById";
-import { Box, Button, Container, Flex, Heading, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Container,
+  Flex,
+  Heading,
+  Text,
+  useMediaQuery,
+} from "@chakra-ui/react";
 
 import { ProjectItems } from "./ProjectItems";
 import { FlairTag } from "../../FlairTag";
@@ -12,6 +20,7 @@ import { ProjectSingleSkeleton } from "../../Skeletons/ProjectSignleSkeleton";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { ArrowBackIcon } from "@chakra-ui/icons";
+import { BreakPoints } from "../../../enums/BreakPoints";
 
 export const ProjectSingle = () => {
   const history = useHistory();
@@ -23,6 +32,8 @@ export const ProjectSingle = () => {
   const options = client.getQueryData<ProjectCreateOptionsDto>(
     "projectCreateOptions"
   );
+  const [showMobileLayout] = useMediaQuery(BreakPoints.Mobile);
+
   const flairDto = options?.flairs.find((flair) => flair.id === data?.flairId);
   useEffect(() => {
     setLoadDelayFinished(false);
@@ -34,12 +45,16 @@ export const ProjectSingle = () => {
 
   return (
     <Container maxW="1000px">
-      <Flex w="100%">
+      <Flex w="100%" flexDirection={showMobileLayout ? "column" : "row"}>
         {isLoading || !loadDelayFinished ? (
           <ProjectSingleSkeleton />
         ) : (
           <>
-            <Box width="40%" p={5} pt={0}>
+            <Box
+              width={showMobileLayout ? "100%" : "40%"}
+              p={showMobileLayout ? 0 : 5}
+              pt={0}
+            >
               <Box>
                 <Heading my={7}>{data?.name}</Heading>
                 <Box fontSize="md" fontWeight="bold" color="grey.700">
@@ -69,8 +84,8 @@ export const ProjectSingle = () => {
               </Box>
             </Box>
             <Box
-              width="60%"
-              p={5}
+              width={showMobileLayout ? "100%" : "60%"}
+              p={showMobileLayout ? 0 : 5}
               pt={0}
               display="flex"
               justifyContent="center"
