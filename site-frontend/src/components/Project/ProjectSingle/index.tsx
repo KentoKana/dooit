@@ -1,6 +1,6 @@
 import { useParams } from "react-router";
 import { useGetProjectById } from "../../../hooks/data/useGetProjectById";
-import { Box, Container, Flex, Heading, Text } from "@chakra-ui/react";
+import { Box, Button, Container, Flex, Heading, Text } from "@chakra-ui/react";
 
 import { ProjectItems } from "./ProjectItems";
 import { FlairTag } from "../../FlairTag";
@@ -10,8 +10,11 @@ import dayjs from "dayjs";
 import { Link } from "react-router-dom";
 import { ProjectSingleSkeleton } from "../../Skeletons/ProjectSignleSkeleton";
 import { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 
 export const ProjectSingle = () => {
+  const history = useHistory();
   const { projectId } = useParams<{ username: string; projectId: string }>();
   const project = useGetProjectById(parseInt(projectId));
   const { data, isLoading } = project;
@@ -37,21 +40,33 @@ export const ProjectSingle = () => {
         ) : (
           <>
             <Box width="40%" p={5} pt={0}>
-              <Heading my={7}>{data?.name}</Heading>
-              <Box fontSize="md" fontWeight="bold" color="grey.700">
-                <Link to={`/${data?.user.username}/`}>
-                  By {data?.user.username}
-                </Link>
-              </Box>
-              <Box fontSize="md" opacity={0.7} mb={3}>
-                Created {dayjs(data?.dateCreated).format("MMMM DD, YYYY")}
-              </Box>
-              {flairDto && (
-                <Box mb={3}>
-                  <FlairTag flair={flairDto} />
+              <Box>
+                <Heading my={7}>{data?.name}</Heading>
+                <Box fontSize="md" fontWeight="bold" color="grey.700">
+                  <Link to={`/${data?.user.username}/`}>
+                    By {data?.user.username}
+                  </Link>
                 </Box>
-              )}
-              <Text>{data?.description}</Text>
+                <Box fontSize="md" opacity={0.7} mb={3}>
+                  Created {dayjs(data?.dateCreated).format("MMMM DD, YYYY")}
+                </Box>
+                {flairDto && (
+                  <Box mb={3}>
+                    <FlairTag flair={flairDto} />
+                  </Box>
+                )}
+                <Text>{data?.description}</Text>
+              </Box>
+              <Box my="3">
+                <Button
+                  variant="unstyled"
+                  onClick={() => {
+                    history.goBack();
+                  }}
+                >
+                  <ArrowBackIcon /> Back
+                </Button>
+              </Box>
             </Box>
             <Box
               width="60%"
