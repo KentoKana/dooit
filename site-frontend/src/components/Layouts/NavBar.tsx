@@ -53,7 +53,7 @@ export const NavBar = observer(() => {
                 userStore.isSignedIn ? LocalRoutes.Dashboard : LocalRoutes.Home
               }
             >
-              <Text>DooIt</Text>
+              <Text>ForkIt</Text>
             </Link>
           </Flex>
           <UnorderedList
@@ -116,6 +116,7 @@ export const NavBar = observer(() => {
           isOpen={isOpen}
           onProjectCreation={(creationState) => {
             setProjectCreationState(creationState);
+            onOpen();
           }}
         />
       )}

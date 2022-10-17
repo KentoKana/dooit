@@ -14,7 +14,7 @@ export const sidebarRoutes = [
   },
   {
     url: LocalRoutes.Portfolio,
-    label: "My Portfolio",
+    label: "My Recipes",
     icon: <AiOutlineFolderOpen />,
   },
   {

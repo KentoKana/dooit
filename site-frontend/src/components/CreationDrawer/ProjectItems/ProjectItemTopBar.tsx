@@ -63,12 +63,12 @@ export const ProjectItemTopBar = ({
 
         <IconButton
           display={["none", "none", "initial"]}
-          title="Add item"
+          title="Add Step"
           size="xs"
           background="transparent"
           backgroundColor="transparent"
           onClick={onAdd}
-          aria-label="Add Item"
+          aria-label="Add Step"
           icon={<AddIcon />}
         />
       </Box>

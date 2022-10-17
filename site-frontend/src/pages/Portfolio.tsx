@@ -14,8 +14,10 @@ import { BasePage } from "../components/Layouts/BasePage";
 import { IPageProps } from "../utils/SharedInterfaces";
 
 export const Portfolio = observer(({ showSidebar }: IPageProps) => {
-  const { projectId, username } =
-    useParams<{ username: string; projectId?: string }>();
+  const { projectId, username } = useParams<{
+    username: string;
+    projectId?: string;
+  }>();
   const projectData = useUserProjects(username);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(
     !isNullOrUndefined(projectId)
@@ -35,7 +37,7 @@ export const Portfolio = observer(({ showSidebar }: IPageProps) => {
   return (
     <BasePage showSidebar={showSidebar}>
       <PageWrapper
-        pageHeading="My Portfolio"
+        pageHeading="My Recipes"
         headingIcon={<AiOutlineFolderOpen />}
       >
         {projectData && (

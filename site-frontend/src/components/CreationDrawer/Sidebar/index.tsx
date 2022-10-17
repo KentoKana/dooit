@@ -31,7 +31,7 @@ export const Sidebar = ({
         <Box>
           <FormElement
             isRequired
-            formLabel="Project Name"
+            formLabel="Recipe Name"
             formFor={"name"}
             isInvalid={errors.name ? true : false}
             maxLengthDisplay={{
@@ -45,9 +45,9 @@ export const Sidebar = ({
                 id="name"
                 value={watch("name")}
                 className="chakra-input css-r7n77o"
-                placeholder="Name your pr oject with something catchy!"
+                placeholder="Name your recipe something catchy!"
                 {...register("name", {
-                  required: "Please enter a project name",
+                  required: "Please enter a name for your recipe",
                 })}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   formHook.setValue(`name`, e.target.value);
@@ -77,7 +77,7 @@ export const Sidebar = ({
                   className="chakra-textarea css-ry2iob"
                   element="textarea"
                   id="projectDescription"
-                  placeholder="E.g. I built a desk with recycled cedar wood..."
+                  placeholder="E.g. Lembas bread, enough to fill a stomach of a grown man!"
                   {...register("projectDescription", {
                     required: "Please enter a project description",
                   })}

@@ -24,7 +24,7 @@ export const Login = observer(({ showSidebar }: IPageProps) => {
           <Heading as="h1" mb="5">
             Log Into{" "}
             <Text as="span" color="primary">
-              DooIt
+              ForkIt
             </Text>
           </Heading>
           <LoginForm />

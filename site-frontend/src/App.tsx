@@ -75,7 +75,7 @@ export const App = observer(() => {
           <Box>
             <Spinner />
           </Box>
-          <Box>Hold on tight! We're initializing DooIt :P</Box>
+          <Box>Hold on tight! We're initializing ForkIt :P</Box>
         </Flex>
       )}
     </>

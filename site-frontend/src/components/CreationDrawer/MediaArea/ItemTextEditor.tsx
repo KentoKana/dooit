@@ -21,7 +21,7 @@ export const ItemTextEditor = ({
     <>
       <DebouncedTextInput
         maxLength={1000}
-        placeholder="✍️ Tell us something interesting about this item..."
+        placeholder="✍️ Describe your recipe step..."
         className="chakra-textarea css-1dt1p6p"
         element="textarea"
         debounceTimeout={300}

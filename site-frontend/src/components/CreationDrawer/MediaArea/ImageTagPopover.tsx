@@ -175,7 +175,7 @@ export const ImageTagPopover = ({
                       ? true
                       : false
                   }
-                  errorMessage="Please enter a valid URL. (E.g. https://dooit.today)"
+                  errorMessage="Please enter a valid URL. (E.g. https://ForkIt.today)"
                   formLabel="URL"
                   formFor="url"
                   formField={

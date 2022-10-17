@@ -18,7 +18,7 @@ export const AddItemButton = ({ onClick }: IAddItemButtonProps) => {
       flexShrink="inherit"
       onClick={onClick}
     >
-      <AddIcon /> Add Item
+      <AddIcon /> Add Step
     </Button>
   );
 };

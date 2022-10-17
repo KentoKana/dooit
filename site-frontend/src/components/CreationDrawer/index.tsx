@@ -73,14 +73,15 @@ export const CreationDrawer = observer(
 
     //#region Mutation handlers
     const onError = (err: HttpError) => {
-      onProjectCreation(LoadingState.Loaded);
+      onProjectCreation(LoadingState.Error);
       toast.close("creating-project");
       toast({
-        title: `Uh oh... :(`,
-        description: err.message,
+        title: `Uh oh... Something went wrong :(`,
+        description: `${err.message} Please try again later.`,
         status: "error",
         isClosable: true,
         position: "top",
+        duration: null,
       });
     };
     const onSuccess = (dto: ProjectGetDto) => {
@@ -89,7 +90,7 @@ export const CreationDrawer = observer(
         toast.close("creating-project");
         toast({
           id: "creation-success",
-          title: `Successfully created project!`,
+          title: `Successfully saved your recipe!`,
           status: "success",
           isClosable: true,
           position: "top",
@@ -116,12 +117,12 @@ export const CreationDrawer = observer(
           id: "creating-project",
           title: (
             <Flex alignItems="center">
-              Creating your project <Spinner ml="5px" />
+              Saving your recipe <Spinner ml="5px" />
             </Flex>
           ),
           status: "info",
           position: "top",
-          description: <Flex>Frantically generating your project...</Flex>,
+          description: <Flex>Frantically saving your recipe...</Flex>,
         });
 
         mutate({
@@ -205,12 +206,12 @@ export const CreationDrawer = observer(
             </Box>
             <Box>
               <Text as="div" fontSize={showMobileLayout ? "md" : "lg"}>
-                Create Project
+                Create Recipe
               </Text>
             </Box>
             <Box>
               <Button
-                title="Submit and Create Project"
+                title="Submit and Create Recipe"
                 type="submit"
                 form="project-form"
                 variant={!showMobileLayout ? "primary" : "unstyled"}
