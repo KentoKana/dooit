@@ -8,6 +8,8 @@ import { truncateText } from "../../utils";
 import { ProjectGetDto } from "../../Dtos/project/ProjectGetDto.dto";
 import { UserGetWithProfileDto } from "../../Dtos/project/UserGetWithProfileDto.dto";
 import { useGetProjectCreationOptions } from "../../hooks/data/useGetProjectCreationOptions";
+import { useQueryClient } from "react-query";
+import { useGetProjectById } from "../../hooks/data/useGetProjectById";
 
 interface IProjectListProps {
   project: ProjectGetDto;
@@ -19,13 +21,21 @@ export const ProjectCard = observer(
     const projectFlair = projectOptions.data?.flairs?.find(
       (flair) => flair.id === project.flairId
     );
+    const singleProject = useGetProjectById(project.id);
     const projectItemImage = project.projectItems.find((item) => item.imageUrl);
+    const queryClient = useQueryClient();
     return (
       <Link
         display="block"
         key={project.id}
         as={RouterLink}
         to={`/${userData.username}/${project.id}`}
+        onMouseOver={() => {
+          queryClient.prefetchQuery(
+            ["project", project.id],
+            () => singleProject
+          );
+        }}
         _hover={{
           textDecoration: "none",
           color: "primary",

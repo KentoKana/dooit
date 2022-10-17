@@ -27,7 +27,6 @@ export const ProjectSingle = () => {
   const { projectId } = useParams<{ username: string; projectId: string }>();
   const project = useGetProjectById(parseInt(projectId));
   const { data, isLoading } = project;
-  const [loadDelayFinished, setLoadDelayFinished] = useState(false);
   const client = useQueryClient();
   const options = client.getQueryData<ProjectCreateOptionsDto>(
     "projectCreateOptions"
@@ -35,18 +34,11 @@ export const ProjectSingle = () => {
   const [showMobileLayout] = useMediaQuery(BreakPoints.Mobile);
 
   const flairDto = options?.flairs.find((flair) => flair.id === data?.flairId);
-  useEffect(() => {
-    setLoadDelayFinished(false);
-    const timeout = setTimeout(() => {
-      setLoadDelayFinished(true);
-    }, 100);
-    return () => clearTimeout(timeout);
-  }, []);
 
   return (
     <Container maxW="1000px">
       <Flex w="100%" flexDirection={showMobileLayout ? "column" : "row"}>
-        {isLoading || !loadDelayFinished ? (
+        {isLoading ? (
           <ProjectSingleSkeleton />
         ) : (
           <>
