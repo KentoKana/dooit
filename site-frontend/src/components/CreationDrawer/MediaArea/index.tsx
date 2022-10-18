@@ -142,7 +142,7 @@ export const MediaArea = ({ selectedItemIndex, formHook }: IMediaAreaProps) => {
       position="relative"
       width="100%"
       m={["0px", "0px", "20px"]}
-      maxWidth={["100%", "100%", "65%"]}
+      maxWidth={["100%", "500px", "500px"]}
     >
       {watchProjectItems &&
       watchProjectItems[selectedItemIndex] &&

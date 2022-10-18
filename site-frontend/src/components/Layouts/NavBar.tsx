@@ -116,7 +116,9 @@ export const NavBar = observer(() => {
           isOpen={isOpen}
           onProjectCreation={(creationState) => {
             setProjectCreationState(creationState);
-            onOpen();
+            if (creationState === LoadingState.Error) {
+              onOpen();
+            }
           }}
         />
       )}

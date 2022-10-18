@@ -101,37 +101,39 @@ export const ProjectItems = ({ data }: IProjectItemsProps) => {
         {items?.map((item, projectIndex) => {
           return (
             <SwiperSlide key={item.id}>
-              <Button
-                variant="unstyled"
-                h="100%"
-                onClick={() => {
-                  setDisplayTags((prev) => !prev);
-                }}
-              >
-                <Image
-                  position="relative"
-                  id={`image_${item.id}`}
-                  src={item.imageUrl}
-                  alt={item.description}
-                  w="100%"
-                  ref={imageRef}
-                  onLoad={() => {
-                    setImagesLoaded(true);
+              {!!item.imageUrl && (
+                <Button
+                  variant="unstyled"
+                  h="100%"
+                  onClick={() => {
+                    setDisplayTags((prev) => !prev);
                   }}
-                />
-                {item.tags?.some((tag) => tag) && (
-                  <Tag
-                    position="absolute"
-                    bottom="0"
-                    right="0"
-                    m={2}
-                    background="rgba(0,0,0,0.4)"
-                    color="#fff"
-                  >
-                    Tap to {displayTags ? "hide" : "show"} tags
-                  </Tag>
-                )}
-              </Button>
+                >
+                  <Image
+                    position="relative"
+                    id={`image_${item.id}`}
+                    src={item.imageUrl}
+                    alt={item.description}
+                    w="100%"
+                    ref={imageRef}
+                    onLoad={() => {
+                      setImagesLoaded(true);
+                    }}
+                  />
+                  {item.tags?.some((tag) => tag) && (
+                    <Tag
+                      position="absolute"
+                      bottom="0"
+                      right="0"
+                      m={2}
+                      background="rgba(0,0,0,0.4)"
+                      color="#fff"
+                    >
+                      Tap to {displayTags ? "hide" : "show"} tags
+                    </Tag>
+                  )}
+                </Button>
+              )}
               {projectIndex === currentSlide &&
                 item.tags?.map((tag) => {
                   return (

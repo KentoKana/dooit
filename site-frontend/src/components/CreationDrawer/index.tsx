@@ -217,11 +217,7 @@ export const CreationDrawer = observer(
                 variant={!showMobileLayout ? "primary" : "unstyled"}
                 color={!showMobileLayout ? "#fff" : "primary"}
               >
-                {!showMobileLayout ? (
-                  <Text as="span">Create!</Text>
-                ) : (
-                  <CheckIcon />
-                )}
+                <Text as="span">Create!</Text>
               </Button>
             </Box>
           </Box>
@@ -241,12 +237,6 @@ export const CreationDrawer = observer(
                     setSelectedItemIndex(selectedItemIndex);
                   }}
                   formHook={formHook}
-                />
-              }
-              contentArea={
-                <MediaArea
-                  formHook={formHook}
-                  selectedItemIndex={selectedItemIndex}
                 />
               }
             />

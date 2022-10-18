@@ -7,8 +7,8 @@ interface IAddItemButtonProps {
 export const AddItemButton = ({ onClick }: IAddItemButtonProps) => {
   return (
     <Button
-      w="150px"
-      h="150px"
+      w="85px"
+      h="85px"
       marginTop="26px"
       variant="unstyled"
       display="flex"

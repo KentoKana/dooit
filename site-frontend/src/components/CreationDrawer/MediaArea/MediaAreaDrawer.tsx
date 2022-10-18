@@ -1,37 +1,29 @@
-import { Flex, IconButton } from "@chakra-ui/react";
+import { Button, Flex, IconButton } from "@chakra-ui/react";
 import { CheckIcon } from "@chakra-ui/icons";
 import { observer } from "mobx-react-lite";
 import { DrawerTemplate } from "../../DrawerTemplate";
 import { IMediaAreaProps, MediaArea } from ".";
 
-interface IMobileMediaAreaDrawerProps extends IMediaAreaProps {
+interface IMediaAreaDrawerProps extends IMediaAreaProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export const MobileMediaAreaDrawer = observer(
-  ({
-    isOpen,
-    onClose,
-    selectedItemIndex,
-    formHook,
-  }: IMobileMediaAreaDrawerProps) => {
+export const MediaAreaDrawer = observer(
+  ({ isOpen, onClose, selectedItemIndex, formHook }: IMediaAreaDrawerProps) => {
     return (
       <DrawerTemplate
         isOpen={isOpen}
-        size="full"
-        placement="left"
+        size="lg"
+        placement="right"
         onClose={onClose}
         drawerFooter={
           <Flex position="absolute" bottom={0} m={1}>
-            <IconButton
+            <Button
               ml={1}
               _hover={{ opacity: 1 }}
               opacity={1}
               className="mediabox"
-              width="60px"
-              height="60px"
-              borderRadius="50%"
               title="Save Item"
               variant="primary"
               icon={<CheckIcon />}
@@ -39,7 +31,9 @@ export const MobileMediaAreaDrawer = observer(
               onClick={() => {
                 onClose();
               }}
-            />
+            >
+              Done
+            </Button>
           </Flex>
         }
       >

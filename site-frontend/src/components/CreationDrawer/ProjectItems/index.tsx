@@ -9,7 +9,7 @@ import {
 import { useFieldArray, UseFormReturn, useWatch } from "react-hook-form";
 import { IProject } from "../";
 import { useCallback, useEffect, useState } from "react";
-import { MobileMediaAreaDrawer } from "../MediaArea/MobileMediaAreaDrawer";
+import { MediaAreaDrawer } from "../MediaArea/MediaAreaDrawer";
 import { BreakPoints } from "../../../enums/BreakPoints";
 import { AddItemButton } from "./AddItemButton";
 import { ProjectItemCard } from "./ProjectItemCard";
@@ -41,7 +41,7 @@ export const ProjectItems = observer(
       name: "projectItems",
     });
     const [isDragging, setIsDragging] = useState(false);
-    const mobileMediaAreaDisclosure = useDisclosure();
+    const mediaAreaDisclosure = useDisclosure();
     const deleteConfirmationDisclosure = useDisclosure();
     const [displayMobileMediaAreaDrawer] = useMediaQuery(BreakPoints.Mobile);
     const watchProjectItems = useWatch({
@@ -106,11 +106,11 @@ export const ProjectItems = observer(
                               {...provided.dragHandleProps}
                               {...provided.draggableProps}
                               ref={provided.innerRef}
-                              minHeight={"150px"}
-                              maxWidth={"150px"}
+                              minHeight={"120px"}
+                              maxWidth={"120px"}
                               my={3}
                               direction="column"
-                              mx={2}
+                              mr={2}
                             >
                               <ProjectItemCard
                                 projectItemsState={watchProjectItems}
@@ -124,9 +124,7 @@ export const ProjectItems = observer(
                                       tags: [],
                                     });
                                     handleItemSelect(index + 1);
-                                    if (displayMobileMediaAreaDrawer) {
-                                      mobileMediaAreaDisclosure.onOpen();
-                                    }
+                                    mediaAreaDisclosure.onOpen();
                                   },
                                   onRemoveItem: () => {
                                     if (
@@ -159,9 +157,7 @@ export const ProjectItems = observer(
                                     handleItemSelect(index + 1);
                                   },
                                   onItemSelect: () => {
-                                    if (displayMobileMediaAreaDrawer) {
-                                      mobileMediaAreaDisclosure.onOpen();
-                                    }
+                                    mediaAreaDisclosure.onOpen();
                                     handleItemSelect(index);
                                   },
                                 }}
@@ -180,18 +176,16 @@ export const ProjectItems = observer(
                           description: "",
                         });
                         handleItemSelect(watchProjectItems.length);
-                        if (displayMobileMediaAreaDrawer) {
-                          mobileMediaAreaDisclosure.onOpen();
-                        }
+                        mediaAreaDisclosure.onOpen();
                       }}
                     />
                   )}
                   {provided.placeholder}
-                  <MobileMediaAreaDrawer
+                  <MediaAreaDrawer
                     onClose={() => {
-                      mobileMediaAreaDisclosure.onClose();
+                      mediaAreaDisclosure.onClose();
                     }}
-                    isOpen={mobileMediaAreaDisclosure.isOpen}
+                    isOpen={mediaAreaDisclosure.isOpen}
                     formHook={formHook}
                     selectedItemIndex={selectedItemIndex}
                   />

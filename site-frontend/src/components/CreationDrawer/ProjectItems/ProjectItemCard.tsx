@@ -56,8 +56,8 @@ export const ProjectItemCard = ({
       />
       <Flex
         color="grey.700"
-        width={"150px"}
-        height={"150px"}
+        width={"120px"}
+        height={"120px"}
         transition="0.2s ease all"
         borderRadius="sm"
         backgroundColor={
@@ -112,9 +112,9 @@ export const ProjectItemCard = ({
                   {mediaPreviewUrl && (
                     <Image
                       borderRadius="sm"
-                      boxSize="110px"
+                      boxSize="85px"
                       _hover={{
-                        boxSize: "115px",
+                        boxSize: "85px",
                       }}
                       transition="0.2s ease all"
                       objectFit="cover"
@@ -127,7 +127,7 @@ export const ProjectItemCard = ({
                     !mediaPreviewUrl && (
                       <Text
                         fontSize="sm"
-                        maxWidth={"100px"}
+                        maxWidth={"85px"}
                         textAlign="left"
                         fontWeight="normal"
                         whiteSpace="break-spaces"
