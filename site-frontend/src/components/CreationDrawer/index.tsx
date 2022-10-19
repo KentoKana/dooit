@@ -1,14 +1,14 @@
-import { ArrowBackIcon, CheckIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import {
+  Box,
   Button,
   Flex,
-  Spinner,
-  useToast,
-  Box,
-  useDisclosure,
   IconButton,
-  useMediaQuery,
+  Spinner,
   Text,
+  useDisclosure,
+  useMediaQuery,
+  useToast
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -25,15 +25,20 @@ import { UseStores } from "../../stores/StoreContexts";
 import { DrawerTemplate } from "../DrawerTemplate";
 import { ActionConfirmationModal } from "./ActionConfirmationModal";
 import { DrawerLayout } from "./DrawerLayout";
-import { MediaArea } from "./MediaArea";
 import { IProjectItem } from "./ProjectItems";
 import { Sidebar } from "./Sidebar";
+export interface IIngredient {
+  ingredient: string;
+  quantity: number;
+  unit: string;
+}
 
 export interface IProject {
   name: string;
   projectDescription: string;
   flair?: string;
   projectItems: IProjectItem[];
+  ingredients: IIngredient[];
 }
 
 interface ICreationDrawerProps {
@@ -52,6 +57,7 @@ export const CreationDrawer = observer(
       return {
         name: "",
         projectDescription: "",
+        ingredients: [],
         projectItems: [
           {
             title: "",

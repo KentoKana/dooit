@@ -29,7 +29,7 @@ export const FormElement = ({
 }: IFormElementProps) => {
   return (
     <FormControl isInvalid={isInvalid} my={3} isRequired={isRequired}>
-      <FormLabel htmlFor={formFor} mr={0} mb={2}>
+      <FormLabel htmlFor={formFor} mr={0} mb={2} fontSize="sm">
         {formLabel}:
       </FormLabel>
       {formField}

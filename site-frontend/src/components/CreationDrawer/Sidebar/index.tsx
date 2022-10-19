@@ -1,12 +1,13 @@
 import { Input } from "@chakra-ui/input";
 import { Box } from "@chakra-ui/layout";
-import { Flex } from "@chakra-ui/react";
+import { Button, Flex, useDisclosure } from "@chakra-ui/react";
 import { Textarea } from "@chakra-ui/textarea";
 import { DebounceInput } from "react-debounce-input";
 import { UseFormReturn } from "react-hook-form";
 import { IProject } from "..";
 import { ProjectCreateOptionsDto } from "../../../Dtos/project/ProjectCreateOptionsDto.dto";
 import { FormElement } from "../../Forms/FormElement";
+import { IngredientsModal } from "../IngredientsModal";
 import { ProjectItems } from "../ProjectItems";
 import { FlairRadio } from "./FlairRadio";
 interface ISidebarProps {
@@ -25,6 +26,7 @@ export const Sidebar = ({
     formState: { errors },
     watch,
   } = formHook;
+  const ingredientsModalDisclosure = useDisclosure();
 
   return (
     <Box>
@@ -93,6 +95,21 @@ export const Sidebar = ({
               errorMessage={
                 errors.projectDescription && errors.projectDescription.message
               }
+            />
+          </Box>
+          <Box>
+            <Button
+              colorScheme="primary"
+              w="100%"
+              borderRadius="sm"
+              onClick={() => ingredientsModalDisclosure.onOpen()}
+            >
+              Add Ingredients +
+            </Button>
+            <IngredientsModal
+              isOpen={ingredientsModalDisclosure.isOpen}
+              onClose={ingredientsModalDisclosure.onClose}
+              formHook={formHook}
             />
           </Box>
           <Box>
