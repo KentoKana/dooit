@@ -2,13 +2,13 @@ import {
   Box,
   FormControl,
   FormErrorMessage,
-  FormLabel,
+  FormLabel
 } from "@chakra-ui/react";
 import { ReactNode } from "react";
 
 interface IFormElementProps {
   isRequired?: boolean;
-  formLabel: string;
+  formLabel?: string;
   formFor: string;
   isInvalid: boolean;
   formField: ReactNode;
@@ -28,10 +28,12 @@ export const FormElement = ({
   maxLengthDisplay,
 }: IFormElementProps) => {
   return (
-    <FormControl isInvalid={isInvalid} my={3} isRequired={isRequired}>
-      <FormLabel htmlFor={formFor} mr={0} mb={2} fontSize="sm">
-        {formLabel}:
-      </FormLabel>
+    <FormControl isInvalid={isInvalid} mt={3} isRequired={isRequired}>
+      {formLabel && (
+        <FormLabel htmlFor={formFor} mr={0} mb={2} fontSize="sm">
+          {formLabel}:
+        </FormLabel>
+      )}
       {formField}
       {maxLengthDisplay && (
         <Box textAlign="right" opacity={0.7} fontSize="sm">

@@ -1,20 +1,20 @@
 import { Box, Flex, useDisclosure, useMediaQuery } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
+import { useCallback, useEffect, useState } from "react";
 import {
   DragDropContext,
-  Droppable,
   Draggable,
-  DropResult,
+  Droppable,
+  DropResult
 } from "react-beautiful-dnd";
 import { useFieldArray, UseFormReturn, useWatch } from "react-hook-form";
 import { IProject } from "../";
-import { useCallback, useEffect, useState } from "react";
-import { MediaAreaDrawer } from "../MediaArea/MediaAreaDrawer";
 import { BreakPoints } from "../../../enums/BreakPoints";
+import { ActionConfirmationModal } from "../ActionConfirmationModal";
+import { MediaAreaDrawer } from "../MediaArea/MediaAreaDrawer";
+import { ITag } from "../MediaArea/MediaAreaImageContainer";
 import { AddItemButton } from "./AddItemButton";
 import { ProjectItemCard } from "./ProjectItemCard";
-import { ITag } from "../MediaArea/MediaAreaImageContainer";
-import { ActionConfirmationModal } from "../ActionConfirmationModal";
 export interface IProjectItem {
   title: string;
   description: string;
@@ -122,6 +122,7 @@ export const ProjectItems = observer(
                                       title: "",
                                       description: "",
                                       tags: [],
+                                      order: index,
                                     });
                                     handleItemSelect(index + 1);
                                     mediaAreaDisclosure.onOpen();
@@ -138,6 +139,7 @@ export const ProjectItems = observer(
                                           title: "",
                                           description: "",
                                           tags: [],
+                                          order: index,
                                         });
                                       } else {
                                         remove(index);
@@ -174,6 +176,8 @@ export const ProjectItems = observer(
                         insert(watchProjectItems.length, {
                           title: "",
                           description: "",
+                          order: watchProjectItems.length - 1,
+                          tags: [],
                         });
                         handleItemSelect(watchProjectItems.length);
                         mediaAreaDisclosure.onOpen();
@@ -199,6 +203,8 @@ export const ProjectItems = observer(
                         insert(selectedItemIndex, {
                           title: "",
                           description: "",
+                          order: watchProjectItems.length - 1,
+                          tags: [],
                         });
                       } else {
                         remove(selectedItemIndex);

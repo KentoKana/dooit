@@ -3282,10 +3282,10 @@ react-focus-lock@2.5.2:
     use-callback-ref "^1.2.5"
     use-sidecar "^1.0.5"
 
-react-hook-form@^7.16.2:
-  version "7.21.0"
-  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-7.21.0.tgz#f6f0311295b83ca768873ca9f2a787ff1525f591"
-  integrity sha512-aekCf+dedYFIg+7nCK2acMvZ+s6Ohw2I7UNQ+zNIadBl1SoXow2Tl6c3F49xF8GFCdn5jeK43JHH26rmtdRyLQ==
+react-hook-form@^7.38.0:
+  version "7.38.0"
+  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-7.38.0.tgz#53d6a68df587ce4ce88352f63e0ecc7fc8779320"
+  integrity sha512-gxWW1kMeru9xR1GoR+Iw4hA+JBOM3SHfr4DWCUKY0xc7Vv1MLsF109oHtBeWl9shcyPFx67KHru44DheN0XY5A==
 
 react-icons@^4.3.1:
   version "4.3.1"
@@ -3409,6 +3409,11 @@ react-transition-group@^4.3.0:
     dom-helpers "^5.0.1"
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
+
+react-use-wizard@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/react-use-wizard/-/react-use-wizard-2.2.1.tgz#95313e4ea2647dc1804904df4a73ac5e1f49790c"
+  integrity sha512-GcoV059pGKcR+gxkeDhTFt+1lz0pnCIN6E4Y2PpppoUOLNjL7+h3710pZegvCkHB8dhTHd3tXIUZtQEQHd1Y7A==
 
 react@^17.0.2:
   version "17.0.2"

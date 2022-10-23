@@ -1,7 +1,6 @@
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import {
   Box,
-  Button,
   Flex,
   IconButton,
   Spinner,
@@ -12,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { useMutation } from "react-query";
 import { ProjectCreationService } from "../../classes/ProjectCreationService";
 import { HttpError } from "../../Dtos/HttpError.dto";
@@ -175,96 +174,87 @@ export const CreationDrawer = observer(
     }, [isSuccess, reset, defaultValues]);
 
     return (
-      <DrawerTemplate
-        closeOnEsc={false}
-        isOpen={isOpen}
-        onClose={onClose}
-        size="full"
-        placement="right"
-        drawerHeader={
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Box display="flex" alignItems="center">
-              <IconButton
-                title="Cancel"
-                onClick={() => {
-                  if (
-                    JSON.stringify(defaultValues) ===
-                    JSON.stringify(formHook.getValues())
-                  ) {
-                    onClose();
-                  } else {
-                    cancelConfirmDisclosure.onOpen();
-                  }
-                }}
-                size="md"
-                icon={
-                  <>
-                    <ArrowBackIcon /> Back
-                  </>
-                }
-                aria-label="Cancel"
-                variant="unstyled"
-              />
-            </Box>
-            <Box>
-              <Text as="div" fontSize={showMobileLayout ? "md" : "lg"}>
-                Create Recipe
-              </Text>
-            </Box>
-            <Box>
-              <Button
-                title="Submit and Create Recipe"
-                type="submit"
-                form="project-form"
-                variant={!showMobileLayout ? "primary" : "unstyled"}
-                color={!showMobileLayout ? "#fff" : "primary"}
-              >
-                <Text as="span">Create!</Text>
-              </Button>
-            </Box>
-          </Box>
-        }
-      >
-        {useProjectCreationOptions.data ? (
-          <form
-            id="project-form"
-            onSubmit={handleSubmit(handleUpload)}
-            style={{ height: "100%" }}
-          >
-            <DrawerLayout
-              sidebar={
-                <Sidebar
-                  projectCreationOptions={useProjectCreationOptions.data}
-                  onItemSelect={(selectedItemIndex) => {
-                    setSelectedItemIndex(selectedItemIndex);
+      <FormProvider {...formHook}>
+        <DrawerTemplate
+          closeOnEsc={false}
+          isOpen={isOpen}
+          onClose={onClose}
+          size="full"
+          placement="right"
+          drawerHeader={
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Box display="flex" alignItems="center">
+                <IconButton
+                  title="Cancel"
+                  onClick={() => {
+                    if (
+                      JSON.stringify(defaultValues) ===
+                      JSON.stringify(formHook.getValues())
+                    ) {
+                      onClose();
+                    } else {
+                      cancelConfirmDisclosure.onOpen();
+                    }
                   }}
-                  formHook={formHook}
+                  size="md"
+                  icon={
+                    <>
+                      <ArrowBackIcon /> Back
+                    </>
+                  }
+                  aria-label="Cancel"
+                  variant="unstyled"
                 />
-              }
-            />
-          </form>
-        ) : (
-          <></>
-        )}
-        <ActionConfirmationModal
-          isOpen={cancelConfirmDisclosure.isOpen}
-          onCancel={() => {
-            cancelConfirmDisclosure.onClose();
-          }}
-          onConfirm={() => {
-            reset();
-            onClose();
-            cancelConfirmDisclosure.onClose();
-          }}
-          modalHeading="All unsaved work will be lost. Are you sure?"
-          confirmButtonColorScheme="red"
-          confirmButtonLabel="Yep, I'm sure"
-        />
-      </DrawerTemplate>
+              </Box>
+              <Box>
+                <Text as="div" fontSize={showMobileLayout ? "md" : "lg"}>
+                  Create Recipe
+                </Text>
+              </Box>
+              <Box></Box>
+            </Box>
+          }
+        >
+          {useProjectCreationOptions.data ? (
+            <form
+              id="project-form"
+              onSubmit={handleSubmit(handleUpload)}
+              style={{ height: "100%" }}
+            >
+              <DrawerLayout
+                sidebar={
+                  <Sidebar
+                    projectCreationOptions={useProjectCreationOptions.data}
+                    onItemSelect={(selectedItemIndex) => {
+                      setSelectedItemIndex(selectedItemIndex);
+                    }}
+                  />
+                }
+              />
+            </form>
+          ) : (
+            <></>
+          )}
+          <ActionConfirmationModal
+            isOpen={cancelConfirmDisclosure.isOpen}
+            onCancel={() => {
+              cancelConfirmDisclosure.onClose();
+            }}
+            onConfirm={() => {
+              reset();
+              onClose();
+              cancelConfirmDisclosure.onClose();
+            }}
+            modalHeading="All unsaved work will be lost. Are you sure?"
+            confirmButtonColorScheme="red"
+            confirmButtonLabel="Yep, I'm sure"
+          />
+        </DrawerTemplate>
+      </FormProvider>
     );
   }
 );
